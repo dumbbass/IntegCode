@@ -1,0 +1,156 @@
+<header class="header">
+    <div class="logo-container">
+        <a href="/billingandinvoicing" style="display: flex; align-items: center; text-decoration: none;"> <!-- Update this link to the appropriate route -->
+            <img src="assets/Logo.png" alt="Carexus Logo" style="margin-right: 10px;">
+            <h1 style="font-size: 24px; color: #333;">Carexus</h1>
+        </a>
+    </div>
+</header>
+
+<main>
+    <div class="receipt-container">
+        <!-- Receipt Header -->
+        <div class="receipt-header">
+            <img src="assets/Logo.png" alt="Logo" class="logo">
+            <h1>Carexus Clinic</h1>
+        </div>
+
+        <!-- Business Details -->
+        <div class="business-details">
+            <p>12 St. East Tapinac Olongapo City</p>
+            <p>09127524381</p>
+            <p>Carexus.com</p>
+        </div>
+
+        <!-- Patient and Invoice Details -->
+        <div class="details">
+            <div>
+                <p><strong>Patient Name:</strong> <input type="text" id="patient-name" placeholder="Enter Patient Name"></p>
+                <p><strong>Address:</strong> <input type="text" id="patient-address" placeholder="Enter Address"></p>
+                <p><strong>Contact No.:</strong> <input type="text" id="patient-contact" placeholder="Enter Contact No."></p>
+                <p><strong>Gender:</strong> <input type="text" id="patient-gender" placeholder="Enter Gender"></p>
+                <p><strong>Age:</strong> <input type="number" id="patient-age" placeholder="Enter Age"></p>
+            </div>
+            <div>
+                <p><strong>Date:</strong> <input type="date" id="invoice-date"></p>
+                <p><strong>Invoice Number:</strong> <input type="text" id="invoice-number" placeholder="Enter Invoice Number"></p>
+                <p><strong>Due Date:</strong> <input type="date" id="due-date"></p>
+            </div>
+        </div>
+
+        <!-- Table for Services -->
+        <table>
+            <thead>
+                <tr>
+                    <th>SR#</th>
+                    <th>Description</th>
+                    <th>MU</th>
+                    <th>QTY</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody id="receipt-items">
+                <tr>
+                    <td><input type="number" value="1" readonly></td>
+                    <td><input type="text" value="General Checkup" placeholder="Enter Service Description"></td>
+                    <td><input type="number" value="1" readonly></td>
+                    <td><input type="number" placeholder="Enter Quantity"></td>
+                    <td><input type="number" placeholder="Enter Amount"></td>
+                </tr>
+                <tr>
+                    <td><input type="number" value="2" readonly></td>
+                    <td><input type="text" value="Blood Test" placeholder="Enter Service Description"></td>
+                    <td><input type="number" value="1" readonly></td>
+                    <td><input type="number" placeholder="Enter Quantity"></td>
+                    <td><input type="number" placeholder="Enter Amount"></td>
+                </tr>
+                <tr>
+                    <td><input type="number" value="2" readonly></td>
+                    <td><input type="text" value="Blood Test" placeholder="Enter Service Description"></td>
+                    <td><input type="number" value="1" readonly></td>
+                    <td><input type="number" placeholder="Enter Quantity"></td>
+                    <td><input type="number" placeholder="Enter Amount"></td>
+                </tr>
+                <tr>
+                    <td><input type="number" value="2" readonly></td>
+                    <td><input type="text" value="Blood Test" placeholder="Enter Service Description"></td>
+                    <td><input type="number" value="1" readonly></td>
+                    <td><input type="number" placeholder="Enter Quantity"></td>
+                    <td><input type="number" placeholder="Enter Amount"></td>
+                </tr>
+                <tr>
+                    <td><input type="number" value="2" readonly></td>
+                    <td><input type="text" value="Blood Test" placeholder="Enter Service Description"></td>
+                    <td><input type="number" value="1" readonly></td>
+                    <td><input type="number" placeholder="Enter Quantity"></td>
+                    <td><input type="number" placeholder="Enter Amount"></td>
+                </tr>
+                <tr>
+                    <td><input type="number" value="2" readonly></td>
+                    <td><input type="text" value="Blood Test" placeholder="Enter Service Description"></td>
+                    <td><input type="number" value="1" readonly></td>
+                    <td><input type="number" placeholder="Enter Quantity"></td>
+                    <td><input type="number" placeholder="Enter Amount"></td>
+                </tr>
+                <tr>
+                    <td><input type="number" value="2" readonly></td>
+                    <td><input type="text" value="Blood Test" placeholder="Enter Service Description"></td>
+                    <td><input type="number" value="1" readonly></td>
+                    <td><input type="number" placeholder="Enter Quantity"></td>
+                    <td><input type="number" placeholder="Enter Amount"></td>
+                </tr>
+                <tr>
+                    <td><input type="number" value="2" readonly></td>
+                    <td><input type="text" value="Blood Test" placeholder="Enter Service Description"></td>
+                    <td><input type="number" value="1" readonly></td>
+                    <td><input type="number" placeholder="Enter Quantity"></td>
+                    <td><input type="number" placeholder="Enter Amount"></td>
+                </tr>
+                <tr>
+                    <td><input type="number" value="2" readonly></td>
+                    <td><input type="text" value="Blood Test" placeholder="Enter Service Description"></td>
+                    <td><input type="number" value="1" readonly></td>
+                    <td><input type="number" placeholder="Enter Quantity"></td>
+                    <td><input type="number" placeholder="Enter Amount"></td>
+                </tr>
+                <tr>
+                    <td><input type="number" value="2" readonly></td>
+                    <td><input type="text" value="Blood Test" placeholder="Enter Service Description"></td>
+                    <td><input type="number" value="1" readonly></td>
+                    <td><input type="number" placeholder="Enter Quantity"></td>
+                    <td><input type="number" placeholder="Enter Amount"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Totals Section -->
+        <div class="totals">
+            <table>
+                <tr>
+                    <td><strong>Sub-total:</strong></td>
+                    <td><input type="number" id="subtotal" placeholder="Enter Sub-total" readonly></td>
+                </tr>
+                <tr>
+                    <td><strong>Tax:</strong></td>
+                    <td><input type="number" id="tax" placeholder="Enter Tax Amount" readonly></td>
+                </tr>
+                <tr>
+                    <td><strong>Total Amount Due:</strong></td>
+                    <td><input type="number" id="total-amount" placeholder="Enter Total Amount" readonly></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Create Receipt Button -->
+<div class="create-receipt-button">
+    <button id="create-receipt" style="width: 100%;">Create Receipt</button>
+</div>
+
+
+        <!-- Terms and Conditions -->
+        <div class="terms">
+            <p><strong>Terms and Conditions:</strong></p>
+            <p>All payments are final. Please contact us for any discrepancies.</p>
+        </div>
+    </div>
+</main>

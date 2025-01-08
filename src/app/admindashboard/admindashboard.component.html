@@ -1,0 +1,48 @@
+<div class="dashboard-wrapper">
+  <app-adminsidenav></app-adminsidenav>
+  <div class="main-content">
+    <div class="admindashboard-header-container">
+      <div class="header">
+        <div class="logo">
+          <i class="fas fa-th-large"></i> Dashboard
+        </div>
+        <div class="search-container">
+          <input type="text" class="search-bar" placeholder="Search">
+          <i class="fas fa-search search-icon"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="admindashboard-list-container">
+      <h2>Current Patients List in your Queue</h2>
+      <table class="admindashboard-table">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Gender</th>
+            
+            <th>Urgency</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>John Doe</td>
+            <td>M</td>
+            <td>Yes</td>
+            <td>
+              <div class="action-buttons">
+                <button class="delete-btn">Archive</button>
+                <a [routerLink]="['/information']"><button class="view-btn">View</button></a>
+              </div>
+            </td>
+          </tr>
+          <!-- Add more rows as needed -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+  

@@ -1,0 +1,18 @@
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { AdminsidenavComponent } from '../adminsidenav/adminsidenav.component';
+
+@Component({
+  selector: 'app-admindashboard',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    AdminsidenavComponent
+  ],
+  templateUrl: './admindashboard.component.html',
+  styleUrl: './admindashboard.component.css'
+})
+export class AdmindashboardComponent {
+}

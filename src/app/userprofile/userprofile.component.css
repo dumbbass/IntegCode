@@ -1,0 +1,150 @@
+.userbilling-container {
+  display: flex;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  margin-left: 240px; /* Adjust this value based on the width of the sidenav */
+}
+
+/* General styling for the containers */
+.userbilling-header-container {
+  background-color: #fff;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+}/* General styling for the containers */
+.user-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 40px;
+}
+
+/* General styling for the containers */
+.userprofile-header-container {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px 20px;
+}
+
+.userprofile-records-list-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 40px 20px;
+}
+
+.logo {
+    font-size: 30px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+}
+
+.logo i {
+    margin-right: 30px;
+    font-size: 30px;
+}
+
+.edit-container {
+    display: flex;
+    align-items: center;
+}
+
+.edit-icon {
+    font-size: 30px; /* Increased size */
+    color: #000000;
+    cursor: pointer;
+    margin-right: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+h2 {
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+
+
+
+/* Container Styling */
+.userprofile-container {
+    background-color: #fff;
+    padding: 20px; /* Space around the content */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px; /* Space around the container */
+  }
+  
+  h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px; /* Space below the header */
+    color: #333;
+  }
+  
+  /* Styling for the User Info */
+  .user-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px; /* Space between rows */
+  }
+  
+  .info-row div {
+    flex: 1;
+    margin-right: 10px; /* Space between columns */
+    padding: 10px; /* Inner padding for each column */
+  }
+  
+  .info-row div:last-child {
+    margin-right: 0; /* Remove right margin for the last column */
+  }
+  
+  /* Strong Tags: Light Grey Color, Lightweight Font, Spacing */
+  strong {
+    color: #aaa; /* Light grey color */
+    font-weight: 300; /* Lightweight font */
+    font-size: 16px;
+    display: block; /* Makes the <strong> appear on a separate line */
+    margin-bottom: 5px; /* Adds spacing below <strong> */
+    margin-left: 20px; /* Moves the <strong> slightly to the right */
+  }
+  
+  /* Paragraph Tags for User Data: Bold and Black Color */
+  p {
+    margin: 0;
+    font-size: 16px;
+    color: #000; /* Black color */
+    font-weight: 700; /* Bold font weight */
+    margin-top: 5px; /* Space above the <p> */
+    margin-left: 20px; /* Moves the <p> slightly to the right */
+  }
+  
+  /* Underline Styling */
+  hr {
+    border: none;
+    border-top: 2px solid #ddd; /* Light grey underline */
+    margin: 20px 0; /* Space above and below the <hr> */
+  }
+  

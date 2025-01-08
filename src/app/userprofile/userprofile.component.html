@@ -1,0 +1,46 @@
+<div class="userbilling-container">
+  <app-sidenav></app-sidenav>
+  <div class="main-content">
+      <div class="userbilling-header-container">
+          <div class="header">
+              <div class="logo">
+                  <i class="fas fa-user"></i> User Profile
+              </div>
+          </div>
+      </div>
+
+  <div class="user-container">
+    <h2>Personal Information</h2>
+    <div class="user-info">
+      <div class="info-row">
+        <div>
+          <strong>Name</strong>
+          <p>{{ user.name }}</p>
+        </div>
+        <div>
+          <strong>Gender</strong>
+          <p>{{ user.gender }}</p>
+        </div>
+        <div>
+          <strong>Date of Birth</strong>
+          <p>{{ user.dateOfBirth }}</p>
+        </div>
+      </div>
+      <hr>
+      <div class="info-row">
+        <div>
+          <strong>Email Address</strong>
+          <p>{{ user.email }}</p>
+        </div>
+        <div>
+          <strong>Home Address</strong>
+          <p>{{ user.address }}</p>
+        </div>
+        <div>
+          <strong>Contact Number</strong>
+          <p>{{ user.contactNumber }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  

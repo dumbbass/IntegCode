@@ -1,0 +1,55 @@
+<div class="userbilling-container">
+    <app-sidenav></app-sidenav>
+    <div class="main-content">
+        <div class="userbilling-header-container">
+            <div class="header">
+                <div class="logo">
+                    <i class="fas fa-credit-card"></i> Billing
+                </div>
+            </div>
+        </div>
+
+    <div class="user-container">
+    <h2>View your receipts in last appointments</h2>
+    <table class="billing-records-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Receipt</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>John Doe</td>
+                <td>2024-12-01</td>
+                <td class="status paid">Paid</td>
+                <td>
+                    <a [routerLink]="['/userreceipt']">
+                        <button class="view-receipt-btn">View</button>
+                    </a>
+                </td>
+                
+            </tr>
+            <tr>
+                <td>Jane Smith</td>
+                <td>2024-12-02</td>
+                <td class="status not-paid">Not Paid</td>
+                <td>
+                    <button class="view-receipt-btn">View</button>
+                </td>
+            </tr>
+            <tr>
+                <td>Sam Brown</td>
+                <td>2024-11-30</td>
+                <td class="status paid">Paid</td>
+                <td>
+                    <a [routerLink]="['/userreceipt']">
+                        <button class="view-receipt-btn">View</button>
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

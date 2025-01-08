@@ -1,0 +1,92 @@
+.header-book{
+    margin-bottom: 40px;
+}/* General Layout */
+.userappointments-container {
+    display: flex;
+}
+
+.main-content {
+    flex: 1;
+    padding: 20px;
+    margin-left: 240px; /* Adjust this value based on the width of the sidenav */
+}
+
+/* Header Styling */
+.userappointments-header-container {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    font-size: 30px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+}
+
+.logo i {
+    margin-right: 30px;
+    font-size: 30px;
+}
+
+/* Appointment Form Styling */
+.appointment-form-container {
+    background-color: #fff;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.appointment-name-container,
+.appointment-date-container,
+.appointment-time-container,
+.appointment-purpose-container,
+.appointment-other-reason-container {
+    margin-bottom: 15px;
+}
+
+label {
+    font-size: 16px;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.user-name,
+.appointment-date,
+.appointment-time,
+.appointment-purpose,
+.appointment-other-reason {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.appointment-purpose {
+    height: 40px;
+}
+
+/* Submit Button Styling */
+.appointment-submit-container {
+    text-align: right;
+}
+
+.submit-btn {
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.submit-btn:hover {
+    background-color: #0056b3;
+}
