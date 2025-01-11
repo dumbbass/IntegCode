@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { AdminService } from '../services/admin.service';
+import { AdminService } from '../../services/admin.service';
 
 @Component({
   selector: 'app-adminlogin',
