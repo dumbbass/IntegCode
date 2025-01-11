@@ -257,3 +257,54 @@
     background-color: #218838 !important;
   }
   
+
+  .SignUp {
+    text-align: center;
+    margin-top: 35px;
+    font-size: 18px;
+  }
+  
+  .signup-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .signup-link:hover {
+    text-decoration: underline;
+  }
+  
+  /* Style for the Register link container */
+.register-container {
+  text-align: center;
+  margin-top: 30px;
+}
+
+/* Style for the Register link */
+.register-container a {
+  display: inline-block;           /* Makes it behave like a block-level element */
+  background: linear-gradient(135deg, #6e7dff, #56c9ff); /* Gradient background */
+  color: white;                    /* White text */
+  padding: 12px 25px;              /* Add padding for a larger button */
+  font-size: 18px;                 /* Larger text size */
+  text-decoration: none;           /* Removes underline */
+  border-radius: 50px;             /* Rounded corners */
+  cursor: pointer;                /* Change cursor on hover */
+  font-weight: bold;               /* Bold text */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  /* Subtle shadow */
+  transition: all 0.3s ease;       /* Smooth transition */
+}
+
+/* Hover effect for the link */
+.register-container a:hover {
+  background: linear-gradient(135deg, #56c9ff, #6e7dff);  /* Reversed gradient */
+  transform: translateY(-4px);       /* Slightly lift the link on hover */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+}
+
+/* Active state (when the link is clicked) */
+.register-container a:active {
+  background: linear-gradient(135deg, #6e7dff, #56c9ff);  /* Default gradient on click */
+  transform: translateY(2px);        /* Slightly depress the link on click */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);  /* Reduce shadow on click */
+}

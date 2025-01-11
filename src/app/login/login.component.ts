@@ -2,13 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';  // Import FormsModule
-import { AuthService } from '../auth.service'; // Ensure the correct import path
+import { FormsModule } from '@angular/forms';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, HttpClientModule], // Add FormsModule here
+  imports: [CommonModule, RouterModule, FormsModule, HttpClientModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit {
     // Call the backend API to validate login credentials
     this.http.post<any>(this.apiUrl, this.loginData).subscribe(
       (response) => {
-        console.log('Response from backend:', response);  // Log the response
+        console.log('Response from backend:', response);
   
         if (response.status) {
           // Store the session data (token and role) in localStorage
@@ -52,9 +52,14 @@ export class LoginComponent implements OnInit {
         }
       },
       (error) => {
-        console.log('Error during login:', error);  // Log the error
+        console.log('Error during login:', error);
         alert('An error occurred. Please try again later.');
       }
     );
-  }  
+  }
+
+  goToRegister(): void {
+    // Use Angular's router to navigate to the Register component
+    this.router.navigate(['/register']);
+  }
 }
