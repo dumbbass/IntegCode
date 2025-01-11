@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { RegisterComponent } from './USERS/register/register.component';
-import { LoginComponent } from './USERS/login/login.component';
+import { LoginComponent } from './login/login.component';
 import { SidenavComponent } from './USERS/sidenav/sidenav.component';
 import { PatientComponent } from './ADMIN/patient/patient.component';
 import { AdmindashboardComponent } from './ADMIN/admindashboard/admindashboard.component';
@@ -15,7 +15,6 @@ import { UsermedicalrecordsComponent } from './USERS/usermedicalrecords/usermedi
 import { UserchatComponent } from './USERS/userchat/userchat.component';
 import { UserappointmentsComponent } from './USERS/userappointments/userappointments.component';
 import { AuthGuard } from './auth.guard';
-import { AdminloginComponent } from './ADMIN/adminlogin/adminlogin.component';
 import { SymptomsComponent } from './ADMIN/symptoms/symptoms.component';
 import { InformationComponent } from './ADMIN/information/information.component';
 import { UserreceiptComponent } from './USERS/userreceipt/userreceipt.component';
@@ -37,7 +36,6 @@ export const routes: Routes = [
   { path: 'usermedicalrecords', component: UsermedicalrecordsComponent}, 
   { path: 'userchat', component: UserchatComponent, canActivate: [AuthGuard] },
   { path: 'userappointments', component: UserappointmentsComponent},
-  { path: 'adminlogin', component: AdminloginComponent },
   { path: 'symptoms', component: SymptomsComponent},
   { path: 'information', component: InformationComponent},
   { path: 'userreceipt', component: UserreceiptComponent},
