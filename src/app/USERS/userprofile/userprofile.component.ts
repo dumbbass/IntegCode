@@ -4,7 +4,7 @@ import { SidenavComponent } from '../sidenav/sidenav.component';
 @Component({
   selector: 'app-userprofile',
   standalone: true,
-  imports: [SidenavComponent],
+  imports: [],
   templateUrl: './userprofile.component.html',
   styleUrls: ['./userprofile.component.css'] // Fixed `styleUrl` to `styleUrls`
 })

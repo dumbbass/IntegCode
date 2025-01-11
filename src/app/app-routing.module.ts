@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
-import { UserchatComponent } from './userchat/userchat.component';
+import { LoginComponent } from './USERS/login/login.component';
+import { RegisterComponent } from './USERS/register/register.component';
+import { UserchatComponent } from './USERS/userchat/userchat.component';
 import { AuthGuard } from './auth.guard';
-import { UserprofileComponent } from './userprofile/userprofile.component';
-import { SymptomsComponent } from './symptoms/symptoms.component'; // Ensure the correct path
-import { InformationComponent } from './information/information.component';
-import { UserreceiptComponent } from './userreceipt/userreceipt.component';
-import { CreatereceiptComponent } from './createreceipt/createreceipt.component';
+import { UserprofileComponent } from './USERS/userprofile/userprofile.component';
+import { SymptomsComponent } from './ADMIN/symptoms/symptoms.component'; // Ensure the correct path
+import { InformationComponent } from './ADMIN/information/information.component';
+import { UserreceiptComponent } from './USERS/userreceipt/userreceipt.component';
+import { CreatereceiptComponent } from './ADMIN/createreceipt/createreceipt.component';
 
 
 const routes: Routes = [
