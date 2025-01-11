@@ -31,21 +31,28 @@ export class LoginComponent implements OnInit {
   onLogin(event: Event): void {
     event.preventDefault();
     console.log('Login attempt with:', this.loginData);
-  
+
     // Call the backend API to validate login credentials
     this.http.post<any>(this.apiUrl, this.loginData).subscribe(
       (response) => {
         console.log('Response from backend:', response);
-  
-        if (response.status) {
-          // Store the session data (token and role) in localStorage
-          this.authService.setSession(response.token, response.user.role);
-  
-          // Redirect to the appropriate dashboard based on the 'dashboard' field in the response
-          if (response.user.role === 'admin') {
-            this.router.navigate(['/admindashboard']);
-          } else if (response.user.role === 'user') {
-            this.router.navigate(['/userdashboard']);
+
+        if (response.status === true) {
+          // Ensure user object exists and extract user details safely
+          if (response.user && response.user.id) {
+            const { token, role, id } = response.user; // Extract token, role, and user id
+
+            // Store the session data (token, role, and userId) in localStorage
+            this.authService.setSession(response.token, role, id);
+
+            // Redirect to the appropriate dashboard based on the user's role
+            if (role === 'admin') {
+              this.router.navigate(['/admindashboard']);
+            } else if (role === 'user') {
+              this.router.navigate(['/userdashboard']);
+            }
+          } else {
+            alert('User ID not found in response');
           }
         } else {
           alert('Login failed: ' + response.message);

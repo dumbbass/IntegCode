@@ -9,38 +9,43 @@
           </div>
       </div>
 
-  <div class="user-container">
-    <h2>Personal Information</h2>
-    <div class="user-info">
-      <div class="info-row">
-        <div>
-          <strong>Name</strong>
-          <p>{{ user.name }}</p>
-        </div>
-        <div>
-          <strong>Gender</strong>
-          <p>{{ user.gender }}</p>
-        </div>
-        <div>
-          <strong>Date of Birth</strong>
-          <p>{{ user.dateOfBirth }}</p>
+      <div class="user-container" *ngIf="user && user.firstname">
+        <h2>Personal Information</h2>
+        <div class="user-info">
+          <div class="info-row">
+            <div>
+              <strong>Name</strong>
+              <p>{{ user.firstname }} {{ user.lastname }}</p>
+            </div>
+            <div>
+              <strong>Gender</strong>
+              <p>{{ user.gender }}</p>
+            </div>
+            <div>
+              <strong>Date of Birth</strong>
+              <p>{{ user.date_of_birth }}</p>
+            </div>
+          </div>
+          <hr>
+          <div class="info-row">
+            <div>
+              <strong>Email Address</strong>
+              <p>{{ user.email }}</p>
+            </div>
+            <div>
+              <strong>Home Address</strong>
+              <p>{{ user.home_address }}</p>
+            </div>
+            <div>
+              <strong>Contact Number</strong>
+              <p>{{ user.contact_number }}</p>
+            </div>
+          </div>
         </div>
       </div>
-      <hr>
-      <div class="info-row">
-        <div>
-          <strong>Email Address</strong>
-          <p>{{ user.email }}</p>
-        </div>
-        <div>
-          <strong>Home Address</strong>
-          <p>{{ user.address }}</p>
-        </div>
-        <div>
-          <strong>Contact Number</strong>
-          <p>{{ user.contactNumber }}</p>
-        </div>
+
+      <div *ngIf="errorMessage" class="error-message">
+        <p>{{ errorMessage }}</p>
       </div>
-    </div>
   </div>
-  
+</div>
