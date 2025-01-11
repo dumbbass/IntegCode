@@ -1,15 +1,14 @@
 import { Component } from '@angular/core';
-import { SidenavComponent } from '../sidenav/sidenav.component';
+import { SidenavComponent } from '../sidenav/sidenav.component';  // Correct import path
 
 @Component({
   selector: 'app-userprofile',
   standalone: true,
-  imports: [],
+  imports: [SidenavComponent],  // Corrected from 'sidenav' to 'SidenavComponent'
   templateUrl: './userprofile.component.html',
-  styleUrls: ['./userprofile.component.css'] // Fixed `styleUrl` to `styleUrls`
+  styleUrls: ['./userprofile.component.css']  // Correct usage of styleUrls
 })
 export class UserprofileComponent {
-  // Define the data that will be used in the HTML
   user = {
     name: 'John Doe',
     gender: 'Male',
