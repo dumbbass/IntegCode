@@ -9,5 +9,13 @@ import { SidenavComponent } from '../sidenav/sidenav.component';
   styleUrls: ['./userdashboard.component.css']
 })
 export class UserdashboardComponent {
+  selectedDescription: string | null = null;
 
+  openDescription(description: string) {
+    this.selectedDescription = description;
+  }
+
+  closeDescription() {
+    this.selectedDescription = null;
+  }
 }

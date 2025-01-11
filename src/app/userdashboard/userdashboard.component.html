@@ -26,7 +26,7 @@
                         <td>2024-12-10</td>
                         <td>Regular Checkup</td>
                         <td>
-                            <button class="view-btn">View</button>
+                            <button class="view-btn" (click)="openDescription('Regular Checkup')">View</button>
                         </td>
                     </tr>
                     <tr>
@@ -34,11 +34,19 @@
                         <td>2024-12-12</td>
                         <td>Follow-up Consultation</td>
                         <td>
-                            <button class="view-btn">View</button>
+                            <button class="view-btn" (click)="openDescription('Follow-up Consultation')">View</button>
                         </td>
                     </tr>
                 </tbody>
             </table>
+        </div>
+
+        <!-- Modal for displaying description -->
+        <div *ngIf="selectedDescription" class="modal">
+            <div class="modal-content">
+                <span class="close" (click)="closeDescription()">&times;</span>
+                <p>{{ selectedDescription }}</p>
+            </div>
         </div>
 
         <div class="userdashboard-reports-container">
