@@ -17,13 +17,14 @@ const routes: Routes = [
   { path: 'userchat', component: UserchatComponent, canActivate: [AuthGuard] },
   { path: 'userprofile', component: UserprofileComponent },
   { path: 'symptoms', component: SymptomsComponent },
-  { path: 'informal', component: InformationComponent},
-  { path: 'userreceipt', component: UserreceiptComponent},
-  { path: 'createreceipt', component: CreatereceiptComponent},
-
+  { path: 'informal', component: InformationComponent },
+  { path: 'userreceipt', component: UserreceiptComponent },
+  { path: 'createreceipt', component: CreatereceiptComponent },
+  
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/login', pathMatch: 'full' }
 ];
+
 
 @NgModule({
   imports: [
