@@ -11,6 +11,12 @@ import { Router, RouterModule } from '@angular/router';
   styleUrls: ['./adminsidenav.component.css']
 })
 export class AdminsidenavComponent {
+  isCollapsed = false; // Sidebar is initially expanded
+
+  // Method to toggle the collapsed state when the menu button is clicked
+  toggleSidenav() {
+    this.isCollapsed = !this.isCollapsed; // Toggle between expanded and collapsed states
+  }
   constructor(private router: Router) {}
 
   navigateTo(route: string) {
