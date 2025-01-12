@@ -19,6 +19,7 @@ import { SymptomsComponent } from './ADMIN/symptoms/symptoms.component';
 import { InformationComponent } from './ADMIN/information/information.component';
 import { UserreceiptComponent } from './USERS/userreceipt/userreceipt.component';
 import { CreatereceiptComponent } from './ADMIN/createreceipt/createreceipt.component';
+import { ArchiveComponent } from './ADMIN/archive/archive.component';
 
 export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
@@ -40,6 +41,7 @@ export const routes: Routes = [
   { path: 'information', component: InformationComponent},
   { path: 'userreceipt', component: UserreceiptComponent},
   { path: 'createreceipt', component: CreatereceiptComponent},
+  { path: 'archive', component: ArchiveComponent },
 
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/login', pathMatch: 'full'}, // Placeholder route
