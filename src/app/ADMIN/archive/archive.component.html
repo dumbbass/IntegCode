@@ -7,7 +7,7 @@
           <i class="fas fa-archive"></i> Archive
         </div>
         <div class="search-container">
-          <input type="text" class="search-bar" placeholder="Search Archives">
+          <input type="text" class="search-bar" placeholder="Search Archives" [(ngModel)]="searchQuery" (input)="onSearch()">
           <i class="fas fa-search search-icon"></i>
         </div>
       </div>
@@ -25,17 +25,16 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>1</td>
-            <td>Sample Item</td>
-            <td>2023-10-01</td>
+          <tr *ngFor="let item of filteredItems">
+            <td>{{ item.id }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.dateArchived }}</td>
             <td>
               <div class="action-buttons">
                 <button class="view-btn">View</button>
               </div>
             </td>
           </tr>
-          <!-- Add more rows as needed -->
         </tbody>
       </table>
     </div>
