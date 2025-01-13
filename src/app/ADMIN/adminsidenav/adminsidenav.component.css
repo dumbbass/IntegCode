@@ -1,90 +1,58 @@
-/* Menu Button (3-line icon) */
-.menu-btn {
-    font-size: 24px;
-    padding: 10px;
-    background-color: #3398db;
-    color: #ffffff;
-    border: none;
-    cursor: pointer;
-    border-radius: 8px;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 0.3s ease;
-    margin-top: 10px;
-}
-
 /* Sidebar styles */
 .sidenav {
     position: fixed;
     left: 0;
     top: 0;
-    width: 240px; /* Default full width */
+    width: 240px; /* Sidebar width */
     height: 100%;
-    background-color: #3398db;
-    color: #0a0000;
+    background-color: #ffffff; /* Sidebar background color */
+    color: #0a0000; /* Sidebar text color */
     padding: 20px;
+    transform: translateX(0);
+    transition: transform 0.3s ease-in-out;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
     border-top-right-radius: 25px;
     border-bottom-right-radius: 25px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    align-items: flex-start;
-    transition: width 0.3s ease-in-out;
 }
 
-/* Minimized State */
-.sidenav.collapsed {
-    width: 90px; /* Minimized width */
-}
-
-/* Sidenav Header - Logo and Menu Button */
+/* Header */
 .sidenav-header {
     display: flex;
-    justify-content: space-between; /* Space between logo and menu button */
+    justify-content: center;
     align-items: center;
     width: 100%;
-    margin-top: -6px;
     margin-bottom: 20px;
-    border-bottom: 2px solid white; /* White line under both the logo and the button */
-    padding-bottom: 10px; /* Adjust padding to add some space below */
 }
 
 .sidenav-header .logo {
-    width: 40px;  /* Adjust the size of the logo */
+    width: 40px;  /* Adjust size as necessary */
     height: auto;
     margin-right: 10px;
 }
 
 .sidenav-header h1 {
-    font-size: 24px;
+    font-size: 22px;
     text-align: center;
-    color: #ffffff;
-    margin-top: 10px;
-    transition: opacity 0.3s ease-in-out;
-    white-space: nowrap;
+    color: #000000;
+    margin: 10px 0;
+    padding-bottom: 5px;
+    position: relative;
 }
 
-/* When the sidebar is collapsed, hide the logo text */
-.sidenav.collapsed .sidenav-header h1 {
-    opacity: 0;
-    visibility: hidden;
-}
 
 /* Sidebar menu */
 .sidenav-menu {
     list-style-type: none;
     padding: 0;
-    margin-top: 0;
+    margin: 0;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
-    transition: opacity 0.3s ease-in-out;
-    width: 100%;  /* Ensure the menu spans the full sidebar width */
+    flex: 1;
 }
 
 /* Sidebar menu item */
@@ -92,90 +60,47 @@
     margin: 10px 0;
     width: 100%;
     text-align: left;
+    border: none; /* Remove border */
+    background-color: #ffffff;
 }
 
 /* Sidebar link */
 .sidenav-link {
-    color: #ffffff;
+    color: #000000;
     text-decoration: none;
-    font-size: 18px;
+    font-size: 17px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
     padding: 10px 15px;
     border-radius: 5px;
     transition: background-color 0.3s ease, color 0.3s ease;
-    width: 100%; /* Make sure it's within the container */
-    margin-right: 20px; /* Ensure it's inside the container */
-}
-
-/* Add space between the icon and the text */
-.sidenav-link i {
-    margin-right: 10px; /* Adjust this value for the desired spacing */
-}
-
-/* When collapsed, only show icons */
-.sidenav.collapsed .sidenav-link span {
-    display: none; /* Hide text of main buttons */
-}
-
-/* Show the text when expanded */
-.sidenav:not(.collapsed) .sidenav-link span {
-    display: inline-block;
-}
-
-/* Hover effect for links */
-.sidenav-link:hover {
+    width: 100%;
+    border: none; /* Ensure no borders */
     background-color: #ffffff;
+}
+
+.sidenav-link i {
+    margin-right: 15px;
+}
+
+.sidenav-link:hover {
+    background-color: #0096FF;
     color: black;
 }
 
 /* Logout section */
 .logout {
     margin-top: auto;
-    padding-top: 90px;
+    padding-top: 20px;
 }
 
 .logout .sidenav-link {
-    color: #ffffff;
-    font-size: 22px;
+    font-size: 19px;
 }
 
 .logout .sidenav-link:hover {
-    background-color: #ffffff;
-    color: black;
-}
-
-/* Main content */
-.main-content {
-    margin-left: 240px; /* Adjust content when sidebar is expanded */
-    padding: 20px;
-    transition: margin-left 0.3s ease-in-out;
-}
-
-/* Adjust content when sidebar is collapsed */
-.sidenav.collapsed ~ .main-content {
-    margin-left: 60px; /* Adjust margin when collapsed */
-}
-
-/* Adjust content when sidebar is hovered */
-.sidenav:hover ~ .main-content {
-    margin-left: 80px; /* Adjust margin for hover state */
-}
-
-@media screen and (max-width: 768px) {
-    .sidenav {
-      width: 100px; /* Adjust to a compact version for mobile */
-    }
-    .sidenav.collapsed {
-      width: 50px;
-    }
-    .main-content {
-      margin-left: 100px; /* Adjust based on mobile view */
-    }
-    .sidenav.collapsed ~ .main-content {
-      margin-left: 50px;
-    }
+    background-color: #0096FF;
 }
 
 /* Modal styles */

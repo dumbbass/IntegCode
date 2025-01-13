@@ -10,14 +10,9 @@ import { Router, RouterModule } from '@angular/router';
   styleUrls: ['./adminsidenav.component.css'],
 })
 export class AdminsidenavComponent {
-  isCollapsed = false; // Sidebar is initially expanded
   isLogoutModalVisible = false; // Controls the visibility of the logout modal
 
   constructor(private router: Router) {}
-
-  toggleSidenav() {
-    this.isCollapsed = !this.isCollapsed; // Toggle between expanded and collapsed states
-  }
 
   navigateTo(route: string) {
     this.router.navigate([`/${route}`]);
@@ -34,5 +29,15 @@ export class AdminsidenavComponent {
   logout() {
     this.isLogoutModalVisible = false; // Hide the modal
     this.router.navigate(['/login']); // Redirect to the login page
+  }
+
+  // Define the confirmLogout method
+  confirmLogout() {
+    this.logout(); // Call logout method
+  }
+
+  // Define the cancelLogout method
+  cancelLogout() {
+    this.hideLogoutModal(); // Hide the modal without logging out
   }
 }
