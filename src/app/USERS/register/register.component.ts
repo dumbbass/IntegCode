@@ -173,7 +173,7 @@ export class RegisterComponent {
         password: this.password,
       };
 
-      this.http.post('http://localhost/carexusapi/backend/carexus.php?action=register', userData).subscribe(
+      this.http.post('http://localhost/API/carexusapi/backend/carexus.php?action=register', userData).subscribe(
         (response: any) => {
           console.log('Registration successful:', response);
           this.router.navigate(['/login']);
@@ -194,3 +194,4 @@ export class RegisterComponent {
     }
   }
 }
+
