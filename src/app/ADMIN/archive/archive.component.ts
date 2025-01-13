@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AdminsidenavComponent } from '../adminsidenav/adminsidenav.component';
+import { FormsModule } from '@angular/forms';
 
 interface ArchiveItem {
   id: number;
@@ -15,7 +16,8 @@ interface ArchiveItem {
   imports: [
     CommonModule,
     RouterModule,
-    AdminsidenavComponent
+    AdminsidenavComponent,
+    FormsModule
   ],
   templateUrl: './archive.component.html',
   styleUrls: ['./archive.component.css']
