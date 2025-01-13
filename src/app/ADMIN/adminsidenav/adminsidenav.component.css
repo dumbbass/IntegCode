@@ -1,4 +1,5 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 /* Menu Button (3-line icon) */
 .menu-btn {
     font-size: 24px;
@@ -18,6 +19,9 @@
 }
 
 /* Basic Styles */
+=======
+/* Sidebar styles */
+>>>>>>> Stashed changes
 =======
 /* Sidebar styles */
 >>>>>>> Stashed changes
@@ -41,6 +45,7 @@
 }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 /* Minimized State */
 .sidenav.collapsed {
     width: 90px; /* Minimized width */
@@ -48,6 +53,9 @@
 
 
 /* Sidenav Header - Logo and Menu Button */
+=======
+/* Header */
+>>>>>>> Stashed changes
 =======
 /* Header */
 >>>>>>> Stashed changes
@@ -60,6 +68,12 @@
     margin-bottom: 20px;
     border-bottom: 2px solid white; /* White line under both the logo and the button */
     padding-bottom: 10px; /* Adjust padding to add some space below */
+}
+
+.sidenav-header .logo {
+    width: 40px;  /* Adjust the size of the logo */
+    height: auto;
+    margin-right: 10px;
 }
 
 .sidenav-header .logo {
@@ -104,6 +118,9 @@
 
 
 /* Sidebar menu */
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 .sidenav-menu {
     list-style-type: none;
@@ -118,7 +135,11 @@
 }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 /* Individual Menu Items */
+=======
+/* Sidebar menu item */
+>>>>>>> Stashed changes
 =======
 /* Sidebar menu item */
 >>>>>>> Stashed changes
@@ -129,7 +150,11 @@
 }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 /* Links (Text and Icons) */
+=======
+/* Sidebar link */
+>>>>>>> Stashed changes
 =======
 /* Sidebar link */
 >>>>>>> Stashed changes
@@ -194,6 +219,9 @@
 }
 
 /* Logout section */
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 .logout {
     margin-top: auto;
@@ -243,6 +271,55 @@
   }
   
 =======
+/* Modal styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content p {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.modal-content button {
+    margin: 5px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.modal-content button:first-child {
+    background-color: #007bff;
+    color: white;
+}
+
+.modal-content button:last-child {
+    background-color: #dc3545;
+    color: white;
+}
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+
 /* Modal styles */
 .modal {
     position: fixed;

@@ -11,12 +11,17 @@ import { Router, RouterModule } from '@angular/router';
 })
 export class AdminsidenavComponent {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   isCollapsed = false; // Sidebar is initially expanded
 
   // Method to toggle the collapsed state when the menu button is clicked
   toggleSidenav() {
     this.isCollapsed = !this.isCollapsed; // Toggle between expanded and collapsed states
   }
+=======
+  isLogoutModalVisible = false; // Controls the visibility of the logout modal
+
+>>>>>>> Stashed changes
 =======
   isLogoutModalVisible = false; // Controls the visibility of the logout modal
 

@@ -12,9 +12,13 @@ import { AuthGuard } from './auth.guard';
 
 import { InformationComponent } from './ADMIN/information/information.component';
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import { UserreceiptComponent } from './USERS/userreceipt/userreceipt.component';
 import { CreatereceiptComponent } from './ADMIN/createreceipt/createreceipt.component';
 import { ArchiveComponent } from './ADMIN/archive/archive.component';
+=======
+
+>>>>>>> Stashed changes
 =======
 
 >>>>>>> Stashed changes
@@ -31,9 +35,13 @@ export const routes: Routes = [
   { path: 'userappointments', component: UserappointmentsComponent},
   { path: 'information', component: InformationComponent},
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   { path: 'userreceipt', component: UserreceiptComponent},
   { path: 'createreceipt', component: CreatereceiptComponent},
   { path: 'archive', component: ArchiveComponent },
+=======
+
+>>>>>>> Stashed changes
 =======
 
 >>>>>>> Stashed changes
