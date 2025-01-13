@@ -14,16 +14,19 @@
           <button (click)="navigateTo('schedule')" class="sidenav-link"><i class="fas fa-calendar-alt"></i> Schedule</button>
         </li>
         <li class="sidenav-item">
-          <button (click)="navigateTo('medicalreports')" class="sidenav-link"><i class="fas fa-file-medical"></i> Medical Reports</button>
-        </li>
-        <li class="sidenav-item">
-          <button (click)="navigateTo('billingandinvoicing')" class="sidenav-link"><i class="fas fa-credit-card"></i> Billing</button>
-        </li>
-        <li class="sidenav-item">
           <button (click)="navigateTo('archive')" class="sidenav-link"><i class="fas fa-archive"></i> Archive</button>
         </li>
         <li class="sidenav-item logout">
-          <button (click)="navigateTo('login')" class="sidenav-link"><i class="fas fa-sign-out-alt"></i> Logout?</button>
+          <button (click)="confirmLogout()" class="sidenav-link"><i class="fas fa-sign-out-alt"></i> Logout?</button>
         </li>
     </ul>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal" *ngIf="showModal">
+  <div class="modal-content">
+    <p>Are you sure you want to log out?</p>
+    <button (click)="logout()">Yes</button>
+    <button (click)="closeModal()">No</button>
+  </div>
 </div> 

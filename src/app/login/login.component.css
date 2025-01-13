@@ -308,3 +308,10 @@
   transform: translateY(2px);        /* Slightly depress the link on click */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);  /* Reduce shadow on click */
 }
+
+.error-message {
+  color: red;
+  font-size: 16px;
+  margin-bottom: 10px;
+  text-align: center;
+}

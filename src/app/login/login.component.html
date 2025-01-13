@@ -41,6 +41,8 @@
           placeholder="Enter your password"
           required
         />
+        <!-- Error message display -->
+        <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
         <div class="button-container">
           <button type="submit">Login</button>
         </div>

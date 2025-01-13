@@ -11,7 +11,22 @@ import { Router, RouterModule } from '@angular/router';
   styleUrls: ['./adminsidenav.component.css']
 })
 export class AdminsidenavComponent {
+  showModal = false;
+
   constructor(private router: Router) {}
+
+  confirmLogout() {
+    this.showModal = true;
+  }
+
+  closeModal() {
+    this.showModal = false;
+  }
+
+  logout() {
+    this.showModal = false;
+    this.router.navigate(['/login']);
+  }
 
   navigateTo(route: string) {
     this.router.navigate([`/${route}`]);

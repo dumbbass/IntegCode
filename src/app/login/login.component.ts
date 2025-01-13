@@ -18,6 +18,8 @@ export class LoginComponent implements OnInit {
     password: ''
   };
 
+  errorMessage: string = '';
+
   private apiUrl = 'http://localhost/API/carexusapi/backend/carexus.php?action=login';
 
   constructor(
@@ -30,6 +32,8 @@ export class LoginComponent implements OnInit {
 
   onLogin(event: Event): void {
     event.preventDefault();
+    this.errorMessage = '';
+
     console.log('Login attempt with:', this.loginData);
 
     // Call the backend API to validate login credentials
@@ -55,12 +59,12 @@ export class LoginComponent implements OnInit {
             alert('User ID not found in response');
           }
         } else {
-          alert('Login failed: ' + response.message);
+          this.errorMessage = 'Invalid Email or Password';
         }
       },
       (error) => {
         console.log('Error during login:', error);
-        alert('An error occurred. Please try again later.');
+        this.errorMessage = 'An error occurred. Please try again later.';
       }
     );
   }

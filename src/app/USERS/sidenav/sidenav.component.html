@@ -9,19 +9,19 @@
             <button (click)="navigateTo('userdashboard')" class="sidenav-link"><i class="fas fa-th-large"></i> Dashboard</button>
         </li>
         <li class="sidenav-item">
-            <button (click)="navigateTo('usermedicalrecords')" class="sidenav-link"><i class="fas fa-credit-card"></i> Medical Records</button>
-        </li>
-        <li class="sidenav-item">
-            <button (click)="navigateTo('userbilling')" class="sidenav-link"><i class="fas fa-credit-card"></i> Billing</button>
-        </li>
-        <li class="sidenav-item">
-            <button (click)="navigateTo('userappointments')" class="sidenav-link"><i class="fas fa-user"></i> Appointments</button>
-        </li>
-        <li class="sidenav-item">
             <button (click)="navigateTo('userprofile')" class="sidenav-link"><i class="fas fa-user"></i> User Profile</button>
         </li>
         <li class="sidenav-item logout">
-            <button (click)="navigateTo('logout')" class="sidenav-link"><i class="fas fa-sign-out-alt"></i> Logout?</button>
+            <button (click)="confirmLogout()" class="sidenav-link"><i class="fas fa-sign-out-alt"></i> Logout?</button>
         </li>
     </ul>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal" *ngIf="showModal">
+  <div class="modal-content">
+    <p>Are you sure you want to log out?</p>
+    <button (click)="logout()">Yes</button>
+    <button (click)="closeModal()">No</button>
+  </div>
 </div>
