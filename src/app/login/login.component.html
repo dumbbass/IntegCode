@@ -19,7 +19,6 @@
     <div class="left-side">
       <div class="centered-headings">
         <h1>Welcome to CarexusFlow</h1>
-        <h3>Kingina</h3>
         <h2>Login</h2>
       </div>
       <form class="login-form" (ngSubmit)="onLogin($event)">
@@ -32,6 +31,7 @@
           placeholder="Enter your email"
           required
         />
+
         <label for="password">Password</label>
         <input
           type="password"
@@ -41,6 +41,12 @@
           placeholder="Enter your password"
           required
         />
+
+        <!-- Error message for empty fields or invalid credentials -->
+        <div *ngIf="loginError" class="error-message">
+          {{ errorMessage }}
+        </div>
+
         <div class="button-container">
           <button type="submit">Login</button>
         </div>

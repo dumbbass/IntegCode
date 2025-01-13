@@ -6,19 +6,42 @@
     </div>
     <ul class="sidenav-menu">
         <li class="sidenav-item">
-            <button (click)="navigateTo('userdashboard')" class="sidenav-link"><i class="fas fa-th-large"></i> Dashboard</button>
+            <button (click)="navigateTo('userappointments')" class="sidenav-link">
+                <i class="fas fa-calendar-check"></i> Appointments
+            </button>
         </li>
         <li class="sidenav-item">
-            <button (click)="navigateTo('userchat')" class="sidenav-link"><i class="fas fa-comments"></i> Chats</button>
-        </li>
-        <li class="sidenav-item">
-            <button (click)="navigateTo('usesrbilling')" class="sidenav-link"><i class="fas fa-credit-card"></i> Billing</button>
-        </li>
-        <li class="sidenav-item">
-            <button (click)="navigateTo('userprofile')" class="sidenav-link"><i class="fas fa-user"></i> User Profile</button>
+            <button (click)="navigateTo('userprofile')" class="sidenav-link">
+                <i class="fas fa-user"></i> User Profile
+            </button>
         </li>
         <li class="sidenav-item logout">
-            <button (click)="navigateTo('logout')" class="sidenav-link"><i class="fas fa-sign-out-alt"></i> Logout?</button>
+            <button (click)="showLogoutModal()" class="sidenav-link">
+                <i class="fas fa-sign-out-alt"></i> Logout?
+            </button>
         </li>
     </ul>
 </div>
+
+<!-- Logout confirmation modal -->
+<div class="modal" *ngIf="isLogoutModalVisible">
+    <div class="modal-content">
+        <h3>Confirm Logout</h3>
+        <p>Are you sure you want to logout?</p>
+        <button class="confirm-btn" (click)="logout()">Yes</button>
+        <button class="cancel-btn" (click)="hideLogoutModal()">Cancel</button>
+    </div>
+  </div>
+  
+
+<!-- Logout confirmation modal -->
+<div class="modal" *ngIf="isLogoutModalVisible">
+    <div class="modal-content">
+      <h3>Confirm Logout</h3>
+      <p>Are you sure you want to logout?</p>
+      <!-- Use the newly defined confirmLogout and cancelLogout methods -->
+      <button class="confirm-btn" (click)="confirmLogout()">Yes</button>
+      <button class="cancel-btn" (click)="cancelLogout()">No</button>
+    </div>
+  </div>
+  

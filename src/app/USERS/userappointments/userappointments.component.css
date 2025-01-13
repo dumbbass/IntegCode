@@ -1,6 +1,9 @@
-.header-book{
+/* Header Styling */
+.header-book {
     margin-bottom: 40px;
-}/* General Layout */
+}
+
+/* General Layout */
 .userappointments-container {
     display: flex;
 }
@@ -32,15 +35,68 @@
     font-size: 30px;
 }
 
-/* Appointment Form Styling */
+/* Button to trigger modal */
+.book-appointment-btn-container {
+    margin-top: 20px;
+    text-align: right; /* Align the button to the right */
+}
+
+/* Remove border from the button */
+.book-appointment-btn {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;  /* This removes the border */
+    border-radius: 5px;
+}
+
+.book-appointment-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Modal Styling */
+.appointment-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .appointment-form-container {
     background-color: #fff;
     padding: 20px;
-    margin-top: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 500px;
+    max-width: 90%;
+    position: relative; /* Make sure we can position the close button correctly */
 }
 
+/* Close Modal Button (X) */
+.close-modal-btn {
+    background-color: transparent;
+    color: #000;
+    font-size: 24px;
+    font-weight: bold;
+    border: none;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+.close-modal-btn:hover {
+    color: #dc3545;
+}
+
+/* Appointment Form Styling */
 .appointment-name-container,
 .appointment-date-container,
 .appointment-time-container,
@@ -89,4 +145,44 @@ label {
 
 .submit-btn:hover {
     background-color: #0056b3;
+}
+
+/* Patients List Styling */
+.patients-list-container {
+    margin-top: 20px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.patients-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.patients-table th,
+.patients-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.patients-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.status {
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+.status.pending {
+    color: #ff0000; /* Pending color */
+}
+
+.status.completed {
+    color: #4caf50; /* Completed color */
 }

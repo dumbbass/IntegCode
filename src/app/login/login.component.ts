@@ -18,6 +18,9 @@ export class LoginComponent implements OnInit {
     password: ''
   };
 
+  loginError = false;  // Flag to show error message
+  errorMessage = '';   // Store the error message
+
   private apiUrl = 'http://localhost/API/carexusapi/backend/carexus.php?action=login';
 
   constructor(
@@ -31,6 +34,17 @@ export class LoginComponent implements OnInit {
   onLogin(event: Event): void {
     event.preventDefault();
     console.log('Login attempt with:', this.loginData);
+
+    // Reset error flag and message before making the request
+    this.loginError = false;
+    this.errorMessage = '';
+
+    // Check if email or password is empty
+    if (!this.loginData.email || !this.loginData.password) {
+      this.loginError = true;
+      this.errorMessage = 'Please enter your email and password';
+      return; // Stop further execution if fields are empty
+    }
 
     // Call the backend API to validate login credentials
     this.http.post<any>(this.apiUrl, this.loginData).subscribe(
@@ -49,18 +63,20 @@ export class LoginComponent implements OnInit {
             if (role === 'admin') {
               this.router.navigate(['/admindashboard']);
             } else if (role === 'user') {
-              this.router.navigate(['/userdashboard']);
+              this.router.navigate(['/userprofile']);
             }
           } else {
             alert('User ID not found in response');
           }
         } else {
-          alert('Login failed: ' + response.message);
+          this.loginError = true; // Set error flag if login failed
+          this.errorMessage = 'Invalid email or password'; // Set invalid credentials message
         }
       },
       (error) => {
         console.log('Error during login:', error);
-        alert('An error occurred. Please try again later.');
+        this.loginError = true; // Set error flag if there is a request error
+        this.errorMessage = 'An error occurred. Please try again later.';
       }
     );
   }
