@@ -15,4 +15,6 @@ import { AdminsidenavComponent } from '../adminsidenav/adminsidenav.component';
   styleUrl: './admindashboard.component.css'
 })
 export class AdmindashboardComponent {
+  showAppointmentForm: boolean = false;
+  showAppointmentTime: boolean = false;
 }

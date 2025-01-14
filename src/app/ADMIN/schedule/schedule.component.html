@@ -23,6 +23,7 @@
             <th>Time</th>
             <th>Purpose of Appointment</th>
             <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -35,33 +36,10 @@
               <select class="status-dropdown">
                 <option value="pending">Pending</option>
                 <option value="completed">Completed</option>
+                <option value="completed">Resched</option>
               </select>
             </td>
-          </tr>
-          <tr>
-            <td>Jane Smith</td>
-            <td>2024-12-06</td>
-            <td>11:30 AM</td>
-            <td>Consultation</td>
-            <td>
-              <select class="status-dropdown">
-                <option value="pending">Pending</option>
-                <option value="completed">Completed</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>Sam Brown</td>
-            <td>2024-12-07</td>
-            <td>2:00 PM</td>
-            <td>Emergency</td>
-            <td>
-              <select class="status-dropdown">
-                <option value="pending">Pending</option>
-                <option value="completed">Completed</option>
-              </select>
-            </td>
-          </tr>
+            <button class="action-btn">Completed</button>
           <!-- Add more rows as needed -->
         </tbody>
       </table>
