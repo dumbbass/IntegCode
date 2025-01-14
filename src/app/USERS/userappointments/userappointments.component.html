@@ -23,9 +23,18 @@
                 <h2 class="header-book">Book an Appointment</h2>
 
                 <!-- Calendar Box for Date and Time -->
+
+                <div class="appointment-purpose-container">
+                    <label for="appointment-purpose">Choose Available Doctors</label>
+                    <select id="appointment-purpose" class="appointment-purpose" onchange="toggleOtherReason()">
+                        <option value="checkup">Jeffry Olaes</option>
+                        <option value="consultation">Lloyd KEKE</option>
+                    </select>
+                </div>
+
                 <div class="appointment-date-time-container">
-                    <label for="appointment-date-time">Select Date and Time</label>
-                    <input type="datetime-local" id="appointment-date-time" class="appointment-date-time" />
+                    <label for="appointment-date-time">Select Date</label>
+                    <input type="date" id="appointment-date-time" class="appointment-date-time" />
                 </div>
 
                 <div class="appointment-purpose-container">
