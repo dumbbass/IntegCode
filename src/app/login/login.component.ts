@@ -22,6 +22,7 @@ export class LoginComponent implements OnInit {
   errorMessage = '';   // Store the error message
 
   private apiUrl = 'http://localhost/API/carexusapi/backend/carexus.php?action=login';
+  private patientsApiUrl = 'http://localhost/API/carexusapi/backend/carexus.php?action=getPatients';
 
   constructor(
     private http: HttpClient,
@@ -57,32 +58,64 @@ export class LoginComponent implements OnInit {
             const { token, role, id } = response.user; // Extract token, role, and user id
 
             // Store the session data (token, role, and userId) in localStorage
-            this.authService.setSession(response.token, role, id);
+            this.authService.setSession(token, role, id);
 
-            // Redirect to the appropriate dashboard based on the user's role
-            if (role === 'admin') {
+            // If user is a regular user, fetch their patient id
+            if (role === 'user') {
+              this.http.get<any>(this.patientsApiUrl).subscribe(
+                (patientsResponse) => {
+                  console.log('Fetched patients:', patientsResponse); // Log the response from patients API
+                  const patients = patientsResponse.patients as { patient_id: number, id: number, email: string }[];
+
+                  console.log('Logged user id:', id);
+                  console.log('Patient list:', patients);
+
+                  // Find the patient based on id
+                  const patient = patients.find(p => p.id === id);
+                  console.log('Found patient:', patient);
+
+                  // If patient found, store patient_id
+                  if (patient) {
+                    console.log('Patient found:', patient); // Log the patient found
+                    const patientId = patient.patient_id;
+                    // Update session with patientId
+                    this.authService.setSession(token, role, id, patientId);
+                    this.router.navigate(['/userprofile']); // Navigate to user profile page
+                  } else {
+                    // Clear session if patient not found
+                    this.authService.clearSession();
+                    this.loginError = true;
+                    this.errorMessage = 'Patient not found for this user.';
+                    console.log('Patient not found for user id:', id); // Log the error case
+                  }
+                },
+                (error) => {
+                  console.log('Error fetching patients:', error);
+                  this.loginError = true;
+                  this.errorMessage = 'An error occurred while fetching patient data.';
+                }
+              );
+            } else {
+              // Redirect admin to admin dashboard
               this.router.navigate(['/admindashboard']);
-            } else if (role === 'user') {
-              this.router.navigate(['/userprofile']);
             }
           } else {
             alert('User ID not found in response');
           }
         } else {
-          this.loginError = true; // Set error flag if login failed
-          this.errorMessage = 'Invalid email or password'; // Set invalid credentials message
+          this.loginError = true;
+          this.errorMessage = 'Invalid email or password';
         }
       },
       (error) => {
         console.log('Error during login:', error);
-        this.loginError = true; // Set error flag if there is a request error
+        this.loginError = true;
         this.errorMessage = 'An error occurred. Please try again later.';
       }
     );
   }
 
   goToRegister(): void {
-    // Use Angular's router to navigate to the Register component
     this.router.navigate(['/register']);
   }
 }

@@ -186,3 +186,24 @@ label {
 .status.completed {
     color: #4caf50; /* Completed color */
 }
+
+.status {
+    padding: 5px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.status.confirmed {
+    background-color: green;
+    color: white;
+}
+
+.status.pending {
+    background-color: orange;
+    color: white;
+}
+
+.status.cancelled {
+    background-color: red;
+    color: white;
+}

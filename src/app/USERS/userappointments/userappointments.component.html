@@ -17,52 +17,43 @@
         <!-- Appointment Form Modal -->
         <div *ngIf="showAppointmentForm" class="appointment-modal">
             <div class="appointment-form-container">
-                <!-- Close Button (X) -->
                 <button class="close-modal-btn" (click)="showAppointmentForm = false">X</button>
 
                 <h2 class="header-book">Book an Appointment</h2>
 
-                <!-- Calendar Box for Date and Time -->
-
                 <div class="appointment-purpose-container">
-                    <label for="appointment-purpose">Choose Available Doctors</label>
-                    <select id="appointment-purpose" class="appointment-purpose" onchange="toggleOtherReason()">
-                        <option value="checkup">Jeffry Olaes</option>
-                        <option value="consultation">Lloyd KEKE</option>
-                    </select>
+                    <label for="doctor-select">Choose Available Doctors</label>
+                    <select id="doctor-select" class="appointment-purpose" [(ngModel)]="selectedDoctorId">
+                        <option *ngFor="let doctor of doctors" [value]="doctor.doctor_id">
+                          {{ doctor.firstname }} {{ doctor.lastname }}
+                        </option>
+                    </select>              
                 </div>
 
                 <div class="appointment-date-time-container">
                     <label for="appointment-date-time">Select Date</label>
-                    <input type="date" id="appointment-date-time" class="appointment-date-time" />
+                    <input type="date" id="appointment-date-time" class="appointment-date-time" [(ngModel)]="appointmentDate" />
                 </div>
 
                 <div class="appointment-purpose-container">
                     <label for="appointment-purpose">Purpose of Appointment</label>
-                    <select id="appointment-purpose" class="appointment-purpose" onchange="toggleOtherReason()">
+                    <select id="appointment-purpose" class="appointment-purpose" [(ngModel)]="appointmentPurpose">
                         <option value="checkup">Check-up</option>
                         <option value="consultation">Consultation</option>
                         <option value="emergency">Emergency</option>
                         <option value="followup">Follow-up</option>
                         <option value="vaccination">Vaccination</option>
-                        <option value="other">Other</option>
                     </select>
                 </div>
 
-                <!-- Text input for 'Other' reason -->
-                <div id="other-reason-container" class="appointment-other-reason-container" style="display:none;">
-                    <label for="other-reason">Please specify the reason</label>
-                    <input type="text" id="other-reason" class="appointment-other-reason" placeholder="Enter your reason" />
-                </div>
-
                 <div class="appointment-submit-container">
-                    <button type="submit" class="submit-btn">Submit Appointment</button>
+                    <button type="submit" class="submit-btn" (click)="bookAppointment()">Submit Appointment</button>
                 </div>
             </div>
         </div>
 
         <div class="patients-list-container">
-            <h2>Appointments</h2>
+            <h2>Your Appointments</h2>
             <table class="patients-table">
                 <thead>
                     <tr>
@@ -74,30 +65,22 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Sam Brown</td>
-                        <td>2024-12-05</td>
-                        <td>10:00 AM</td>
-                        <td>Routine Check-up</td>
-                        <td class="status pending">Pending</td>
+                    <tr *ngFor="let appointment of appointments">
+                        <td>{{ appointment.doctor.firstname }} {{ appointment.doctor.lastname }}</td>
+                        <td>{{ appointment.appointment_date | date: 'fullDate' }}</td> <!-- Date formatting -->
+                        <td>{{ appointment.time }}</td>
+                        <td>{{ appointment.purpose }}</td>
+                        <td class="status" [ngClass]="{
+                                'confirmed': appointment.status === 'Confirmed',
+                                'pending': appointment.status === 'Pending',
+                                'cancelled': appointment.status === 'Cancelled'
+                            }">
+                            {{ appointment.status }}
+                        </td>
                     </tr>
-                    <tr>
-                        <td>Sam Brown</td>
-                        <td>2024-12-06</td>
-                        <td>11:30 AM</td>
-                        <td>Consultation</td>
-                        <td class="status completed">Completed</td>
-                    </tr>
-                    <tr>
-                        <td>Sam Brown</td>
-                        <td>2024-12-07</td>
-                        <td>2:00 PM</td>
-                        <td>Emergency</td>
-                        <td class="status pending">Pending</td>
-                    </tr>
-                    <!-- Add more rows as needed -->
                 </tbody>
             </table>
         </div>
+        
     </div>
 </div>

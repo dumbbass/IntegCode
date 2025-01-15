@@ -1,15 +1,135 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';  // Import CommonModule
+import { Component, OnInit } from '@angular/core';
+import { AppointmentService } from '../services/appointment.service';  // Import AppointmentService
+import { AuthService } from '../../auth.service'; // Import AuthService
+import { DoctorService } from '../services/doctor.service';
+import { PatientService } from '../services/patient.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 import { SidenavComponent } from '../sidenav/sidenav.component';
 
 @Component({
   selector: 'app-userappointments',
   standalone: true,
-  imports: [CommonModule, SidenavComponent], // Add CommonModule here
+  imports: [CommonModule, HttpClientModule, SidenavComponent, FormsModule],
   templateUrl: './userappointments.component.html',
-  styleUrls: ['./userappointments.component.css'] // Corrected styleUrl to styleUrls
+  styleUrls: ['./userappointments.component.css']
 })
-export class UserappointmentsComponent {
-  showAppointmentForm: boolean = false; // Make sure this is defined
+export class UserappointmentsComponent implements OnInit {
+  showAppointmentForm: boolean = false;
+  doctors: any[] = [];
+  selectedDoctorId: string | null = null;
+  appointmentDate: string = '';
+  appointmentPurpose: string = '';
+  patientId: number | null = null;
+  appointments: any[] = [];
 
+  constructor(
+    private doctorService: DoctorService,
+    private appointmentService: AppointmentService,
+    private patientService: PatientService,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit(): void {
+    this.fetchDoctors();
+    this.fetchPatientData();  // Fetch patient data on initialization
+  }
+
+  fetchPatientData(): void {
+    const patientIdFromAuth = this.authService.getPatientId();
+    console.log('Fetched patientId from AuthService:', patientIdFromAuth);
+  
+    if (patientIdFromAuth !== null) {
+      this.patientId = patientIdFromAuth;
+      console.log('Setting patientId:', this.patientId);
+  
+      this.patientService.getPatientInfo(this.patientId).subscribe(
+        (response: any) => {
+          console.log('Response from getPatientInfo:', response);
+          if (response && response.patient_id) {
+            this.patientId = response.patient_id;
+            console.log('Patient data fetched:', response);
+            this.fetchAppointments();
+          } else {
+            console.error('Patient data not found in response');
+          }
+        },
+        (error: any) => {
+          console.error('Error fetching patient data:', error);
+        }
+      );
+    } else {
+      console.error('Patient ID is null');
+    }
+  }
+
+  fetchAppointments(): void {
+    if (this.patientId !== null) {
+      this.appointmentService.getAppointments(this.patientId.toString()).subscribe(
+        (response) => {
+          this.appointments = response.appointments;
+          console.log('Appointments fetched:', this.appointments);
+        },
+        (error) => {
+          console.error('Error fetching appointments:', error);
+        }
+      );
+    } else {
+      console.error('patientId is null');
+    }
+  }
+
+  fetchDoctors(): void {
+    console.log('Fetching doctors...');
+    this.doctorService.getDoctors().subscribe(
+      (response) => {
+        if (response.status) {
+          this.doctors = response.doctors;
+        } else {
+          console.error('No doctors found');
+        }
+      },
+      (error: any) => {
+        console.error('Error fetching doctors:', error);
+      }
+    );
+  }
+
+  bookAppointment(): void {
+    const patientId = this.authService.getPatientId();  // Retrieve patient_id from authService
+    console.log('Booking appointment with patientId:', patientId);
+  
+    // Ensure all fields are filled in
+    if (!this.selectedDoctorId || !this.appointmentDate || !this.appointmentPurpose || !patientId) {
+      alert('Please fill in all the required fields');
+      return;
+    }
+  
+    const appointmentData = {
+      patient_id: patientId,
+      doctor_id: +this.selectedDoctorId, // Convert doctor_id to a number
+      appointment_date: this.appointmentDate,
+      purpose: this.appointmentPurpose,
+    };
+  
+    console.log('Appointment data to be sent:', appointmentData);
+  
+    this.appointmentService.scheduleAppointment(appointmentData).subscribe(
+      (response) => {
+        console.log('Response from scheduleAppointment:', response);
+        if (response.status) {
+          alert('Appointment scheduled successfully');
+          this.showAppointmentForm = false;
+        } else {
+          console.error('Error scheduling appointment:', response.message);
+          alert('Error scheduling appointment: ' + response.message);
+        }
+      },
+      (error) => {
+        console.error('Error scheduling appointment:', error);
+        alert('There was an error scheduling your appointment.');
+      }
+    );
+  }
 }

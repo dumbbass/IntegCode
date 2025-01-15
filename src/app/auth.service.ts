@@ -10,11 +10,16 @@ export class AuthService {
     return !!localStorage.getItem('authToken'); // Check for the existence of an auth token
   }
 
-  // Set session data (authToken, userRole, and userId)
-  setSession(authToken: string, role: string, userId: number): void {
-    localStorage.setItem('authToken', authToken);  // Store token
-    localStorage.setItem('userRole', role);  // Store user role
-    localStorage.setItem('userId', userId.toString());  // Store user ID
+  // Set session data (authToken, userRole, userId, and optionally patientId)
+  setSession(authToken: string, role: string, userId: number, patient_id?: number): void {
+    localStorage.setItem('authToken', authToken);
+    localStorage.setItem('userRole', role);
+    localStorage.setItem('userId', userId.toString());
+
+    // Store patientId if it's provided
+    if (patient_id !== undefined) {
+      localStorage.setItem('patientId', patient_id.toString());
+    }
   }
 
   // Get the stored user role
@@ -28,10 +33,17 @@ export class AuthService {
     return userId ? parseInt(userId, 10) : null;  // Return user ID or null if not found
   }
 
+  // Get the stored patient ID
+  getPatientId(): number | null {
+    const patientId = localStorage.getItem('patientId');
+    return patientId ? parseInt(patientId, 10) : null;  // Return patient ID or null if not found
+  }
+
   // Clear session (logout)
   clearSession(): void {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userRole');
+    localStorage.removeItem('patientId');  // Corrected to remove patientId
     localStorage.removeItem('userId');  // Remove user ID when logging out
   }
 }
