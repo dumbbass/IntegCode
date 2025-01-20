@@ -18,72 +18,22 @@
       <table class="patients-table">
         <thead>
           <tr>
-            <th>Id</th>
             <th>Name</th>
             <th>Gender</th>
-            <th>Age</th>
-            <th>Blood Type</th>
-            <th>Information</th>
+            <th>Email</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>1</td>
-            <td>John Doe</td>
-            <td>M</td>
-            <td>20</td>
-            <td>AB</td>
-            <td><a [routerLink]="['/information']"><button class="view-btn">View</button></a></td>
+          <tr *ngFor="let user of users">
+            <td>{{ user.firstname }} {{ user.lastname }}</td>
+            <td>{{ user.gender }}</td>
+            <td>{{ user.email }}</td>
             <td>
+              <a [routerLink]="['/information', user.id]"><button class="view-btn">View</button></a>
               <button class="decline-btn">Archive</button>
             </td>
           </tr>
-          <tr>
-            <td>2</td>
-            <td>John Doe</td>
-            <td>M</td>
-            <td>19</td>
-            <td>O</td>
-            <td><a [routerLink]="['/information']"><button class="view-btn">View</button></a></td>
-            <td>
-              <button class="decline-btn">Archive</button>
-            </td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>John Doe</td>
-            <td>M</td>
-            <td>20</td>
-            <td>AB</td>
-            <td><a [routerLink]="['/information']"><button class="view-btn">View</button></a></td>
-            <td>
-              <button class="decline-btn">Archive</button>
-            </td>
-          </tr>
-          <tr>
-            <td>4</td>
-            <td>John Doe</td>
-            <td>M</td>
-            <td>20</td>
-            <td>AB</td>
-            <td><a [routerLink]="['/information']"><button class="view-btn">View</button></a></td>
-            <td>
-              <button class="decline-btn">Archive</button>
-            </td>
-          </tr>
-          <tr>
-            <td>5</td>
-            <td>John Doe</td>
-            <td>M</td>
-            <td>20</td>
-            <td>AB</td>
-            <td><a [routerLink]="['/information']"><button class="view-btn">View</button></a></td>
-            <td>
-              <button class="decline-btn">Archive</button>
-            </td>
-          </tr>
-          <!-- More rows as needed -->
         </tbody>
       </table>
     </div>
