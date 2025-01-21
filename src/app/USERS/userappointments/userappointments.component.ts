@@ -34,6 +34,7 @@ export class UserappointmentsComponent implements OnInit {
   ngOnInit(): void {
     this.fetchDoctors();
     this.fetchPatientData();  // Fetch patient data on initialization
+    // Fetch appointments will be called after patient data is fetched
   }
 
   fetchPatientData(): void {
@@ -41,42 +42,32 @@ export class UserappointmentsComponent implements OnInit {
     console.log('Fetched patientId from AuthService:', patientIdFromAuth);
   
     if (patientIdFromAuth !== null) {
-      this.patientId = patientIdFromAuth;
-      console.log('Setting patientId:', this.patientId);
-  
-      this.patientService.getPatientInfo(this.patientId).subscribe(
-        (response: any) => {
-          console.log('Response from getPatientInfo:', response);
-          if (response && response.patient_id) {
-            this.patientId = response.patient_id;
-            console.log('Patient data fetched:', response);
-            this.fetchAppointments();
-          } else {
-            console.error('Patient data not found in response');
-          }
-        },
-        (error: any) => {
-          console.error('Error fetching patient data:', error);
-        }
-      );
+        this.patientId = patientIdFromAuth;
+        console.log('Setting patientId:', this.patientId);
+        this.fetchAppointments(); // Fetch appointments after setting patientId
     } else {
-      console.error('Patient ID is null');
+        console.error('Patient ID is null');
     }
   }
 
   fetchAppointments(): void {
     if (this.patientId !== null) {
-      this.appointmentService.getAppointments(this.patientId.toString()).subscribe(
-        (response) => {
-          this.appointments = response.appointments;
-          console.log('Appointments fetched:', this.appointments);
-        },
-        (error) => {
-          console.error('Error fetching appointments:', error);
-        }
-      );
+        this.appointmentService.getAppointments(this.patientId.toString()).subscribe(
+            (response) => {
+                console.log('Raw response:', response); // Log the raw response
+                if (response.status) {
+                    this.appointments = response.appointments;
+                    console.log('Appointments fetched:', this.appointments); // Log the appointments array
+                } else {
+                    console.error('Failed to fetch appointments:', response.message);
+                }
+            },
+            (error) => {
+                console.error('Error fetching appointments:', error);
+            }
+        );
     } else {
-      console.error('patientId is null');
+        console.error('patientId is null');
     }
   }
 

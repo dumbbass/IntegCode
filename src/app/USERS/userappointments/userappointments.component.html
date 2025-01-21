@@ -57,7 +57,7 @@
             <table class="patients-table">
                 <thead>
                     <tr>
-                        <th>Name</th>
+                        <th>Doctor Name</th>
                         <th>Date</th>
                         <th>Time</th>
                         <th>Purpose of Appointment</th>
@@ -66,9 +66,9 @@
                 </thead>
                 <tbody>
                     <tr *ngFor="let appointment of appointments">
-                        <td>{{ appointment.doctor.firstname }} {{ appointment.doctor.lastname }}</td>
-                        <td>{{ appointment.appointment_date | date: 'fullDate' }}</td> <!-- Date formatting -->
-                        <td>{{ appointment.time }}</td>
+                        <td>{{ appointment.doctor_firstname }} {{ appointment.doctor_lastname }}</td>
+                        <td>{{ appointment.appointment_date | date: 'fullDate' }}</td>
+                        <td>{{ appointment.appointment_time }}</td>
                         <td>{{ appointment.purpose }}</td>
                         <td class="status" [ngClass]="{
                                 'confirmed': appointment.status === 'Confirmed',
