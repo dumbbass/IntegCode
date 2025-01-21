@@ -173,10 +173,14 @@ export class RegisterComponent {
         password: this.password,
       };
 
-      this.http.post('http://localhost/API/carexusapi/backend/carexus.php?action=register', userData).subscribe(
+      this.http.post('http://localhost/API/carexusapi/Backend/carexus.php?action=register', userData).subscribe(
         (response: any) => {
-          console.log('Registration successful:', response);
-          this.router.navigate(['/login']);
+          if (response.status) {
+            console.log('Registration successful:', response);
+            this.router.navigate(['/login']);
+          } else {
+            this.submitError = response.message;
+          }
         },
         (error: any) => {
           console.error('Registration failed:', error);

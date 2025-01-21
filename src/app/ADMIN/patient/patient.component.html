@@ -20,22 +20,20 @@
           <tr>
             <th>Name</th>
             <th>Gender</th>
-            <th>Age</th>
-            <th>Information</th>
+            <th>Email</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>John Doe</td>
-            <td>Male</td>
-            <td>20</td>
-            <td><a [routerLink]="['/information']"><button class="view-btn">View</button></a></td>
+          <tr *ngFor="let user of users">
+            <td>{{ user.firstname }} {{ user.lastname }}</td>
+            <td>{{ user.gender }}</td>
+            <td>{{ user.email }}</td>
             <td>
+              <a [routerLink]="['/information', user.id]"><button class="view-btn">View</button></a>
               <button class="decline-btn">Archive</button>
             </td>
           </tr>
-          <!-- More rows as needed -->
         </tbody>
       </table>
     </div>
