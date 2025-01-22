@@ -12,7 +12,7 @@
         </div>
       </div>
     </div>
-    
+
     <div class="patients-list-container">
       <h2>Patients List</h2>
       <table class="patients-table">
@@ -20,25 +20,37 @@
           <tr>
             <th>Name</th>
             <th>Gender</th>
-            <th>Age</th>
             <th>Information</th>
             <th>Action</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>John Doe</td>
-            <td>Male</td>
-            <td>20</td>
+        <!-- For Schedule Component -->
+        <!-- <tbody>
+          <!-- Loop through patients array to display patient data dynamically
+          <tr *ngFor="let patient of patients">
+            <td>{{ patient.patient_firstname }} {{ patient.patient_lastname }}</td>
+            <td>{{ patient.gender | titlecase  }}</td>
             <td><a [routerLink]="['/information']"><button class="view-btn">View</button></a></td>
             <td>
               <button class="decline-btn">Archive</button>
             </td>
           </tr>
-          <!-- More rows as needed -->
+        </tbody> -->
+
+
+        <tbody>
+          <!-- Loop through patients array to display patient data dynamically -->
+          <tr *ngFor="let patient of patients">
+            <td>{{ patient.patient_firstname }} {{ patient.patient_lastname }}</td>
+            <td>{{ patient.gender | titlecase }}</td>
+            <td><a [routerLink]="['/information']"><button class="view-btn">View</button></a></td>
+            <td>
+              <button class="decline-btn">Archive</button>
+            </td>
+          </tr>
         </tbody>
+        
       </table>
     </div>
   </div>
 </div>
-  
