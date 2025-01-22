@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../auth.service';
+import { DataService } from '../USERS/services/data.service';
 
 @Component({
   selector: 'app-login',
@@ -21,11 +22,8 @@ export class LoginComponent implements OnInit {
   loginError = false;  // Flag to show error message
   errorMessage = '';   // Store the error message
 
-  private apiUrl = 'http://localhost/API/carexusapi/backend/carexus.php?action=login';
-  private patientsApiUrl = 'http://localhost/API/carexusapi/backend/carexus.php?action=getPatients';
-
   constructor(
-    private http: HttpClient,
+    private dataService: DataService,  // Use the data service for HTTP requests
     private router: Router,
     private authService: AuthService
   ) {}
@@ -47,8 +45,8 @@ export class LoginComponent implements OnInit {
       return; // Stop further execution if fields are empty
     }
 
-    // Call the backend API to validate login credentials
-    this.http.post<any>(this.apiUrl, this.loginData).subscribe(
+    // Call the DataService to validate login credentials
+    this.dataService.login(this.loginData).subscribe(
       (response) => {
         console.log('Response from backend:', response);
 
@@ -62,10 +60,12 @@ export class LoginComponent implements OnInit {
 
             // If user is a regular user, fetch their patient id
             if (role === 'user') {
-              this.http.get<any>(this.patientsApiUrl).subscribe(
+              this.dataService.getPatientInfo(id).subscribe(
                 (patientsResponse) => {
                   console.log('Fetched patients:', patientsResponse); // Log the response from patients API
-                  const patients = patientsResponse.patients as { patient_id: number, id: number, email: string }[];
+
+                  // Access patient data inside 'payload' (instead of 'patients')
+                  const patients = patientsResponse.payload as { patient_id: number, id: number, email: string }[];
 
                   console.log('Logged user id:', id);
                   console.log('Patient list:', patients);

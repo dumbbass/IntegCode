@@ -1,12 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { AppointmentService } from '../services/appointment.service';  // Import AppointmentService
 import { AuthService } from '../../auth.service'; // Import AuthService
-import { DoctorService } from '../services/doctor.service';
-import { PatientService } from '../services/patient.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { SidenavComponent } from '../sidenav/sidenav.component';
+import { DataService } from '../services/data.service';
 
 @Component({
   selector: 'app-userappointments',
@@ -25,9 +23,7 @@ export class UserappointmentsComponent implements OnInit {
   appointments: any[] = [];
 
   constructor(
-    private doctorService: DoctorService,
-    private appointmentService: AppointmentService,
-    private patientService: PatientService,
+    private dataService: DataService,  // Use DataService instead of individual services
     private authService: AuthService
   ) {}
 
@@ -37,19 +33,21 @@ export class UserappointmentsComponent implements OnInit {
   }
 
   fetchPatientData(): void {
-    const patientIdFromAuth = this.authService.getPatientId();
+    const patientIdFromAuth = this.authService.getUserId();
     console.log('Fetched patientId from AuthService:', patientIdFromAuth);
   
     if (patientIdFromAuth !== null) {
       this.patientId = patientIdFromAuth;
       console.log('Setting patientId:', this.patientId);
   
-      this.patientService.getPatientInfo(this.patientId).subscribe(
+      this.dataService.getPatientInfo(this.patientId).subscribe(
         (response: any) => {
           console.log('Response from getPatientInfo:', response);
-          if (response && response.patient_id) {
-            this.patientId = response.patient_id;
-            console.log('Patient data fetched:', response);
+  
+          if (response && response.payload && response.payload.length > 0) {
+            const patientData = response.payload[0];  // Accessing the first element of the payload array
+            console.log('Patient data fetched:', patientData);
+            this.patientId = patientData.patient_id;  // Assigning the patient_id from the fetched data
             this.fetchAppointments();
           } else {
             console.error('Patient data not found in response');
@@ -63,13 +61,19 @@ export class UserappointmentsComponent implements OnInit {
       console.error('Patient ID is null');
     }
   }
+  
 
   fetchAppointments(): void {
     if (this.patientId !== null) {
-      this.appointmentService.getAppointments(this.patientId.toString()).subscribe(
+      this.dataService.getAppointments(this.patientId.toString()).subscribe(
         (response) => {
-          this.appointments = response.appointments;
-          console.log('Appointments fetched:', this.appointments);
+          // Update this line to access the correct part of the response
+          if (response.payload && response.payload.length > 0) {
+            this.appointments = response.payload; // Assign the payload to the appointments array
+            console.log('Appointments fetched:', this.appointments);
+          } else {
+            console.log('No appointments found.');
+          }
         },
         (error) => {
           console.error('Error fetching appointments:', error);
@@ -79,13 +83,14 @@ export class UserappointmentsComponent implements OnInit {
       console.error('patientId is null');
     }
   }
+  
 
   fetchDoctors(): void {
     console.log('Fetching doctors...');
-    this.doctorService.getDoctors().subscribe(
+    this.dataService.getDoctors().subscribe(
       (response) => {
         if (response.status) {
-          this.doctors = response.doctors;
+          this.doctors = response.payload;  // Ensure the payload contains the doctor data
         } else {
           console.error('No doctors found');
         }
@@ -95,6 +100,7 @@ export class UserappointmentsComponent implements OnInit {
       }
     );
   }
+  
 
   bookAppointment(): void {
     const patientId = this.authService.getPatientId();  // Retrieve patient_id from authService
@@ -115,7 +121,7 @@ export class UserappointmentsComponent implements OnInit {
   
     console.log('Appointment data to be sent:', appointmentData);
   
-    this.appointmentService.scheduleAppointment(appointmentData).subscribe(
+    this.dataService.scheduleAppointment(appointmentData).subscribe(
       (response) => {
         console.log('Response from scheduleAppointment:', response);
         if (response.status) {

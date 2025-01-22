@@ -65,17 +65,19 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- Loop through appointments and safely access properties -->
                     <tr *ngFor="let appointment of appointments">
-                        <td>{{ appointment.doctor.firstname }} {{ appointment.doctor.lastname }}</td>
-                        <td>{{ appointment.appointment_date | date: 'fullDate' }}</td> <!-- Date formatting -->
-                        <td>{{ appointment.time }}</td>
-                        <td>{{ appointment.purpose }}</td>
+                        <!-- Use safe navigation operator to avoid errors if doctor or doctor.firstname is undefined -->
+                        <td>{{ appointment?.doctor_firstname }} {{ appointment?.doctor_lastname }}</td>
+                        <td>{{ appointment?.appointment_date | date: 'fullDate' }}</td> <!-- Date formatting -->
+                        <td>{{ appointment?.time }}</td>
+                        <td>{{ appointment?.purpose }}</td>
                         <td class="status" [ngClass]="{
-                                'confirmed': appointment.status === 'Confirmed',
-                                'pending': appointment.status === 'Pending',
-                                'cancelled': appointment.status === 'Cancelled'
+                                'confirmed': appointment?.status === 'Confirmed',
+                                'pending': appointment?.status === 'Pending',
+                                'cancelled': appointment?.status === 'Cancelled'
                             }">
-                            {{ appointment.status }}
+                            {{ appointment?.status }}
                         </td>
                     </tr>
                 </tbody>
