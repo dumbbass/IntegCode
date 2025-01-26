@@ -84,3 +84,11 @@
         
     </div>
 </div>
+
+<!-- Modal for Appointment Booking Limits -->
+<div *ngIf="showLimitModal" class="modal">
+  <div class="modal-content">
+    <h2><span class="reminder">Reminder:</span> You are allowed a maximum of 2 appointments per week and 8 appointments per month.</h2>
+    <button class="ok-button" (click)="closeLimitModal()">OK</button>
+  </div>
+</div>
