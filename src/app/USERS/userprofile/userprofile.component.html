@@ -47,5 +47,39 @@
       <div *ngIf="errorMessage" class="error-message">
         <p>{{ errorMessage }}</p>
       </div>
+
+      <!-- Button to open the modal -->
+      <button (click)="openModal()">Edit Profile</button>
+
+      <!-- Modal for updating user profile -->
+      <div id="updateProfileModal" class="modal">
+        <div class="modal-content">
+          <span class="close" (click)="closeModal()">&times;</span>
+          <h2>Update Profile</h2>
+          <form (ngSubmit)="updateUserProfile()">
+            <div class="form-group">
+              <label for="firstname">First Name</label>
+              <input type="text" id="firstname" [(ngModel)]="user.firstname" name="firstname" required disabled>
+            </div>
+            <div class="form-group">
+              <label for="lastname">Last Name</label>
+              <input type="text" id="lastname" [(ngModel)]="user.lastname" name="lastname" required disabled>
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" [(ngModel)]="user.email" name="email" required>
+            </div>
+            <div class="form-group">
+              <label for="home_address">Home Address</label>
+              <input type="text" id="home_address" [(ngModel)]="user.home_address" name="home_address">
+            </div>
+            <div class="form-group">
+              <label for="contact_number">Contact Number</label>
+              <input type="text" id="contact_number" [(ngModel)]="user.contact_number" name="contact_number">
+            </div>
+            <button type="submit">Save Changes</button>
+          </form>
+        </div>
+      </div>
   </div>
 </div>
