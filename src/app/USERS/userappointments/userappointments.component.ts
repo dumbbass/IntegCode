@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { AppointmentService } from '../services/appointment.service';  // Import AppointmentService
-import { AuthService } from '../../auth.service'; // Import AuthService
+import { AppointmentService } from '../services/appointment.service';  
+import { AuthService } from '../../auth.service'; 
 import { DoctorService } from '../services/doctor.service';
 import { PatientService } from '../services/patient.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { SidenavComponent } from '../sidenav/sidenav.component';
+import { isWithinInterval, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 
 @Component({
   selector: 'app-userappointments',
@@ -17,6 +18,7 @@ import { SidenavComponent } from '../sidenav/sidenav.component';
 })
 export class UserappointmentsComponent implements OnInit {
   showAppointmentForm: boolean = false;
+  showLimitModal: boolean = false;  // Variable to control modal display
   doctors: any[] = [];
   selectedDoctorId: string | null = null;
   appointmentDate: string = '';
@@ -33,7 +35,7 @@ export class UserappointmentsComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchDoctors();
-    this.fetchPatientData();  // Fetch patient data on initialization
+    this.fetchPatientData();
   }
 
   fetchPatientData(): void {
@@ -41,42 +43,32 @@ export class UserappointmentsComponent implements OnInit {
     console.log('Fetched patientId from AuthService:', patientIdFromAuth);
   
     if (patientIdFromAuth !== null) {
-      this.patientId = patientIdFromAuth;
-      console.log('Setting patientId:', this.patientId);
-  
-      this.patientService.getPatientInfo(this.patientId).subscribe(
-        (response: any) => {
-          console.log('Response from getPatientInfo:', response);
-          if (response && response.patient_id) {
-            this.patientId = response.patient_id;
-            console.log('Patient data fetched:', response);
-            this.fetchAppointments();
-          } else {
-            console.error('Patient data not found in response');
-          }
-        },
-        (error: any) => {
-          console.error('Error fetching patient data:', error);
-        }
-      );
+        this.patientId = patientIdFromAuth;
+        console.log('Setting patientId:', this.patientId);
+        this.fetchAppointments(); // Fetch appointments after setting patientId
     } else {
-      console.error('Patient ID is null');
+        console.error('Patient ID is null');
     }
   }
 
   fetchAppointments(): void {
     if (this.patientId !== null) {
-      this.appointmentService.getAppointments(this.patientId.toString()).subscribe(
-        (response) => {
-          this.appointments = response.appointments;
-          console.log('Appointments fetched:', this.appointments);
-        },
-        (error) => {
-          console.error('Error fetching appointments:', error);
-        }
-      );
+        this.appointmentService.getAppointments(this.patientId.toString()).subscribe(
+            (response) => {
+                console.log('Raw response:', response); // Log the raw response
+                if (response.status) {
+                    this.appointments = response.appointments;
+                    console.log('Appointments fetched:', this.appointments); // Log the appointments array
+                } else {
+                    console.error('Failed to fetch appointments:', response.message);
+                }
+            },
+            (error) => {
+                console.error('Error fetching appointments:', error);
+            }
+        );
     } else {
-      console.error('patientId is null');
+        console.error('patientId is null');
     }
   }
 
@@ -99,28 +91,35 @@ export class UserappointmentsComponent implements OnInit {
   bookAppointment(): void {
     const patientId = this.authService.getPatientId();  // Retrieve patient_id from authService
     console.log('Booking appointment with patientId:', patientId);
-  
+
     // Ensure all fields are filled in
     if (!this.selectedDoctorId || !this.appointmentDate || !this.appointmentPurpose || !patientId) {
       alert('Please fill in all the required fields');
       return;
     }
-  
+
+    // Check if the user has already booked an appointment within the week or month limit
+    if (this.isAppointmentLimitReached(this.appointmentDate)) {
+      this.showLimitModal = true;  // Show the modal if limits are reached
+      return;
+    }
+
     const appointmentData = {
       patient_id: patientId,
       doctor_id: +this.selectedDoctorId, // Convert doctor_id to a number
       appointment_date: this.appointmentDate,
       purpose: this.appointmentPurpose,
     };
-  
+
     console.log('Appointment data to be sent:', appointmentData);
-  
+
     this.appointmentService.scheduleAppointment(appointmentData).subscribe(
       (response) => {
         console.log('Response from scheduleAppointment:', response);
         if (response.status) {
           alert('Appointment scheduled successfully');
           this.showAppointmentForm = false;
+          this.fetchAppointments(); // Fetch updated list of appointments
         } else {
           console.error('Error scheduling appointment:', response.message);
           alert('Error scheduling appointment: ' + response.message);
@@ -131,5 +130,36 @@ export class UserappointmentsComponent implements OnInit {
         alert('There was an error scheduling your appointment.');
       }
     );
+  }
+
+  // Helper function to check if the user has an appointment within the current week/month
+  isAppointmentLimitReached(appointmentDate: string): boolean {
+    const dateToCheck = new Date(appointmentDate);
+
+    // Check appointments within the current week
+    const appointmentsThisWeek = this.appointments.filter(appointment => 
+      isWithinInterval(new Date(appointment.appointment_date), {
+        start: startOfWeek(new Date()),
+        end: endOfWeek(new Date())
+      })
+    );
+
+    // Check appointments within the current month
+    const appointmentsThisMonth = this.appointments.filter(appointment =>
+      isWithinInterval(new Date(appointment.appointment_date), {
+        start: startOfMonth(new Date()),
+        end: endOfMonth(new Date())
+      })
+    );
+
+    // Limit: 2 appointments per week and 8 appointments per month
+    const isWeeklyLimitReached = appointmentsThisWeek.length >= 2;
+    const isMonthlyLimitReached = appointmentsThisMonth.length >= 8;
+
+    return isWeeklyLimitReached || isMonthlyLimitReached;
+  }
+
+  closeLimitModal(): void {
+    this.showLimitModal = false;  // Close the modal
   }
 }

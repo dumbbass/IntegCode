@@ -3,11 +3,12 @@ import { HttpClient, HttpClientModule } from '@angular/common/http'; // Import H
 import { CommonModule } from '@angular/common';
 import { SidenavComponent } from '../sidenav/sidenav.component';
 import { AuthService } from '../../auth.service';  // Import the AuthService
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-userprofile',
   standalone: true,
-  imports: [SidenavComponent, CommonModule, HttpClientModule],  // Include HttpClientModule here
+  imports: [SidenavComponent, CommonModule, HttpClientModule, FormsModule],  // Include HttpClientModule and FormsModule here
   templateUrl: './userprofile.component.html',
   styleUrls: ['./userprofile.component.css']
 })
@@ -52,6 +53,47 @@ export class UserprofileComponent implements OnInit {
             console.error(this.errorMessage, error);
           }
         );
+    }
+  }
+
+  updateUserProfile(): void {
+    if (this.userId) {
+      this.http.post(`http://localhost/API/carexusapi/backend/carexus.php?action=updateUserProfile`, {
+        id: this.userId,
+        firstname: this.user.firstname,
+        lastname: this.user.lastname,
+        email: this.user.email,
+        gender: this.user.gender,
+        home_address: this.user.home_address,
+        contact_number: this.user.contact_number
+      }).subscribe(
+        (response: any) => {
+          if (response.status === true) {
+            alert('Profile updated successfully!');
+          } else {
+            this.errorMessage = 'Failed to update profile';
+            console.error(this.errorMessage, response);
+          }
+        },
+        (error: any) => {
+          this.errorMessage = 'Error updating profile';
+          console.error(this.errorMessage, error);
+        }
+      );
+    }
+  }
+
+  openModal(): void {
+    const modal = document.getElementById('updateProfileModal');
+    if (modal) {
+      modal.style.display = 'block';
+    }
+  }
+
+  closeModal(): void {
+    const modal = document.getElementById('updateProfileModal');
+    if (modal) {
+      modal.style.display = 'none';
     }
   }
 }
