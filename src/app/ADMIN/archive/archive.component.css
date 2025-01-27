@@ -77,6 +77,7 @@
   padding: 25px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow-x: auto;
 }
 
 .archive-table {
@@ -84,50 +85,58 @@
   border-collapse: separate;
   border-spacing: 0;
   margin-top: 20px;
+  table-layout: fixed; /* Controls table width */
 }
 
 .archive-table th,
 .archive-table td {
-  padding: 16px;
+  padding: 5px; /* Reduced padding */
   text-align: left;
   border-bottom: 1px solid #eee;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .archive-table th {
   background-color: #f8f9fa;
   font-weight: 600;
   color: #444;
-  font-size: 15px;
+  font-size: 14px; /* Slightly reduced font size */
 }
 
 .archive-table td {
   color: #555;
-  font-size: 14px;
-}
-
-.archive-table tr:hover {
-  background-color: #f8f9fa;
+  font-size: 13px; /* Slightly reduced font size */
 }
 
 .action-buttons {
   display: flex;
-  gap: 10px;
+  gap: 5px; /* Reduced gap between buttons */
 }
 
+.view-btn,
+.unarchive-btn {
+  padding: 6px 12px; /* Reduced button padding */
+  font-size: 13px; /* Reduced font size for buttons */
+}
 .view-btn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
   background-color: #007bff;
   color: white;
-  transition: all 0.3s ease;
 }
 
 .view-btn:hover {
   background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+.unarchive-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.unarchive-btn:hover {
+  background-color: #218838;
   transform: translateY(-1px);
 }
 
@@ -207,4 +216,17 @@ button:last-of-type {
 
 button:last-of-type:hover {
   background-color: #c82333;
-} 
+}
+
+/* Responsive fix for smaller screens */
+@media (max-width: 768px) {
+  .view-btn,
+  .unarchive-btn {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+
+  .action-buttons {
+    gap: 5px;
+  }
+}

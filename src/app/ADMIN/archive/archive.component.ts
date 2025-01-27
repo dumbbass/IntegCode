@@ -35,6 +35,8 @@ export class ArchiveComponent implements OnInit {
   searchQuery: string = '';
   showDeleteModal: boolean = false;
   itemToDelete: ArchiveItem | null = null;
+  showViewModal: boolean = false;  // Add this property for the view modal
+  selectedItem: ArchiveItem | null = null; // Add this property for selected item to view details
 
   constructor(private archiveService: ArchiveService) {
     this.archiveItems = this.archiveService.getArchivedUsers();
@@ -79,4 +81,15 @@ export class ArchiveComponent implements OnInit {
       this.closeDeleteModal();
     }
   }
-} 
+
+  // Add these methods for the View User modal
+  openViewModal(item: ArchiveItem) {
+    this.selectedItem = item;
+    this.showViewModal = true;
+  }
+
+  closeViewModal() {
+    this.showViewModal = false;
+    this.selectedItem = null;
+  }
+}

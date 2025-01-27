@@ -63,6 +63,7 @@ export class UserprofileComponent implements OnInit {
         firstname: this.user.firstname,
         lastname: this.user.lastname,
         email: this.user.email,
+        gender: this.user.gender,
         home_address: this.user.home_address,
         contact_number: this.user.contact_number
       }).subscribe(

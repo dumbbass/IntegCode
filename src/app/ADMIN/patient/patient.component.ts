@@ -26,12 +26,12 @@ export class PatientComponent implements OnInit {
   showArchiveModal: boolean = false;
   userToArchive: any = null;
   archiveRemarks: string = '';
+  
 
   constructor(private http: HttpClient, private archiveService: ArchiveService) {}
 
   ngOnInit() {
     this.fetchUsers();
-    this.loadArchivedUsers();
   }
 
   fetchUsers() {
@@ -39,22 +39,18 @@ export class PatientComponent implements OnInit {
       'http://localhost/API/carexusapi/Backend/carexus.php?action=getUsers'
     ).subscribe(
       response => {
-        console.log('API Response:', response);  // Log the full response to check for missing fields
         if (response.status) {
-          this.users = response.users;
-          this.filteredUsers = this.users; // Initialize filteredUsers to be all users initially
+          const archivedUsers = JSON.parse(localStorage.getItem('archivedUsers') || '[]');
+          this.users = response.users.filter(user => 
+            !archivedUsers.some((archived: any) => archived.email === user.email)
+          );
+          this.filteredUsers = [...this.users];
         } else {
           console.error('Failed to fetch users');
         }
       },
       error => console.error('Error fetching users', error)
     );
-  }
-
-  loadArchivedUsers() {
-    const archivedUsers: any[] = JSON.parse(localStorage.getItem('archivedUsers') || '[]');
-    this.users = this.users.filter(user => !archivedUsers.some((archived: any) => archived.email === user.email));
-    this.filteredUsers = [...this.users];
   }
 
   searchUsers() {
@@ -64,21 +60,17 @@ export class PatientComponent implements OnInit {
       this.filteredUsers = this.users.filter(user => 
         (user.firstname + ' ' + user.lastname).toLowerCase().includes(this.searchQuery.toLowerCase())
       );
-      
     }
   }
 
   viewUser(user: any) {
-    console.log('Selected User:', user); // Log the selected user data
-
-    // Ensure that contact_number and home_address are included if they exist in the user object
     this.selectedUser = {
       firstname: user.firstname || 'N/A',
       lastname: user.lastname || 'N/A',
       gender: user.gender || 'N/A',
       email: user.email || 'N/A',
-      contact_number: user.contact_number || 'N/A',  // Ensure correct field name
-      home_address: user.home_address || 'N/A',  // Ensure correct field name
+      contact_number: user.contact_number || 'N/A',
+      home_address: user.home_address || 'N/A',
       medicalHistory: user.medicalHistory || []
     };
   }
@@ -100,13 +92,6 @@ export class PatientComponent implements OnInit {
 
   confirmArchive() {
     if (this.userToArchive) {
-      // Archive the user using the service
-      this.archiveService.addArchivedUser({
-        ...this.userToArchive,
-        dateArchived: new Date().toISOString().split('T')[0],
-        remarks: this.archiveRemarks
-      });
-      // Persist archived users in local storage
       const archivedUsers = JSON.parse(localStorage.getItem('archivedUsers') || '[]');
       archivedUsers.push({
         ...this.userToArchive,
@@ -114,12 +99,12 @@ export class PatientComponent implements OnInit {
         remarks: this.archiveRemarks
       });
       localStorage.setItem('archivedUsers', JSON.stringify(archivedUsers));
-      // Remove the user from the current list
-      this.users = this.users.filter(user => user !== this.userToArchive);
-      this.filteredUsers = this.filteredUsers.filter(user => user !== this.userToArchive);
-      console.log('Archived user:', this.userToArchive, 'with remarks:', this.archiveRemarks);
+
+      this.users = this.users.filter(user => user.email !== this.userToArchive.email);
+      this.filteredUsers = this.filteredUsers.filter(user => user.email !== this.userToArchive.email);
+
       this.closeArchiveModal();
-      this.archiveRemarks = ''; // Clear remarks after archiving
+      console.log('User archived successfully:', this.userToArchive);
     }
   }
 }
