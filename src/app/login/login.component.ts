@@ -46,9 +46,19 @@ export class LoginComponent implements OnInit {
       this.errorMessage = 'Please enter your email and password';
       return; // Stop further execution if fields are empty
     }
+<<<<<<< HEAD
+<<<<<<< HEAD
+  
+=======
+
+>>>>>>> parent of fa86ed8 (update)
+    // Call the DataService to validate login credentials
+    this.dataService.login(this.loginData).subscribe(
+=======
 
     // Call the backend API to validate login credentials
     this.http.post<any>(this.apiUrl, this.loginData).subscribe(
+>>>>>>> parent of facac91 (Update)
       (response) => {
         console.log('Response from backend:', response);
 
@@ -65,8 +75,22 @@ export class LoginComponent implements OnInit {
               this.http.get<any>(this.patientsApiUrl).subscribe(
                 (patientsResponse) => {
                   console.log('Fetched patients:', patientsResponse); // Log the response from patients API
+<<<<<<< HEAD
+<<<<<<< HEAD
+  
+                  // Access patient data inside 'payload' (instead of 'patients')
+                  const patients = patientsResponse.payload as { patient_id: number, id: number, email: string }[];
+  
+=======
                   const patients = patientsResponse.patients as { patient_id: number, id: number, email: string }[];
 
+>>>>>>> parent of facac91 (Update)
+=======
+
+                  // Access patient data inside 'payload' (instead of 'patients')
+                  const patients = patientsResponse.payload as { patient_id: number, id: number, email: string }[];
+
+>>>>>>> parent of fa86ed8 (update)
                   console.log('Logged user id:', id);
                   console.log('Patient list:', patients);
 
