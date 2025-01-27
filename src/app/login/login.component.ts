@@ -35,11 +35,11 @@ export class LoginComponent implements OnInit {
   onLogin(event: Event): void {
     event.preventDefault();
     console.log('Login attempt with:', this.loginData);
-  
+
     // Reset error flag and message before making the request
     this.loginError = false;
     this.errorMessage = '';
-  
+
     // Check if email or password is empty
     if (!this.loginData.email || !this.loginData.password) {
       this.loginError = true;
@@ -47,7 +47,11 @@ export class LoginComponent implements OnInit {
       return; // Stop further execution if fields are empty
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> parent of fa86ed8 (update)
     // Call the DataService to validate login credentials
     this.dataService.login(this.loginData).subscribe(
 =======
@@ -57,20 +61,21 @@ export class LoginComponent implements OnInit {
 >>>>>>> parent of facac91 (Update)
       (response) => {
         console.log('Response from backend:', response);
-  
+
         if (response.status === true) {
           // Ensure user object exists and extract user details safely
           if (response.user && response.user.id) {
             const { token, role, id } = response.user; // Extract token, role, and user id
-  
+
             // Store the session data (token, role, and userId) in localStorage
             this.authService.setSession(token, role, id);
-  
+
             // If user is a regular user, fetch their patient id
             if (role === 'user') {
               this.http.get<any>(this.patientsApiUrl).subscribe(
                 (patientsResponse) => {
                   console.log('Fetched patients:', patientsResponse); // Log the response from patients API
+<<<<<<< HEAD
 <<<<<<< HEAD
   
                   // Access patient data inside 'payload' (instead of 'patients')
@@ -80,13 +85,19 @@ export class LoginComponent implements OnInit {
                   const patients = patientsResponse.patients as { patient_id: number, id: number, email: string }[];
 
 >>>>>>> parent of facac91 (Update)
+=======
+
+                  // Access patient data inside 'payload' (instead of 'patients')
+                  const patients = patientsResponse.payload as { patient_id: number, id: number, email: string }[];
+
+>>>>>>> parent of fa86ed8 (update)
                   console.log('Logged user id:', id);
                   console.log('Patient list:', patients);
-  
+
                   // Find the patient based on id
                   const patient = patients.find(p => p.id === id);
                   console.log('Found patient:', patient);
-  
+
                   // If patient found, store patient_id
                   if (patient) {
                     console.log('Patient found:', patient); // Log the patient found
@@ -108,33 +119,9 @@ export class LoginComponent implements OnInit {
                   this.errorMessage = 'An error occurred while fetching patient data.';
                 }
               );
-            } else if (role === 'admin') {
-              // If the user is an admin, fetch doctor_id from the doctors table
-              this.dataService.getDoctorInfo(id).subscribe(
-                (doctorResponse) => {
-                  console.log('Fetched doctor info:', doctorResponse); // Log doctor info
-              
-                  if (doctorResponse && doctorResponse.payload && doctorResponse.payload.length > 0) {
-                    const doctor_id = doctorResponse.payload[0].doctor_id; // Access doctor_id from the first element in the payload array
-              
-                    // Store doctor_id in the session for the admin user
-                    this.authService.setSession(token, role, id, doctor_id);
-                    console.log('Doctor ID stored in session:', doctor_id); // Log doctor ID for debugging
-              
-                    // Redirect admin to admin dashboard
-                    this.router.navigate(['/admindashboard']);
-                  } else {
-                    this.loginError = true;
-                    this.errorMessage = 'Doctor information not found for this admin.';
-                    console.log('Doctor information not found for admin id:', id); // Log the error case
-                  }
-                },
-                (error) => {
-                  console.log('Error fetching doctor info:', error);
-                  this.loginError = true;
-                  this.errorMessage = 'An error occurred while fetching doctor information.';
-                }
-              );              
+            } else {
+              // Redirect admin to admin dashboard
+              this.router.navigate(['/admindashboard']);
             }
           } else {
             alert('User ID not found in response');
@@ -151,7 +138,6 @@ export class LoginComponent implements OnInit {
       }
     );
   }
-  
 
   goToRegister(): void {
     this.router.navigate(['/register']);

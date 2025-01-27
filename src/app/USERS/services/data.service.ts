@@ -41,14 +41,6 @@ export class DataService {
     getDoctors(): Observable<any> {
         return this.http.get<any>(`${this.apiUrl}getDoctors`);
     }
-
-    getDoctorInfo(id: number): Observable<any> {
-        return this.http.get<any>(`${this.apiUrl}getDoctorInfo&id=${id}`);
-    }
-
-    getDoctorsPatients(doctorId: number): Observable<any> {
-        return this.http.get<any>(`${this.apiUrl}getDoctorsPatients&doctor_id=${doctorId}`);
-    }
     
 
     // Fetch all appointments

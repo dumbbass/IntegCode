@@ -11,14 +11,14 @@ export class AuthService {
   }
 
   // Set session data (authToken, userRole, userId, and optionally patientId)
-  setSession(authToken: string, role: string, userId: number, doctor_id?: number): void {
+  setSession(authToken: string, role: string, userId: number, patient_id?: number): void {
     localStorage.setItem('authToken', authToken);
     localStorage.setItem('userRole', role);
     localStorage.setItem('userId', userId.toString());
 
     // Store patientId if it's provided
-    if (doctor_id !== undefined) {
-      localStorage.setItem('doctorId', doctor_id.toString());
+    if (patient_id !== undefined) {
+      localStorage.setItem('patientId', patient_id.toString());
     }
   }
 
@@ -43,7 +43,7 @@ export class AuthService {
   clearSession(): void {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userRole');
-    localStorage.removeItem('doctorId');  // Corrected to remove patientId
+    localStorage.removeItem('patientId');  // Corrected to remove patientId
     localStorage.removeItem('userId');  // Remove user ID when logging out
   }
 }
