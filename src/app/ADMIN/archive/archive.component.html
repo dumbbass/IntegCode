@@ -19,24 +19,49 @@
         <thead>
           <tr>
             <th>Id</th>
-            <th>Name</th>
             <th>Date Archived</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Gender</th>
+            <th>Email</th>
+            <th>Contact Number</th>
+            <th>Home Address</th>
+            <th>Remarks</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let item of filteredItems">
             <td>{{ item.id }}</td>
-            <td>{{ item.name }}</td>
             <td>{{ item.dateArchived }}</td>
+            <td>{{ item.firstname }}</td>
+            <td>{{ item.lastname }}</td>
+            <td>{{ item.gender }}</td>
+            <td>{{ item.email }}</td>
+            <td>{{ item.contact_number }}</td>
+            <td>{{ item.home_address }}</td>
+            <td>{{ item.remarks }}</td>
             <td>
               <div class="action-buttons">
                 <button class="view-btn">View</button>
+                <button class="delete-btn" (click)="openDeleteModal(item)">Delete</button>
               </div>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div *ngIf="showDeleteModal" class="modal-overlay" (click)="closeDeleteModal()"></div>
+<div *ngIf="showDeleteModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" (click)="closeDeleteModal()">&times;</span>
+    <h3>Confirm Deletion</h3>
+    <p>Are you sure you want to delete {{ itemToDelete?.firstname }} {{ itemToDelete?.lastname }} from the archive?</p>
+    <button (click)="confirmDelete()">Yes, Delete</button>
+    <button (click)="closeDeleteModal()">Cancel</button>
   </div>
 </div> 

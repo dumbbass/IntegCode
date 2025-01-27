@@ -1,12 +1,10 @@
-
-
-
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AdminsidenavComponent } from '../adminsidenav/adminsidenav.component';
 import { FormsModule } from '@angular/forms';  // Import FormsModule
+import { ArchiveService } from '../archive/archive.service';
 
 @Component({
   selector: 'app-patient',
@@ -25,11 +23,15 @@ export class PatientComponent implements OnInit {
   filteredUsers: any[] = [];
   selectedUser: any = null;
   searchQuery: string = '';
+  showArchiveModal: boolean = false;
+  userToArchive: any = null;
+  archiveRemarks: string = '';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private archiveService: ArchiveService) {}
 
   ngOnInit() {
     this.fetchUsers();
+    this.loadArchivedUsers();
   }
 
   fetchUsers() {
@@ -47,6 +49,12 @@ export class PatientComponent implements OnInit {
       },
       error => console.error('Error fetching users', error)
     );
+  }
+
+  loadArchivedUsers() {
+    const archivedUsers: any[] = JSON.parse(localStorage.getItem('archivedUsers') || '[]');
+    this.users = this.users.filter(user => !archivedUsers.some((archived: any) => archived.email === user.email));
+    this.filteredUsers = [...this.users];
   }
 
   searchUsers() {
@@ -77,5 +85,41 @@ export class PatientComponent implements OnInit {
 
   closeModal() {
     this.selectedUser = null;
+  }
+
+  openArchiveModal(user: any) {
+    this.userToArchive = user;
+    this.showArchiveModal = true;
+  }
+
+  closeArchiveModal() {
+    this.showArchiveModal = false;
+    this.userToArchive = null;
+    this.archiveRemarks = '';
+  }
+
+  confirmArchive() {
+    if (this.userToArchive) {
+      // Archive the user using the service
+      this.archiveService.addArchivedUser({
+        ...this.userToArchive,
+        dateArchived: new Date().toISOString().split('T')[0],
+        remarks: this.archiveRemarks
+      });
+      // Persist archived users in local storage
+      const archivedUsers = JSON.parse(localStorage.getItem('archivedUsers') || '[]');
+      archivedUsers.push({
+        ...this.userToArchive,
+        dateArchived: new Date().toISOString().split('T')[0],
+        remarks: this.archiveRemarks
+      });
+      localStorage.setItem('archivedUsers', JSON.stringify(archivedUsers));
+      // Remove the user from the current list
+      this.users = this.users.filter(user => user !== this.userToArchive);
+      this.filteredUsers = this.filteredUsers.filter(user => user !== this.userToArchive);
+      console.log('Archived user:', this.userToArchive, 'with remarks:', this.archiveRemarks);
+      this.closeArchiveModal();
+      this.archiveRemarks = ''; // Clear remarks after archiving
+    }
   }
 }
