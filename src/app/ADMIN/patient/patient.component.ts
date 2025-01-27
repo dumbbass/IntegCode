@@ -26,7 +26,7 @@ export class PatientComponent implements OnInit {
   showArchiveModal: boolean = false;
   userToArchive: any = null;
   archiveRemarks: string = '';
-  
+  isRemarksTooLong: boolean = false; // Flag to check if remarks exceed word limit
 
   constructor(private http: HttpClient, private archiveService: ArchiveService) {}
 
@@ -34,8 +34,14 @@ export class PatientComponent implements OnInit {
     this.fetchUsers();
   }
 
+  // Word count check for remarks
+  checkRemarks() {
+    const wordCount = this.archiveRemarks.split(/\s+/).length;
+    this.isRemarksTooLong = wordCount > 30;  // Check if words exceed 30
+  }
+
   fetchUsers() {
-    this.http.get<{ status: boolean; users: any[] }>(
+    this.http.get<{ status: boolean; users: any[] }>( 
       'http://localhost/API/carexusapi/Backend/carexus.php?action=getUsers'
     ).subscribe(
       response => {
@@ -91,7 +97,7 @@ export class PatientComponent implements OnInit {
   }
 
   confirmArchive() {
-    if (this.userToArchive) {
+    if (this.userToArchive && !this.isRemarksTooLong) {
       const archivedUsers = JSON.parse(localStorage.getItem('archivedUsers') || '[]');
       archivedUsers.push({
         ...this.userToArchive,
@@ -105,6 +111,8 @@ export class PatientComponent implements OnInit {
 
       this.closeArchiveModal();
       console.log('User archived successfully:', this.userToArchive);
+    } else if (this.isRemarksTooLong) {
+      alert("Remarks should not exceed 30 words.");
     }
   }
 }

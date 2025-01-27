@@ -35,8 +35,8 @@ export class ArchiveComponent implements OnInit {
   searchQuery: string = '';
   showDeleteModal: boolean = false;
   itemToDelete: ArchiveItem | null = null;
-  showViewModal: boolean = false;  // Add this property for the view modal
-  selectedItem: ArchiveItem | null = null; // Add this property for selected item to view details
+  showViewModal: boolean = false;  // For the view modal
+  selectedItem: ArchiveItem | null = null; // For the selected item to view details
 
   constructor(private archiveService: ArchiveService) {
     this.archiveItems = this.archiveService.getArchivedUsers();
@@ -60,7 +60,6 @@ export class ArchiveComponent implements OnInit {
   }
 
   openDeleteModal(item: ArchiveItem) {
-    console.log('Opening delete modal for:', item);
     this.itemToDelete = item;
     this.showDeleteModal = true;
   }
@@ -72,20 +71,17 @@ export class ArchiveComponent implements OnInit {
 
   confirmDelete() {
     if (this.itemToDelete) {
-      // Remove the item from the archiveItems list
       this.archiveItems = this.archiveItems.filter(item => item.id !== this.itemToDelete?.id);
       this.filteredItems = this.filteredItems.filter(item => item.id !== this.itemToDelete?.id);
-      // Update local storage
       localStorage.setItem('archivedUsers', JSON.stringify(this.archiveItems));
-      console.log('Deleted archived user:', this.itemToDelete);
       this.closeDeleteModal();
     }
   }
 
-  // Add these methods for the View User modal
+  // Methods for the View User modal
   openViewModal(item: ArchiveItem) {
-    this.selectedItem = item;
-    this.showViewModal = true;
+    this.selectedItem = item;  // Set the selected item
+    this.showViewModal = true;  // Show the modal
   }
 
   closeViewModal() {

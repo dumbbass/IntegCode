@@ -74,8 +74,13 @@
     <span class="close-btn" (click)="closeArchiveModal()">&times;</span>
     <h3>Confirm Archive</h3>
     <p>Are you sure you want to archive {{ userToArchive?.firstname }} {{ userToArchive?.lastname }}?</p>
-    <textarea [(ngModel)]="archiveRemarks" placeholder="Enter remarks here..." rows="3" style="width: 100%; margin-bottom: 10px;"></textarea>
-    <button (click)="confirmArchive()">Yes, Archive</button>
+    <textarea [(ngModel)]="archiveRemarks" 
+              placeholder="Enter remarks here..." 
+              rows="3" 
+              style="width: 100%; margin-bottom: 10px;"
+              (input)="checkRemarks()"></textarea>
+    <p *ngIf="isRemarksTooLong" style="color: red; font-size: 12px;">Remarks should not exceed 30 words.</p>
+    <button [disabled]="isRemarksTooLong" (click)="confirmArchive()">Yes, Archive</button>
     <button (click)="closeArchiveModal()">Cancel</button>
   </div>
 </div>
