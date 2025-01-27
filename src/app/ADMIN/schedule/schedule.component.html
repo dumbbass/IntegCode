@@ -12,37 +12,39 @@
         </div>
       </div>
     </div>
-    
-    <div class="patients-list-container">
-      <h2>Upcoming Appointments</h2>
-      <table class="patients-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Purpose of Appointment</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>John Doe</td>
-            <td>2024-12-05</td>
-            <td>10:00 AM</td>
-            <td>Routine Check-up</td>
-            <td>
-              <select class="status-dropdown">
-                <option value="pending">Pending</option>
-                <option value="completed">Completed</option>
-                <option value="completed">Resched</option>
-              </select>
-            </td>
-            <button class="action-btn">Completed</button>
-          <!-- Add more rows as needed -->
-        </tbody>
-      </table>
+
+
+    <!-- CONTENTS -->
+
+
+    <div class="schedule-container">
+      <div class="calendar-header">
+        <button (click)="prevMonth()" class="btn">&lt;</button>
+        <h2>{{ currentMonth | date: 'MMMM yyyy' }}</h2>
+        <button (click)="nextMonth()" class="btn">&gt;</button>
+      </div>
+
+      <div class="calendar-days">
+        <div *ngFor="let day of weekDays" class="day-header">{{ day }}</div>
+      </div>
+
+      <div class="calendar-cells">
+        <div *ngFor="let day of daysInMonth"
+             class="calendar-cell"
+             [class.selected]="isSelected(day)"
+             (click)="toggleDate(day)">
+          {{ day.getDate() }}
+        </div>
+      </div>
+
+      <div class="selected-dates">
+        <h3>Selected Dates:</h3>
+        <ul>
+          <li *ngFor="let date of selectedDates">{{ date | date: 'MMMM d, yyyy' }}</li>
+        </ul>
+      </div>
     </div>
+
+
   </div>
 </div>
