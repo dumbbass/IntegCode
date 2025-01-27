@@ -17,6 +17,9 @@ export class RegisterComponent {
   lastName: string = '';
   dob: string = '';
   gender: string = '';
+  height: number | null = null;
+  weight: number | null = null;
+  medications: string = '';
   homeAddress: string = '';
   contactNumber: string = '';
   email: string = '';
@@ -91,6 +94,18 @@ export class RegisterComponent {
     // Gender validation
     if (!this.gender) {
       this.errors['gender'] = 'Please select a gender';
+      isValid = false;
+    }
+
+    // Height validation (set to 0 if null or undefined)
+    if (!this.height) this.height = 0;
+
+// Weight validation (set to 0 if null or undefined)
+    if (!this.weight) this.weight = 0;
+
+// Medications validation
+    if (!this.medications) {
+      this.errors['medications'] = 'Please select whether you are taking any medications';
       isValid = false;
     }
 
@@ -171,6 +186,9 @@ export class RegisterComponent {
         contactNumber: this.contactNumber,
         email: this.email,
         password: this.password,
+        height: this.height,
+        weight: this.weight,
+        medications: this.medications,
       };
 
       this.http.post('http://localhost/API/carexusapi/Backend/carexus.php?action=register', userData).subscribe(

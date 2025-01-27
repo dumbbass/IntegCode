@@ -47,6 +47,36 @@
         </div>
 
         <div class="form-group">
+          <label for="height" class="form-label">Height (cm)</label>
+          <input type="number" id="height" class="form-input"
+                 [ngClass]="{'error-input': errors['height']}"
+                 placeholder="Enter your height in cm (optional)"
+                 [(ngModel)]="height" name="height">
+          <div *ngIf="errors['height']" class="error-message">{{ errors['height'] }}</div>
+      </div>
+
+      <div class="form-group">
+          <label for="weight" class="form-label">Weight (kg)</label>
+          <input type="number" id="weight" class="form-input"
+                 [ngClass]="{'error-input': errors['weight']}"
+                 placeholder="Enter your weight in kg (optional)"
+                 [(ngModel)]="weight" name="weight">
+          <div *ngIf="errors['weight']" class="error-message">{{ errors['weight'] }}</div>
+      </div>
+
+      <div class="form-group">
+          <label for="medications" class="form-label">Taking any medications, currently?</label>
+          <select id="medications" class="form-input"
+                  [ngClass]="{'error-input': errors['medications']}"
+                  [(ngModel)]="medications" name="medications" required>
+              <option value="" disabled selected>Select an option</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+          </select>
+          <div *ngIf="errors['medications']" class="error-message">{{ errors['medications'] }}</div>
+      </div>
+
+        <div class="form-group">
             <label for="home-address" class="form-label">Home Address</label>
             <input type="text" id="home-address" class="form-input" [ngClass]="{'error-input': errors['homeAddress']}"
                 placeholder="Enter your Home Address" [(ngModel)]="homeAddress" name="homeAddress" required>
@@ -70,16 +100,16 @@
         <div class="form-group">
             <label for="password" class="form-label">Password</label>
             <div class="password-input-container">
-                <input [type]="showPassword ? 'text' : 'password'" 
-                       id="password" 
-                       class="form-input" 
+                <input [type]="showPassword ? 'text' : 'password'"
+                       id="password"
+                       class="form-input"
                        [ngClass]="{'error-input': errors['password']}"
-                       placeholder="Enter your Password" 
-                       [(ngModel)]="password" 
-                       name="password" 
+                       placeholder="Enter your Password"
+                       [(ngModel)]="password"
+                       name="password"
                        required>
-                <button type="button" 
-                        class="toggle-password" 
+                <button type="button"
+                        class="toggle-password"
                         (click)="togglePasswordVisibility('password')">
                     {{ showPassword ? '🔒' : '👁️' }}
                 </button>
@@ -93,16 +123,16 @@
         <div class="form-group">
             <label for="confirm-password" class="form-label">Confirm Password</label>
             <div class="password-input-container">
-                <input [type]="showConfirmPassword ? 'text' : 'password'" 
-                       id="confirm-password" 
-                       class="form-input" 
+                <input [type]="showConfirmPassword ? 'text' : 'password'"
+                       id="confirm-password"
+                       class="form-input"
                        [ngClass]="{'error-input': errors['confirmPassword']}"
-                       placeholder="Confirm your Password" 
-                       [(ngModel)]="confirmPassword" 
-                       name="confirmPassword" 
+                       placeholder="Confirm your Password"
+                       [(ngModel)]="confirmPassword"
+                       name="confirmPassword"
                        required>
-                <button type="button" 
-                        class="toggle-password" 
+                <button type="button"
+                        class="toggle-password"
                         (click)="togglePasswordVisibility('confirmPassword')">
                     {{ showConfirmPassword ? '🔒' : '👁️' }}
                 </button>
@@ -112,9 +142,9 @@
 
         <div class="form-group terms-container">
             <label class="terms-label">
-                <input type="checkbox" 
-                       [(ngModel)]="termsAccepted" 
-                       name="terms" 
+                <input type="checkbox"
+                       [(ngModel)]="termsAccepted"
+                       name="terms"
                        required>
                 I accept the <a href="/terms" target="_blank">Terms and Conditions</a>
             </label>
@@ -124,3 +154,4 @@
         <button type="submit" class="form-register">Register</button>
     </form>
 </div>
+
