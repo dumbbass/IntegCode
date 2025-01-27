@@ -8,6 +8,7 @@ import { ScheduleComponent } from './ADMIN/schedule/schedule.component';
 import { UserprofileComponent } from './USERS/userprofile/userprofile.component';
 import { UserdashboardComponent } from './USERS/userdashboard/userdashboard.component';
 import { UserappointmentsComponent } from './USERS/userappointments/userappointments.component';
+import { DashboardComponent } from './USERS/dashboard/dashboard.component';
 import { AuthGuard } from './auth.guard';
 
 import { InformationComponent } from './ADMIN/information/information.component';
@@ -25,6 +26,7 @@ export const routes: Routes = [
   { path: 'userappointments', component: UserappointmentsComponent },
   { path: 'information', component: InformationComponent },
   { path: 'archive', component: ArchiveComponent },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
 
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/login', pathMatch: 'full' }, // Placeholder route
