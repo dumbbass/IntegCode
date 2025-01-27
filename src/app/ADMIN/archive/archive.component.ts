@@ -58,6 +58,7 @@ export class ArchiveComponent implements OnInit {
   }
 
   openDeleteModal(item: ArchiveItem) {
+    console.log('Opening delete modal for:', item);
     this.itemToDelete = item;
     this.showDeleteModal = true;
   }
