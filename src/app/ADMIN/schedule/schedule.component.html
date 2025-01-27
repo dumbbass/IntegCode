@@ -20,23 +20,29 @@
     <div class="schedule-container">
       <div class="calendar-header">
         <button (click)="prevMonth()" class="btn">&lt;</button>
-        <h2>{{ currentMonth | date: 'MMMM yyyy' }}</h2>
+        <h2 class="calendar-title">{{ currentMonth | date: 'MMMM yyyy' }}</h2>
         <button (click)="nextMonth()" class="btn">&gt;</button>
       </div>
-
-      <div class="calendar-days">
-        <div *ngFor="let day of weekDays" class="day-header">{{ day }}</div>
-      </div>
-
-      <div class="calendar-cells">
-        <div *ngFor="let day of daysInMonth"
-             class="calendar-cell"
-             [class.selected]="isSelected(day)"
-             (click)="toggleDate(day)">
-          {{ day.getDate() }}
-        </div>
-      </div>
-
+    
+      <table class="calendar-table">
+        <thead>
+          <tr>
+            <th *ngFor="let day of weekDays" class="calendar-day-header">{{ day }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let week of getWeeks()">
+            <td *ngFor="let day of week" 
+                class="calendar-cell" 
+                [class.selected]="isSelected(day)"
+                [class.today]="isToday(day)"
+                (click)="toggleDate(day)">
+              {{ day.getDate() }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    
       <div class="selected-dates">
         <h3>Selected Dates:</h3>
         <ul>
@@ -44,6 +50,7 @@
         </ul>
       </div>
     </div>
+    
 
 
   </div>

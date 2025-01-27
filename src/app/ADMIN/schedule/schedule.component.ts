@@ -60,4 +60,30 @@ export class ScheduleComponent {
   isSelected(date: Date): boolean {
     return this.selectedDates.some((d) => isSameDay(d, date));
   }
+  getWeeks(): Date[][] {
+    const weeks: Date[][] = [];
+    let week: Date[] = [];
+  
+    this.daysInMonth.forEach((day, index) => {
+      week.push(day);
+      if ((index + 1) % 7 === 0) {
+        weeks.push(week);
+        week = [];
+      }
+    });
+  
+    if (week.length > 0) {
+      weeks.push(week);
+    }
+  
+    return weeks;
+  }
+  
+  isToday(date: Date): boolean {
+    const today = new Date();
+    return date.getDate() === today.getDate() &&
+           date.getMonth() === today.getMonth() &&
+           date.getFullYear() === today.getFullYear();
+  }
+  
 }

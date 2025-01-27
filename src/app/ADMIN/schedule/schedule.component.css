@@ -138,22 +138,23 @@ h2 {
 .schedule-container {
   max-width: 800px;
   margin: auto;
-  padding: 16px;
+  padding: 20px;
   border: 1px solid #ddd;
   border-radius: 10px;
   background-color: #fff;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial', sans-serif;
 }
 
 .calendar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .calendar-title {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: bold;
 }
 
@@ -161,38 +162,40 @@ h2 {
   background-color: #007bff;
   color: #fff;
   border: none;
-  padding: 8px 12px;
+  padding: 10px 16px;
   border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
+  transition: background-color 0.3s ease;
 }
 
 .btn:hover {
   background-color: #0056b3;
 }
 
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
+.calendar-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.calendar-table th, 
+.calendar-table td {
+  width: 14.28%;
+  padding: 20px;
   text-align: center;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  cursor: pointer;
 }
 
 .calendar-day-header {
-  font-weight: bold;
-  padding: 10px 0;
   background-color: #f1f1f1;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  font-weight: bold;
 }
 
 .calendar-cell {
-  padding: 16px;
   background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
+  transition: background-color 0.3s ease;
 }
 
 .calendar-cell:hover {
@@ -202,20 +205,46 @@ h2 {
 .calendar-cell.selected {
   background-color: #007bff;
   color: #fff;
-  border-color: #007bff;
+  font-weight: bold;
+  border: 2px solid #0056b3;
+}
+
+.calendar-cell.today {
+  background-color: #ffeb3b;
+  border: 2px solid #fbc02d;
 }
 
 .selected-dates {
-  margin-top: 16px;
+  margin-top: 20px;
 }
 
 .selected-dates ul {
   list-style: none;
-  padding-left: 0;
+  padding: 0;
 }
 
 .selected-dates li {
-  padding: 4px 0;
+  padding: 8px 0;
   border-bottom: 1px solid #ddd;
 }
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .calendar-title {
+    font-size: 1.4rem;
+  }
+  
+  .btn {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+
+  .calendar-table th, 
+  .calendar-table td {
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+}
+
+
 
