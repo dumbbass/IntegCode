@@ -3,7 +3,6 @@ import { HttpClient, HttpClientModule } from '@angular/common/http'; // Import H
 import { CommonModule } from '@angular/common';
 import { SidenavComponent } from '../sidenav/sidenav.component';
 import { AuthService } from '../../auth.service';  // Import the AuthService
-import { DataService } from '../services/data.service';
 
 @Component({
   selector: 'app-userprofile',
@@ -17,7 +16,7 @@ export class UserprofileComponent implements OnInit {
   userId: number | null = null;  // userId can be null initially
   errorMessage: string = '';
 
-  constructor(private http: HttpClient, private authService: AuthService, private dataService: DataService) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   ngOnInit(): void {
     this.userId = this.authService.getUserId();  // Retrieve the userId from the AuthService
@@ -31,36 +30,28 @@ export class UserprofileComponent implements OnInit {
 
   fetchUserProfile(): void {
     if (this.userId) {
-      // Use DataService to fetch the user profile instead of directly using HttpClient
-      this.dataService.getPatientUserInfo(this.userId).subscribe(
-        (data: any) => {
-          if (!data) {
-            this.errorMessage = 'No data returned from API';
-            console.error(this.errorMessage);
-            return;
-          }
-  
-          // Updated check to verify if the status.remarks is 'success'
-          if (data.status && data.status.remarks === 'success' && data.payload && data.payload.length > 0) {
-            // Assuming data.payload is an array of patients, and we need to find the matching user
-            const patient = data.payload.find((p: any) => p.id === this.userId);
-            if (patient) {
-              this.user = patient;  // Set the user data
+      this.http.get(`http://localhost/API/carexusapi/backend/carexus.php?action=getUserProfile&id=${this.userId}`)
+        .subscribe(
+          (data: any) => {
+            if (!data) {
+              this.errorMessage = 'No data returned from API';
+              console.error(this.errorMessage);
+              return;
+            }
+
+            if (data.status === true) {
+              this.user = data.user;
               this.errorMessage = '';  // Clear error if data is fetched successfully
             } else {
-              this.errorMessage = 'Patient not found for the provided user ID';
-              console.error(this.errorMessage);
+              this.errorMessage = 'Invalid status or missing user data';
+              console.error(this.errorMessage, data);
             }
-          } else {
-            this.errorMessage = 'Invalid status or missing user data';
-            console.error(this.errorMessage, data);
+          },
+          (error: any) => {
+            this.errorMessage = 'Error fetching user data';
+            console.error(this.errorMessage, error);
           }
-        },
-        (error: any) => {
-          this.errorMessage = 'Error fetching user data';
-          console.error(this.errorMessage, error);
-        }
-      );
+        );
     }
-  }  
+  }
 }
