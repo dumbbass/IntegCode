@@ -27,7 +27,7 @@
                         <option *ngFor="let doctor of doctors" [value]="doctor.doctor_id">
                           {{ doctor.firstname }} {{ doctor.lastname }}
                         </option>
-                    </select>              
+                    </select>
                 </div>
 
                 <div class="appointment-date-time-container">
@@ -70,18 +70,13 @@
                         <td>{{ appointment.appointment_date | date: 'fullDate' }}</td>
                         <td>{{ appointment.appointment_time }}</td>
                         <td>{{ appointment.purpose }}</td>
-                        <td class="status" [ngClass]="{
-                                'confirmed': appointment.status === 'Confirmed',
-                                'pending': appointment.status === 'Pending',
-                                'cancelled': appointment.status === 'Cancelled'
-                            }">
-                            {{ appointment.status }}
-                        </td>
+
+
                     </tr>
                 </tbody>
             </table>
         </div>
-        
+
     </div>
 </div>
 

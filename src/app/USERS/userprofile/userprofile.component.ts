@@ -6,18 +6,13 @@ import { AuthService } from '../../auth.service';  // Import the AuthService
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-userprofile',
-  standalone: true,
-  imports: [SidenavComponent, CommonModule, 
-// TODO: `HttpClientModule` should not be imported into a component directly.
-// Please refactor the code to add `provideHttpClient()` call to the provider list in the
-// application bootstrap logic and remove the `HttpClientModule` import from this component.
-HttpClientModule, FormsModule],  // Include HttpClientModule and FormsModule here
-  templateUrl: './userprofile.component.html',
-  styleUrls: ['./userprofile.component.css']
+    selector: 'app-userprofile',
+    imports: [SidenavComponent, CommonModule, FormsModule], // Include HttpClientModule and FormsModule here
+    templateUrl: './userprofile.component.html',
+    styleUrls: ['./userprofile.component.css']
 })
 export class UserprofileComponent implements OnInit {
-  user: any = {};  
+  user: any = {};
   userId: number | null = null;  // userId can be null initially
   errorMessage: string = '';
   firstName: string = '';
@@ -35,7 +30,7 @@ export class UserprofileComponent implements OnInit {
   homeAddress: string = '';
   contactNumber: string = '';
   email: string = '';
-  
+
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
@@ -111,7 +106,7 @@ export class UserprofileComponent implements OnInit {
       );
     }
   }
-  
+
   isModalOpen = false;
 
   openModal(): void {

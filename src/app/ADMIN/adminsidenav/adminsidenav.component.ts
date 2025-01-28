@@ -3,11 +3,10 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-adminsidenav',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './adminsidenav.component.html',
-  styleUrls: ['./adminsidenav.component.css'],
+    selector: 'app-adminsidenav',
+    imports: [CommonModule, RouterModule],
+    templateUrl: './adminsidenav.component.html',
+    styleUrls: ['./adminsidenav.component.css']
 })
 export class AdminsidenavComponent {
   isLogoutModalVisible = false; // Controls the visibility of the logout modal

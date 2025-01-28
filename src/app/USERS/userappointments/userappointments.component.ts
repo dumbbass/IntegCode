@@ -1,24 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { AppointmentService } from '../services/appointment.service';  
-import { AuthService } from '../../auth.service'; 
+import { AppointmentService } from '../services/appointment.service';
+import { AuthService } from '../../auth.service';
 import { DoctorService } from '../services/doctor.service';
 import { PatientService } from '../services/patient.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {} from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { SidenavComponent } from '../sidenav/sidenav.component';
 import { isWithinInterval, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 
 @Component({
-  selector: 'app-userappointments',
-  standalone: true,
-  imports: [CommonModule, 
-// TODO: `HttpClientModule` should not be imported into a component directly.
-// Please refactor the code to add `provideHttpClient()` call to the provider list in the
-// application bootstrap logic and remove the `HttpClientModule` import from this component.
-HttpClientModule, SidenavComponent, FormsModule],
-  templateUrl: './userappointments.component.html',
-  styleUrls: ['./userappointments.component.css']
+    selector: 'app-userappointments',
+    imports: [HttpClientModule, SidenavComponent, FormsModule, CommonModule],
+    templateUrl: './userappointments.component.html',
+    styleUrls: ['./userappointments.component.css']
 })
 export class UserappointmentsComponent implements OnInit {
   showAppointmentForm: boolean = false;
@@ -45,7 +40,7 @@ export class UserappointmentsComponent implements OnInit {
   fetchPatientData(): void {
     const patientIdFromAuth = this.authService.getPatientId();
     console.log('Fetched patientId from AuthService:', patientIdFromAuth);
-  
+
     if (patientIdFromAuth !== null) {
         this.patientId = patientIdFromAuth;
         console.log('Setting patientId:', this.patientId);
@@ -141,7 +136,7 @@ export class UserappointmentsComponent implements OnInit {
     const dateToCheck = new Date(appointmentDate);
 
     // Check appointments within the current week
-    const appointmentsThisWeek = this.appointments.filter(appointment => 
+    const appointmentsThisWeek = this.appointments.filter(appointment =>
       isWithinInterval(new Date(appointment.appointment_date), {
         start: startOfWeek(new Date()),
         end: endOfWeek(new Date())
