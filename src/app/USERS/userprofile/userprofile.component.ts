@@ -65,7 +65,10 @@ export class UserprofileComponent implements OnInit {
         email: this.user.email,
         gender: this.user.gender,
         home_address: this.user.home_address,
-        contact_number: this.user.contact_number
+        contact_number: this.user.contact_number,
+        height: this.user.height,
+        weight: this.user.weight,
+        medications: this.user.medications
       }).subscribe(
         (response: any) => {
           if (response.status === true) {
@@ -82,6 +85,7 @@ export class UserprofileComponent implements OnInit {
       );
     }
   }
+  
 
   openModal(): void {
     const modal = document.getElementById('updateProfileModal');

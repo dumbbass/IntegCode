@@ -1,3 +1,107 @@
-<app-sidenav></app-sidenav>
+<div class="dashboard-container">
+    <app-sidenav></app-sidenav>
+    <div class="main-content">
+      <div class="dashboard-header-container">
+        <div class="header">
+          <div class="logo">
+            <i class="fas fa-credit-card"></i> Dashboard
+          </div>
+        </div>
+      </div>
+      <div class="dashboard-appointments-container">
+        <h2>Upcoming Appointments</h2>
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Doctor Name</th>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Dr. John Doe</td>
+                    <td>2024-12-10</td>
+                    <td>Regular Checkup</td>
+                    <td>
+                        <button class="view-btn">View</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Dr. Jane Smith</td>
+                    <td>2024-12-12</td>
+                    <td>Follow-up Consultation</td>
+                    <td>
+                        <button class="view-btn">View</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+  
+      <div class="dashboard-reports-container">
+        <h2>Appointment Medical History</h2>
+        <div class="filter-container">
+          <label for="filter">Filter:</label>
+          <select id="filter" (change)="onFilterChange($event)">
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly" selected>Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+        </div>
+        <div class="chart-container">
+          <canvas id="medicalReportsChart"></canvas>
+        </div>
+      </div>
+<div class="background-history-container">
+                <h3>Background History</h3>
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>Doctor Name</th>
+                            <th>Date</th>
+                            <th>Activity</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Dr. John Doe</td>
+                            <td>2024-11-15</td>
+                            <td>Consultation</td>
+                            <td>
+                                <button class="view-btn" (click)="openModal('Dr. John Doe', '2024-11-15', 'Consultation', 'Discussed symptoms and prescribed medication for hypertension.')">
+                                    View
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Dr. Jane Smith</td>
+                            <td>2024-10-10</td>
+                            <td>Checkup</td>
+                            <td>
+                                <button class="view-btn" (click)="openModal('Dr. Jane Smith', '2024-10-10', 'Checkup', 'Performed routine checkup; blood sugar levels monitored.')">
+                                    View
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    
 
-<p>dashboard works!</p>
+     <!-- Modal -->
+  <div *ngIf="showModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3>Details</h3>
+      <p><strong>Doctor:</strong> {{ modalData.doctor }}</p>
+      <p><strong>Date:</strong> {{ modalData.date }}</p>
+      <p><strong>Activity:</strong> {{ modalData.activity }}</p>
+      <p><strong>Description:</strong> {{ modalData.description }}</p>
+      <button class="close-btn" (click)="closeModal()">Close</button>
+    </div>
+  </div>
+</div>

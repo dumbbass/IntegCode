@@ -41,6 +41,21 @@
               <p>{{ user.contact_number }}</p>
             </div>
           </div>
+          <hr>
+          <div class="info-row">
+            <div>
+              <strong>Height</strong>
+              <p>{{ user.height }}</p>
+            </div>
+            <div>
+              <strong>Weight</strong>
+              <p>{{ user.weight }}</p>
+            </div>
+            <div>
+              <strong>Medications</strong>
+              <p>{{ user.medications }}</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -67,10 +82,6 @@
             </div>
             <div class="form-group">
               <label for="email">Email</label>
-              <input type="gender" id="gender" [(ngModel)]="user.gender" name="gender" required disabled>
-            </div>
-            <div class="form-group">
-              <label for="email">Email</label>
               <input type="email" id="email" [(ngModel)]="user.email" name="email" required>
             </div>
             <div class="form-group">
@@ -80,6 +91,18 @@
             <div class="form-group">
               <label for="contact_number">Contact Number</label>
               <input type="text" id="contact_number" [(ngModel)]="user.contact_number" name="contact_number">
+            </div>
+            <div class="form-group">
+              <label for="height">Height</label>
+              <input type="text" id="height" [(ngModel)]="user.height" name="height">
+            </div>
+            <div class="form-group">
+              <label for="weight">Weight</label>
+              <input type="text" id="weight" [(ngModel)]="user.weight" name="weight">
+            </div>
+            <div class="form-group">
+              <label for="medications">Medications</label>
+              <textarea id="medications" [(ngModel)]="user.medications" name="medications"></textarea>
             </div>
             <button type="submit">Save Changes</button>
           </form>
