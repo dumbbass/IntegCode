@@ -8,6 +8,49 @@
               </div>
           </div>
       </div>
+      <!-- Patient History Section -->
+    <div class="patient-history-container">
+      <h2>Patient History</h2>
+      <div class="history-note">
+        <table>
+          <tbody>
+            <tr>
+              <td><strong>Medical History:</strong></td>
+              <td>{{ user.medical_history }}</td>
+            </tr>
+            <tr>
+              <td><strong>Surgical History:</strong></td>
+              <td>{{ user.surgical_history }}</td>
+            </tr>
+            <tr>
+              <td><strong>Medications:</strong></td>
+              <td>{{ user.medications }}</td>
+            </tr>
+            <tr>
+              <td><strong>Allergies:</strong></td>
+              <td>{{ user.allergies }}</td>
+            </tr>
+            <tr>
+              <td><strong>Injuries and Accidents:</strong></td>
+              <td>{{ user.injuries_accidents }}</td>
+            </tr>
+            <tr>
+              <td><strong>Special Needs:</strong></td>
+              <td>{{ user.special_needs }}</td>
+            </tr>
+            <tr>
+              <td><strong>Blood Transfusion:</strong></td>
+              <td>{{ user.blood_transfusion }}</td>
+            </tr>
+            <tr>
+              <td><strong>Present History:</strong></td>
+              <td>{{ user.present_history }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
 
       <div class="user-container" *ngIf="user && user.firstname">
         <h2>Personal Information</h2>
@@ -64,7 +107,7 @@
             </div>
             <div>
               <strong>Civil Status</strong>
-              <p>{{ user.civilStatus }}</p>
+              <p>{{ user.civil_status }}</p>
             </div>
           </div>
           <hr>
@@ -93,7 +136,7 @@
       <button (click)="openModal()">Edit Profile</button>
 
       <!-- Modal for updating user profile -->
-      <div id="updateProfileModal" class="modal">
+      <div id="updateProfileModal" class="modal" [class.show]="isModalOpen">
         <div class="modal-content">
           <span class="close" (click)="closeModal()">&times;</span>
           <h2>Update Profile</h2>
@@ -117,6 +160,26 @@
             <div class="form-group">
               <label for="contact_number">Contact Number</label>
               <input type="text" id="contact_number" [(ngModel)]="user.contact_number" name="contact_number">
+            </div>
+            <div class="form-group">
+              <label for="birthplace">Birthplace</label>
+              <input id="birthplace" [(ngModel)]="user.birthplace" name="birthplace">
+            </div>
+            <div class="form-group">
+              <label for="age">Age</label>
+              <input id="age" [(ngModel)]="user.age" name="age">
+            </div>
+            <div class="form-group">
+              <label for="nationality">Nationality</label>
+              <input id="nationality" [(ngModel)]="user.nationality" name="nationality">
+            </div>
+            <div class="form-group">
+              <label for="religion">Religion</label>
+              <input id="religion" [(ngModel)]="user.religion" name="religion">
+            </div>
+            <div class="form-group">
+              <label for="civil_status">Civil Status</label>
+              <input id="civil_status" [(ngModel)]="user.civil_status" name="civil_status">
             </div>
             <div class="form-group">
               <label for="height">Height</label>

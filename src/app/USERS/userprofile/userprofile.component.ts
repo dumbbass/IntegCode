@@ -31,6 +31,7 @@ export class UserprofileComponent implements OnInit {
   homeAddress: string = '';
   contactNumber: string = '';
   email: string = '';
+  
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
@@ -83,7 +84,13 @@ export class UserprofileComponent implements OnInit {
         contact_number: this.user.contact_number,
         height: this.user.height,
         weight: this.user.weight,
-        medications: this.user.medications
+        medications: this.user.medications,
+        birthplace: this.user.birthplace,
+        dob: this.user.dob,
+        age: this.user.age,
+        nationality: this.user.nationality,
+        religion: this.user.religion,
+        civil_status: this.user.civil_status,
       }).subscribe(
         (response: any) => {
           if (response.status === true) {
@@ -101,6 +108,7 @@ export class UserprofileComponent implements OnInit {
     }
   }
   
+  isModalOpen = false;
 
   openModal(): void {
     const modal = document.getElementById('updateProfileModal');
