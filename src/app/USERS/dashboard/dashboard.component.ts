@@ -16,15 +16,50 @@ Chart.register(...registerables);
 export class DashboardComponent implements AfterViewInit {
   chart: Chart | null = null;
   showModal: boolean = false;
+
+  // Updated modalData to include pastHistory
   modalData = {
     doctor: '',
     date: '',
     activity: '',
     description: '',
+    pastHistory: {
+      medicalHistory: '',
+      surgicalHistory: '',
+      medications: '',
+      allergies: '',
+      injuriesAndAccidents: '',
+      specialNeeds: '',
+      bloodTransfusion: '',
+    },
   };
 
+  greetingMessage: string = ''; // Holds the greeting message
+  patientName: string = 'John Doe'; // Replace with dynamic data as needed
+
+  ngOnInit(): void {
+    this.setGreetingMessage();
+  }
+
   ngAfterViewInit(): void {
-    this.initializeChart('monthly');
+    const canvas = document.getElementById('medicalReportsChart') as HTMLCanvasElement;
+
+    if (canvas) {
+      this.initializeChart('monthly');
+    } else {
+      console.error('Canvas element not found!');
+    }
+  }
+
+  setGreetingMessage(): void {
+    const currentHour = new Date().getHours();
+    if (currentHour < 12) {
+      this.greetingMessage = 'Good Morning';
+    } else if (currentHour < 18) {
+      this.greetingMessage = 'Good Afternoon';
+    } else {
+      this.greetingMessage = 'Good Evening';
+    }
   }
 
   onFilterChange(event: Event): void {
@@ -98,7 +133,21 @@ export class DashboardComponent implements AfterViewInit {
   }
 
   openModal(doctor: string, date: string, activity: string, description: string): void {
-    this.modalData = { doctor, date, activity, description };
+    this.modalData = {
+      doctor,
+      date,
+      activity,
+      description,
+      pastHistory: {
+        medicalHistory: 'Hypertension, Diabetes',
+        surgicalHistory: 'Appendectomy (2018)',
+        medications: 'Metformin, Lisinopril',
+        allergies: 'Penicillin, Pollen',
+        injuriesAndAccidents: 'Fractured left arm (2020)',
+        specialNeeds: 'Requires wheelchair accessibility',
+        bloodTransfusion: 'Received blood transfusion in 2022',
+      },
+    };
     this.showModal = true;
   }
 

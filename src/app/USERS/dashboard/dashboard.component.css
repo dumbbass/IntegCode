@@ -241,3 +241,13 @@ h2 {
 .close-btn:hover {
   background-color: #0056b3;
 }
+.greeting-container {
+  margin-top: 10px; /* Adds spacing between the dashboard title and the greeting */
+  text-align: left; /* Align the text to the left */
+  font-size: 18px; /* Slightly larger font size for emphasis */
+  font-weight: 500; /* Medium weight for readability */
+}
+
+.greeting-container h2 {
+  color: #2a6fb1; /* Dark blue for the greeting text */
+}
