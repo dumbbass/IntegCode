@@ -194,6 +194,11 @@ export class RegisterComponent {
         height: this.height,
         weight: this.weight,
         medications: this.medications,
+        birthplace: this.birthplace,
+        nationality: this.nationality,
+        religion: this.religion,
+        civilStatus: this.civilStatus,
+        age: this.age,
       };
 
       this.http.post('http://localhost/API/carexusapi/Backend/carexus.php?action=register', userData).subscribe(
