@@ -26,20 +26,12 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Dr. John Doe</td>
-              <td>2024-12-10</td>
-              <td>Regular Checkup</td>
+            <tr *ngFor="let appointment of appointments">
+              <td>{{ fetchDoctorName(appointment.doctor_id) }}</td>
+              <td>{{ appointment.appointment_date | date: 'fullDate' }}</td>
+              <td>{{ appointment.description }}</td>
               <td>
-                <button class="view-btn">View</button>
-              </td>
-            </tr>
-            <tr>
-              <td>Dr. Jane Smith</td>
-              <td>2024-12-12</td>
-              <td>Follow-up Consultation</td>
-              <td>
-                <button class="view-btn">View</button>
+                <button class="view-btn" (click)="viewAppointment(appointment.id)">View</button>
               </td>
             </tr>
           </tbody>
@@ -76,14 +68,14 @@
           </thead>
           <tbody>
             <tr>
-              <td>Dr. John Doe</td>
+              <td>Jeffry Olaes</td>
               <td>2024-11-15</td>
               <td>Consultation</td>
               <td>
                 <button
                   class="view-btn"
                   (click)="openModal(
-                    'Dr. John Doe',
+                    'Jeffry Olaes',
                     '2024-11-15',
                     'Consultation',
                     'Discussed symptoms and prescribed medication for hypertension.'
@@ -94,14 +86,14 @@
               </td>
             </tr>
             <tr>
-              <td>Dr. Jane Smith</td>
+              <td>Jeffry Olaes</td>
               <td>2024-10-10</td>
               <td>Checkup</td>
               <td>
                 <button
                   class="view-btn"
                   (click)="openModal(
-                    'Dr. Jane Smith',
+                    'Jeffry Olaes',
                     '2024-10-10',
                     'Checkup',
                     'Performed routine checkup; blood sugar levels monitored.'
