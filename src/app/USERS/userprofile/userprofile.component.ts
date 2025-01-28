@@ -16,6 +16,21 @@ export class UserprofileComponent implements OnInit {
   user: any = {};  
   userId: number | null = null;  // userId can be null initially
   errorMessage: string = '';
+  firstName: string = '';
+  lastName: string = '';
+  birthplace: string = '';
+  dob: string = '';
+  age: number | null = null;
+  gender: string = '';
+  nationality: string = '';
+  religion: string = '';
+  civilStatus: string = '';
+  height: number | null = null;
+  weight: number | null = null;
+  medications: string = '';
+  homeAddress: string = '';
+  contactNumber: string = '';
+  email: string = '';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 

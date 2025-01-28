@@ -28,6 +28,11 @@ export class RegisterComponent {
   termsAccepted: boolean = false;
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
+  birthplace: string = '';
+  nationality: string = '';
+  religion: string = '';
+  civilStatus: string = '';
+  age: number | null = null;
 
   // Validation errors
   errors: { [key: string]: string } = {};
