@@ -1,21 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Component, AfterViewInit, OnInit } from '@angular/core';
+import { Component, AfterViewInit } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import { SidenavComponent } from '../sidenav/sidenav.component';
-import { AuthService } from '../../auth.service';
-import { AppointmentService } from '../../services/appointment.service';
-import { DoctorService } from '../../services/doctor.service';
 
 Chart.register(...registerables);
-
-interface Appointment {
-  id: number;
-  doctor_id: number;
-  appointment_date: string; // or Date if you prefer
-  description: string;
-  // Add other fields as necessary
-}
 
 @Component({
   selector: 'app-dashboard',
@@ -24,12 +13,9 @@ interface Appointment {
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
 })
-export class DashboardComponent implements AfterViewInit, OnInit {
+export class DashboardComponent implements AfterViewInit {
   chart: Chart | null = null;
   showModal: boolean = false;
-  appointments: Appointment[] = [];
-  patientName: string = '';
-  doctors: { [key: number]: string } = {}; // Map of doctor_id to doctor_name
 
   // Updated modalData to include pastHistory
   modalData = {
@@ -49,22 +35,10 @@ export class DashboardComponent implements AfterViewInit, OnInit {
   };
 
   greetingMessage: string = ''; // Holds the greeting message
-
-  constructor(
-    private authService: AuthService,
-    private appointmentService: AppointmentService,
-    private doctorService: DoctorService
-  ) {}
+  patientName: string = 'John Doe'; // Replace with dynamic data as needed
 
   ngOnInit(): void {
-    if (!this.authService.isAuthenticated()) {
-      console.error('User is not authenticated');
-    } else {
-      this.patientName = this.authService.getUserName() || 'User';
-      this.setGreetingMessage();
-      this.fetchDoctors();
-      this.fetchAppointments();
-    }
+    this.setGreetingMessage();
   }
 
   ngAfterViewInit(): void {
@@ -179,51 +153,5 @@ export class DashboardComponent implements AfterViewInit, OnInit {
 
   closeModal(): void {
     this.showModal = false;
-  }
-
-  fetchAppointments(): void {
-    const patientId = this.authService.getPatientId();
-    if (patientId) {
-      this.appointmentService.getAppointmentsByPatientId(patientId).subscribe(
-        (response) => {
-          if (response.status) {
-            this.appointments = response.appointments.map((appointment: Appointment) => ({
-              ...appointment,
-              appointment_date: new Date(appointment.appointment_date)
-            }));
-          } else {
-            console.error('Failed to fetch appointments:', response.message);
-          }
-        },
-        (error) => {
-          console.error('Error fetching appointments:', error);
-        }
-      );
-    }
-  }
-
-  viewAppointment(appointmentId: number): void {
-    console.log('Viewing appointment with ID:', appointmentId);
-  }
-
-  fetchDoctors(): void {
-    this.doctorService.getDoctors().subscribe(
-      (response) => {
-        if (response.status) {
-          response.doctors.forEach((doctor: any) => {
-            this.doctors[doctor.id] = doctor.name; // Ensure doctor object has id and name
-          });
-          console.log('Doctors map:', this.doctors); // Log the doctors map
-        }
-      },
-      (error) => {
-        console.error('Error fetching doctors:', error);
-      }
-    );
-  }
-
-  fetchDoctorName(doctorId: number): string {
-    // Temporarily return "Jeffry Olaes" for all doctor IDs
-    return 'Jeffry Olaes';
   }
 }

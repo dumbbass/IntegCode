@@ -57,31 +57,48 @@ export class LoginComponent implements OnInit {
           if (response.user && response.user.id) {
             const { token, role, id } = response.user; // Extract token, role, and user id
 
-            // Fetch the patient's first name based on the patient_id
-            this.http.get<any>(this.patientsApiUrl).subscribe(
-              (patientsResponse) => {
-                const patients = patientsResponse.patients as { patient_id: number, id: number, firstname: string }[];
-                const patient = patients.find(p => p.id === id);
+            // Store the session data (token, role, and userId) in localStorage
+            this.authService.setSession(token, role, id);
 
-                if (patient) {
-                  const patientId = patient.patient_id;
-                  const firstName = patient.firstname;
+            // If user is a regular user, fetch their patient id
+            if (role === 'user') {
+              this.http.get<any>(this.patientsApiUrl).subscribe(
+                (patientsResponse) => {
+                  console.log('Fetched patients:', patientsResponse); // Log the response from patients API
+                  const patients = patientsResponse.patients as { patient_id: number, id: number, email: string }[];
 
-                  // Store the session data including the patient's first name
-                  this.authService.setSession(token, role, id, patientId, firstName);
-                  this.router.navigate(['/dashboard']); // Navigate to the dashboard
-                } else {
-                  this.authService.clearSession();
+                  console.log('Logged user id:', id);
+                  console.log('Patient list:', patients);
+
+                  // Find the patient based on id
+                  const patient = patients.find(p => p.id === id);
+                  console.log('Found patient:', patient);
+
+                  // If patient found, store patient_id
+                  if (patient) {
+                    console.log('Patient found:', patient); // Log the patient found
+                    const patientId = patient.patient_id;
+                    // Update session with patientId
+                    this.authService.setSession(token, role, id, patientId);
+                    this.router.navigate(['/dashboard']); // Navigate to user profile page
+                  } else {
+                    // Clear session if patient not found
+                    this.authService.clearSession();
+                    this.loginError = true;
+                    this.errorMessage = 'Patient not found for this user.';
+                    console.log('Patient not found for user id:', id); // Log the error case
+                  }
+                },
+                (error) => {
+                  console.log('Error fetching patients:', error);
                   this.loginError = true;
-                  this.errorMessage = 'Patient not found for this user.';
+                  this.errorMessage = 'An error occurred while fetching patient data.';
                 }
-              },
-              (error) => {
-                console.log('Error fetching patients:', error);
-                this.loginError = true;
-                this.errorMessage = 'An error occurred while fetching patient data.';
-              }
-            );
+              );
+            } else {
+              // Redirect admin to admin dashboard
+              this.router.navigate(['/admindashboard']);
+            }
           } else {
             alert('User ID not found in response');
           }

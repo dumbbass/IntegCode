@@ -4,7 +4,6 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class AuthService {
-  private userName: string | null = null;
 
   // Check if the user is authenticated
   isAuthenticated(): boolean {
@@ -12,16 +11,14 @@ export class AuthService {
   }
 
   // Set session data (authToken, userRole, userId, and optionally patientId)
-  setSession(token: string, role: string, userId: number, patientId?: number, firstName?: string): void {
-    localStorage.setItem('token', token);
-    localStorage.setItem('role', role);
+  setSession(authToken: string, role: string, userId: number, patient_id?: number): void {
+    localStorage.setItem('authToken', authToken);
+    localStorage.setItem('userRole', role);
     localStorage.setItem('userId', userId.toString());
-    if (patientId) {
-      localStorage.setItem('patientId', patientId.toString());
-    }
-    if (firstName) {
-      this.userName = firstName;
-      localStorage.setItem('userName', firstName);
+
+    // Store patientId if it's provided
+    if (patient_id !== undefined) {
+      localStorage.setItem('patientId', patient_id.toString());
     }
   }
 
@@ -40,11 +37,6 @@ export class AuthService {
   getPatientId(): number | null {
     const patientId = localStorage.getItem('patientId');
     return patientId ? parseInt(patientId, 10) : null;  // Return patient ID or null if not found
-  }
-
-  // Get the stored user name
-  getUserName(): string | null {
-    return this.userName || localStorage.getItem('userName');
   }
 
   // Clear session (logout)
