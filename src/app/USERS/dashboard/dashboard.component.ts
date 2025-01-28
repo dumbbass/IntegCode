@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Component, AfterViewInit } from '@angular/core';
-import { Chart, registerables } from 'chart.js';
+// import { Chart, registerables } from 'chart.js';
 import { SidenavComponent } from '../sidenav/sidenav.component';
 
-Chart.register(...registerables);
+// Chart.register(...registerables);
 
 @Component({
     selector: 'app-dashboard',
@@ -13,7 +13,7 @@ Chart.register(...registerables);
     styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements AfterViewInit {
-  chart: Chart | null = null;
+  // chart: Chart | null = null;
   showModal: boolean = false;
 
   // Updated modalData to include pastHistory
@@ -44,7 +44,7 @@ export class DashboardComponent implements AfterViewInit {
     const canvas = document.getElementById('medicalReportsChart') as HTMLCanvasElement;
 
     if (canvas) {
-      this.initializeChart('monthly');
+      // this.initializeChart('monthly');
     } else {
       console.error('Canvas element not found!');
     }
@@ -63,46 +63,46 @@ export class DashboardComponent implements AfterViewInit {
 
   onFilterChange(event: Event): void {
     const filter = (event.target as HTMLSelectElement).value;
-    this.updateChart(filter);
+    // this.updateChart(filter);
   }
 
-  initializeChart(filter: string): void {
-    const ctx = document.getElementById('medicalReportsChart') as HTMLCanvasElement;
+  // initializeChart(filter: string): void {
+  //   const ctx = document.getElementById('medicalReportsChart') as HTMLCanvasElement;
 
-    if (ctx) {
-      const data = this.getFilteredData(filter);
+  //   if (ctx) {
+  //     const data = this.getFilteredData(filter);
 
-      this.chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: data.labels,
-          datasets: [
-            {
-              label: 'Appointments',
-              data: data.values,
-              borderColor: 'rgba(75, 192, 192, 1)',
-              backgroundColor: 'rgba(75, 192, 192, 0.2)',
-              fill: true,
-              tension: 0.4,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-        },
-      });
-    }
-  }
+  //     this.chart = new Chart(ctx, {
+  //       type: 'line',
+  //       data: {
+  //         labels: data.labels,
+  //         datasets: [
+  //           {
+  //             label: 'Appointments',
+  //             data: data.values,
+  //             borderColor: 'rgba(75, 192, 192, 1)',
+  //             backgroundColor: 'rgba(75, 192, 192, 0.2)',
+  //             fill: true,
+  //             tension: 0.4,
+  //           },
+  //         ],
+  //       },
+  //       options: {
+  //         responsive: true,
+  //         maintainAspectRatio: false,
+  //       },
+  //     });
+  //   }
+  // }
 
-  updateChart(filter: string): void {
-    if (this.chart) {
-      const data = this.getFilteredData(filter);
-      this.chart.data.labels = data.labels;
-      this.chart.data.datasets[0].data = data.values;
-      this.chart.update();
-    }
-  }
+  // updateChart(filter: string): void {
+  //   if (this.chart) {
+  //     const data = this.getFilteredData(filter);
+  //     this.chart.data.labels = data.labels;
+  //     this.chart.data.datasets[0].data = data.values;
+  //     this.chart.update();
+  //   }
+  // }
 
   getFilteredData(filter: string): { labels: string[]; values: number[] } {
     switch (filter) {

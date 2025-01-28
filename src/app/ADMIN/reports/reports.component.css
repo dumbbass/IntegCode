@@ -1,0 +1,99 @@
+/* Reports Management Content Styles */
+main.appointments-content {
+    margin-left: 16rem; /* Sidebar width (64px * 4) */
+    padding-top: 20px;
+    padding-right: 2rem; /* Optional: Add padding on the right */
+}
+
+/* Title Styles */
+h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px 16px;
+    border: 1px solid #e2e2e2;
+}
+
+th {
+    background-color: #f8f8f8;
+    font-weight: 600;
+}
+
+td {
+    text-align: left;
+}
+
+/* Button Styles */
+button {
+    border: 2px solid transparent; /* Transparent border for smooth transitions */
+    border-radius: 8px; /* Rounded corners */
+    padding: 8px 16px; /* Add some padding for a more substantial button size */
+    cursor: pointer;
+    transition: all 0.3s ease; /* Smooth transition for hover effects */
+    font-weight: 500;
+    font-size: 14px; /* Standard font size */
+}
+
+/* View Button */
+button.text-blue-500 {
+    color: #ffffff; /* Blue text color */
+    border-color: #3B82F6; /* Blue border */
+    background-color: #3B82F6; /* Blue background */
+}
+
+button.text-blue-500:hover {
+    color: #ffffff; /* White text on hover */
+    background-color: #2563EB; /* Darker blue background */
+    transform: translateY(-2px); /* Slightly lift the button */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Slight shadow for depth */
+}
+
+/* Resubmit Button */
+button.text-yellow-500 {
+    color: #ffffff; /* Yellow text color */
+    border-color: #0bf522; /* Yellow border */
+    background-color: #0bf522; /* Yellow background */
+}
+
+button.text-yellow-500:hover {
+    color: #ffffff; /* White text on hover */
+    background-color: #30D731; /* Darker yellow background */
+    transform: translateY(-2px); /* Slightly lift the button */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Slight shadow for depth */
+}
+
+/* Reject Button */
+button.text-red-500 {
+    color: #ffffff; /* Red text color */
+    border-color: #EF4444; /* Red border */
+    background-color: #EF4444; /* Red background */
+}
+
+button.text-red-500:hover {
+    color: #ffffff; /* White text on hover */
+    background-color: #D32F2F; /* Darker red background */
+    transform: translateY(-2px); /* Slightly lift the button */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Slight shadow for depth */
+}
+
+/* Add a subtle shadow for buttons */
+button.text-blue-500, 
+button.text-yellow-500, 
+button.text-red-500 {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+/* Remove the underline on hover for general button state */
+button:hover {
+    text-decoration: none;
+}

@@ -1,0 +1,63 @@
+
+<!-- Reports Management Content -->
+<main class="appointments-content pt-20 px-8">
+    <app-adminsidenav></app-adminsidenav>
+    <h2 class="text-2xl font-semibold mb-4">Reports Management</h2>
+    
+    <!-- Summary View Section -->
+    <section class="mb-8">
+        <h3 class="text-xl font-semibold mb-2">Summary View</h3>
+        <div class="bg-white p-4 rounded-lg shadow-md">
+            <p>Total Patients: {{ totalPatients }}</p>
+            <p>Appointments This Week: {{ appointmentsThisWeek }}</p>
+            <p>Appointments This Month: {{ appointmentsThisMonth }}</p>
+            <p>Total Appointments: {{ totalAppointments }}</p>
+            <p>Missed Appointments: {{ missedAppointments }}</p>
+        </div>
+    </section>
+
+    <!-- Export Data Section -->
+    <section class="mb-8">
+        <h3 class="text-xl font-semibold mb-2">Export Data</h3>
+        <div class="bg-white p-4 rounded-lg shadow-md">
+            <button class="bg-[#6A42C2] text-white p-2 rounded-lg mr-2" (click)="exportData('patients')">Export Patients (CSV)</button>
+            <button class="bg-[#6A42C2] text-white p-2 rounded-lg" (click)="exportData('appointments')">Export Appointments (CSV)</button>
+        </div>
+    </section>
+
+    <!-- Existing Reports List Table -->
+    <table class="min-w-full table-auto border-collapse bg-white">
+        <thead>
+            <tr class="bg-gray-100">
+                <th class="px-4 py-2 text-left border-b">Report Title</th>
+                <th class="px-4 py-2 text-left border-b">Submission Date</th>
+                <th class="px-4 py-2 text-left border-b">Status</th>
+                <th class="px-4 py-2 text-left border-b">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="px-4 py-2 border-b">Skincare for Different Skin Types</td>
+                <td class="px-4 py-2 border-b">06/07/2024</td>
+                <td class="px-4 py-2 border-b">Under Review</td>
+                <td class="px-4 py-2 border-b">
+                    <button class="text-blue-500 hover:text-blue-700">View</button>
+                    <button class="text-yellow-500 hover:text-yellow-700 ml-2">Resubmit</button>
+                    <button class="text-red-500 hover:text-red-700 ml-2">Reject</button>
+                </td>
+            </tr>
+            <tr>
+                <td class="px-4 py-2 border-b">Hydration in Skincare Products</td>
+                <td class="px-4 py-2 border-b">01/01/2024</td>
+                <td class="px-4 py-2 border-b">Approved</td>
+                <td class="px-4 py-2 border-b">
+                    <button class="text-blue-500 hover:text-blue-700">View</button>
+                    <button class="text-yellow-500 hover:text-yellow-700 ml-2">Resubmit</button>
+                    <button class="text-red-500 hover:text-red-700 ml-2">Reject</button>
+                </td>
+            </tr>
+            
+            <!-- Add more report rows here -->
+        </tbody>
+    </table>
+</main>
