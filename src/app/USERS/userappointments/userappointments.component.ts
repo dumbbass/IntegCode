@@ -5,14 +5,18 @@ import { DoctorService } from '../services/doctor.service';
 import { PatientService } from '../services/patient.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import {} from '@angular/common/http';
 import { SidenavComponent } from '../sidenav/sidenav.component';
 import { isWithinInterval, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 
 @Component({
   selector: 'app-userappointments',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, SidenavComponent, FormsModule],
+  imports: [CommonModule, 
+// TODO: `HttpClientModule` should not be imported into a component directly.
+// Please refactor the code to add `provideHttpClient()` call to the provider list in the
+// application bootstrap logic and remove the `HttpClientModule` import from this component.
+HttpClientModule, SidenavComponent, FormsModule],
   templateUrl: './userappointments.component.html',
   styleUrls: ['./userappointments.component.css']
 })
