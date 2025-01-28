@@ -26,6 +26,18 @@
               <i class="fas fa-archive"></i> Archive
           </button>
       </li>
+
+      <li class="sidenav-item">
+        <button (click)="navigateTo('appointment')" class="sidenav-link">
+            <i class="fas fa-archive"></i> Appointments
+        </button>
+    </li>
+
+    <li class="sidenav-item">
+        <button (click)="navigateTo('report')" class="sidenav-link">
+            <i class="fas fa-archive"></i> Reports
+        </button>
+    </li>
       
       <li class="sidenav-item logout">
         <button (click)="showLogoutModal()" class="sidenav-link">
