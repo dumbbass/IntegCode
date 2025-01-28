@@ -22,7 +22,7 @@
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 40px;
+  margin-top: 10px;
 }
 
 /* General styling for the containers */
@@ -123,7 +123,7 @@ h2 {
   
   /* Strong Tags: Light Grey Color, Lightweight Font, Spacing */
   strong {
-    color: #aaa; /* Light grey color */
+    color: #000000; /* Light grey color */
     font-weight: 300; /* Lightweight font */
     font-size: 16px;
     display: block; /* Makes the <strong> appear on a separate line */
@@ -223,4 +223,34 @@ button {
 
 button:hover {
   background-color: #45a049;
+}
+.patient-history-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.patient-history-container h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.history-note table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.history-note td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  vertical-align: top;
+}
+
+.history-note td:first-child {
+  font-weight: bold;
+  width: 30%;
+  background-color: #f9f9f9;
 }
