@@ -11,11 +11,7 @@ import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameDay, i
 
 @Component({
     selector: 'app-userappointments',
-    imports: [CommonModule,
-        // TODO: `HttpClientModule` should not be imported into a component directly.
-        // Please refactor the code to add `provideHttpClient()` call to the provider list in the
-        // application bootstrap logic and remove the `HttpClientModule` import from this component.
-        HttpClientModule, SidenavComponent, FormsModule],
+    imports: [CommonModule, SidenavComponent, FormsModule],
     templateUrl: './userappointments.component.html',
     styleUrls: ['./userappointments.component.css']
 })
