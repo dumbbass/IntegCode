@@ -1,16 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpClientModule } from '@angular/common/http'; // Import HttpClientModule
+import { HttpClient } from '@angular/common/http'; // Import HttpClientModule
 import { CommonModule } from '@angular/common';
 import { SidenavComponent } from '../sidenav/sidenav.component';
 import { AuthService } from '../../auth.service';  // Import the AuthService
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-userprofile',
-  standalone: true,
-  imports: [SidenavComponent, CommonModule, HttpClientModule, FormsModule],  // Include HttpClientModule and FormsModule here
-  templateUrl: './userprofile.component.html',
-  styleUrls: ['./userprofile.component.css']
+    selector: 'app-userprofile',
+    imports: [SidenavComponent, CommonModule,
+        // TODO: `HttpClientModule` should not be imported into a component directly.
+        // Please refactor the code to add `provideHttpClient()` call to the provider list in the
+        // application bootstrap logic and remove the `HttpClientModule` import from this component.
+        HttpClientModule, FormsModule], // Include HttpClientModule and FormsModule here
+    templateUrl: './userprofile.component.html',
+    styleUrls: ['./userprofile.component.css']
 })
 export class UserprofileComponent implements OnInit {
   user: any = {};  

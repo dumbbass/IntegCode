@@ -7,11 +7,10 @@ import { SidenavComponent } from '../sidenav/sidenav.component';
 Chart.register(...registerables);
 
 @Component({
-  selector: 'app-dashboard',
-  standalone: true,
-  imports: [SidenavComponent, CommonModule, RouterModule],
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css'],
+    selector: 'app-dashboard',
+    imports: [SidenavComponent, CommonModule, RouterModule],
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements AfterViewInit {
   chart: Chart | null = null;

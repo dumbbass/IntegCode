@@ -5,15 +5,14 @@ import { AdminsidenavComponent } from '../adminsidenav/adminsidenav.component';
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameDay } from 'date-fns';
 
 @Component({
-  selector: 'app-schedule',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    AdminsidenavComponent
-  ],
-  templateUrl: './schedule.component.html',
-  styleUrl: './schedule.component.css'
+    selector: 'app-schedule',
+    imports: [
+        CommonModule,
+        RouterModule,
+        AdminsidenavComponent
+    ],
+    templateUrl: './schedule.component.html',
+    styleUrl: './schedule.component.css'
 })
 export class ScheduleComponent {
   currentMonth: Date = new Date();

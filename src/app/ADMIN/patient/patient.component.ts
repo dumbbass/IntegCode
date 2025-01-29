@@ -7,16 +7,15 @@ import { FormsModule } from '@angular/forms';  // Import FormsModule
 import { ArchiveService } from '../archive/archive.service';
 
 @Component({
-  selector: 'app-patient',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    AdminsidenavComponent,
-    FormsModule  // Add FormsModule here
-  ],
-  templateUrl: './patient.component.html',
-  styleUrls: ['./patient.component.css']
+    selector: 'app-patient',
+    imports: [
+        CommonModule,
+        RouterModule,
+        AdminsidenavComponent,
+        FormsModule // Add FormsModule here
+    ],
+    templateUrl: './patient.component.html',
+    styleUrls: ['./patient.component.css']
 })
 export class PatientComponent implements OnInit {
   users: any[] = [];

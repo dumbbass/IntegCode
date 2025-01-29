@@ -18,16 +18,15 @@ interface ArchiveItem {
 }
 
 @Component({
-  selector: 'app-archive',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    AdminsidenavComponent,
-    FormsModule
-  ],
-  templateUrl: './archive.component.html',
-  styleUrls: ['./archive.component.css']
+    selector: 'app-archive',
+    imports: [
+        CommonModule,
+        RouterModule,
+        AdminsidenavComponent,
+        FormsModule
+    ],
+    templateUrl: './archive.component.html',
+    styleUrls: ['./archive.component.css']
 })
 export class ArchiveComponent implements OnInit {
   archiveItems: ArchiveItem[] = [];
