@@ -5,9 +5,7 @@ import { DoctorService } from '../services/doctor.service';
 import { PatientService } from '../services/patient.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {} from '@angular/common/http';
 import { SidenavComponent } from '../sidenav/sidenav.component';
-import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameDay, isWithinInterval } from 'date-fns';
 
 @Component({
     selector: 'app-userappointments',
@@ -28,6 +26,18 @@ export class UserappointmentsComponent implements OnInit {
   selectedDates: Date[] = [];
   weekDays: string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   daysInMonth: Date[] = [];
+
+  availableDates: Date[] = [new Date(), new Date(new Date().setDate(new Date().getDate() + 2)), new Date(new Date().setDate(new Date().getDate() + 5))];
+  availableTimes: string[] = [];
+  selectedDate: Date | null = null;
+  selectedTime: string | null = null;
+
+  // Mock availability for specific dates
+  timeSlots: { [key: string]: string[] } = {
+    '2025-01-29': ['09:00 AM', '11:00 AM', '02:00 PM', '04:00 PM'],
+    '2025-01-31': ['10:00 AM', '01:00 PM', '03:30 PM', '05:00 PM'],
+    '2025-02-03': ['08:30 AM', '12:00 PM', '03:00 PM']
+  };
 
   constructor(
     private doctorService: DoctorService,
@@ -86,20 +96,16 @@ export class UserappointmentsComponent implements OnInit {
 
   bookAppointment(): void {
     const patientId = this.authService.getPatientId();
-    if (!this.selectedDoctorId || !this.appointmentDate || !this.appointmentPurpose || !patientId) {
+    if (!this.selectedDoctorId || !this.selectedDate || !this.selectedTime || !this.appointmentPurpose || !patientId) {
       alert('Please fill in all the required fields');
-      return;
-    }
-
-    if (this.isAppointmentLimitReached(this.appointmentDate)) {
-      this.showLimitModal = true;
       return;
     }
 
     const appointmentData = {
       patient_id: patientId,
       doctor_id: +this.selectedDoctorId,
-      appointment_date: this.appointmentDate,
+      appointment_date: this.selectedDate.toISOString().split('T')[0],
+      appointment_time: this.selectedTime,
       purpose: this.appointmentPurpose,
     };
 
@@ -109,6 +115,7 @@ export class UserappointmentsComponent implements OnInit {
           alert('Appointment scheduled successfully');
           this.showAppointmentForm = false;
           this.fetchAppointments();
+          this.resetSelections();
         } else {
           alert('Error scheduling appointment: ' + response.message);
         }
@@ -120,75 +127,65 @@ export class UserappointmentsComponent implements OnInit {
     );
   }
 
-  isAppointmentLimitReached(appointmentDate: string): boolean {
-    const dateToCheck = new Date(appointmentDate);
-
-    const appointmentsThisWeek = this.appointments.filter(appointment =>
-      isWithinInterval(new Date(appointment.appointment_date), {
-        start: startOfWeek(new Date()),
-        end: endOfWeek(new Date())
-      })
-    );
-
-    const appointmentsThisMonth = this.appointments.filter(appointment =>
-      isWithinInterval(new Date(appointment.appointment_date), {
-        start: startOfMonth(new Date()),
-        end: endOfMonth(new Date())
-      })
-    );
-
-    return appointmentsThisWeek.length >= 2 || appointmentsThisMonth.length >= 8;
-  }
-
-  closeLimitModal(): void {
-    this.showLimitModal = false;
-  }
-
-  prevMonth(): void {
-    this.currentMonth = new Date(this.currentMonth.setMonth(this.currentMonth.getMonth() - 1));
-    this.generateCalendar();
-  }
-
-  nextMonth(): void {
-    this.currentMonth = new Date(this.currentMonth.setMonth(this.currentMonth.getMonth() + 1));
-    this.generateCalendar();
+  resetSelections(): void {
+    this.selectedDate = null;
+    this.selectedTime = null;
+    this.availableTimes = [];
   }
 
   generateCalendar(): void {
-    const start = startOfWeek(startOfMonth(this.currentMonth));
-    const end = endOfWeek(endOfMonth(this.currentMonth));
+    const year = this.currentMonth.getFullYear();
+    const month = this.currentMonth.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+
     this.daysInMonth = [];
-
-    let day = start;
-    while (day <= end) {
-      this.daysInMonth.push(new Date(day));
-      day = addDays(day, 1);
+    for (let date = new Date(firstDay); date <= lastDay; date.setDate(date.getDate() + 1)) {
+      this.daysInMonth.push(new Date(date));
     }
   }
 
-  toggleDate(date: Date): void {
-    const index = this.selectedDates.findIndex((d) => isSameDay(d, date));
-    if (index > -1) {
-      this.selectedDates.splice(index, 1);
+  goToPreviousMonth(): void {
+    const year = this.currentMonth.getFullYear();
+    const month = this.currentMonth.getMonth();
+    this.currentMonth = new Date(year, month - 1, 1);
+    this.generateCalendar();
+  }
+
+  goToNextMonth(): void {
+    const year = this.currentMonth.getFullYear();
+    const month = this.currentMonth.getMonth();
+    this.currentMonth = new Date(year, month + 1, 1);
+    this.generateCalendar();
+  }
+
+  selectDate(date: Date): void {
+    if (this.isAvailableDate(date)) {
+      this.selectedDate = date;
+      const dateKey = date.toISOString().split('T')[0];
+      this.availableTimes = this.timeSlots[dateKey] || [];
+      this.selectedTime = null; // Reset selected time
+    }
+  }
+
+  selectTime(time: string): void {
+    this.selectedTime = time;
+  }
+
+  isAvailableDate(date: Date): boolean {
+    return this.availableDates.some((availableDate) => availableDate.toDateString() === date.toDateString());
+  }
+
+  isSelectedDate(date: Date): boolean {
+    return this.selectedDates.some((selectedDate) => selectedDate.toDateString() === date.toDateString());
+  }
+
+  confirmAppointment(): void {
+    if (this.selectedDate && this.selectedTime) {
+      alert(`Appointment Confirmed!\nDate: ${this.selectedDate.toDateString()}\nTime: ${this.selectedTime}`);
+      this.resetSelections();
     } else {
-      this.selectedDates.push(date);
+      alert('Please select a valid date and time.');
     }
-  }
-
-  isSelected(date: Date): boolean {
-    return this.selectedDates.some((d) => isSameDay(d, date));
-  }
-
-  getWeeks(): Date[][] {
-    return this.daysInMonth.reduce((weeks, day, index) => {
-      if (index % 7 === 0) weeks.push([]);
-      weeks[weeks.length - 1].push(day);
-      return weeks;
-    }, [] as Date[][]);
-  }
-
-  isToday(date: Date): boolean {
-    const today = new Date();
-    return isSameDay(date, today);
   }
 }
