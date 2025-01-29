@@ -31,6 +31,9 @@ export class UserappointmentsComponent implements OnInit {
   availableTimes: string[] = [];
   selectedDate: Date | null = null;
   selectedTime: string | null = null;
+  isModalOpen: boolean = false; // Modal visibility state
+  modalDate: Date | null = null; // Date selected for the modal
+  modalTimes: string[] = []; // Available times for the selected date
 
   // Mock availability for specific dates
   timeSlots: { [key: string]: string[] } = {
@@ -187,5 +190,24 @@ export class UserappointmentsComponent implements OnInit {
     } else {
       alert('Please select a valid date and time.');
     }
+  }
+
+  openModal(date: Date): void {
+    const dateKey = date.toISOString().split('T')[0];
+    this.modalTimes = this.timeSlots[dateKey] || [];
+    this.modalDate = date;
+    this.isModalOpen = true; // Open the modal
+  }
+
+  closeModal(): void {
+    this.isModalOpen = false; // Close the modal
+    this.modalDate = null;
+    this.modalTimes = [];
+  }
+
+  selectTimeFromModal(time: string): void {
+    this.selectedDate = this.modalDate;
+    this.selectedTime = time;
+    this.isModalOpen = false; // Close the modal after selection
   }
 }

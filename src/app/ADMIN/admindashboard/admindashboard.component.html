@@ -14,13 +14,7 @@
       </div>
     </div>
 
-    <div class="admindashboard-list-container">
-      <p>Are you available for Scheduling? (Active*) </p>
-          <button class="view-btn">Active</button>
-          <button class="delete-btn">Not Available</button>
 
-    </div>
-    
     <div class="admindashboard-list-container">
       <h2>Current Patients List in your Today's Queue</h2>
       <table class="admindashboard-table">
@@ -29,7 +23,6 @@
             <th>Name</th>
             <th>Gender</th>
             <th>Status</th>
-            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -37,78 +30,25 @@
             <td>John Doe</td>
             <td>Male</td>
             <td>Pending</td>
-            <td>
-              <div class="action-buttons">
-                <div class="book-appointment-btn-container">
-                  <button class="book-appointment-btn" (click)="showAppointmentForm = true">Resched</button>
-              </div>
-
-                <a [routerLink]="['/information']"><button class="view-btn">View Information</button></a>
-
-                <div class="book-appointment-btn-container">
-                  <button class="book-appointment-btn" (click)="showAppointmentTime = true">Accept</button>
-              </div>
-              </div>
-            </td>
           </tr>
-          
-          <div *ngIf="showAppointmentTime" class="appointment-modal">
-            <div class="appointment-form-container">
-                <!-- Close Button (X) -->
-                <button class="close-modal-btn" (click)="showAppointmentTime = false">X</button>
+        </tbody>
+        </table>
+        </div>
 
-                <h2 class="header-book">Select Time</h2>
-
-                <!-- Calendar Box for Date and Time -->
-                <div class="appointment-time-container">
-                    <label for="appointment-date-time">Select Time</label>
-                    <input type="time" id="appointment-time" class="appointment-time" />
-                    <div class="appointment-submit-container">
-                      <button type="submit" class="submit-btn">Submit Appointment</button>
-                    </div>
-                </div>
+          <div class="dashboard-reports-container">
+            <h2>Appointment Medical History</h2>
+            <div class="filter-container">
+              <label for="filter">Filter:</label>
+              <select id="filter" (change)="onFilterChange($event)">
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly" selected>Monthly</option>
+                <option value="yearly">Yearly</option>
+              </select>
+            </div>
+            <div class="chart-container">
+              <canvas #medicalReportsChart></canvas>
             </div>
           </div>
 
-          <div *ngIf="showAppointmentForm" class="appointment-modal">
-            <div class="appointment-form-container">
-                <!-- Close Button (X) -->
-                <button class="close-modal-btn" (click)="showAppointmentForm = false">X</button>
 
-                <h2 class="header-book">Book an Appointment</h2>
-
-                <!-- Calendar Box for Date and Time -->
-                <div class="appointment-date-time-container">
-                    <label for="appointment-date-time">Select Date and Time</label>
-                    <input type="datetime-local" id="appointment-date-time" class="appointment-date-time" />
-                </div>
-
-                <div class="appointment-purpose-container">
-                    <label for="appointment-purpose">Purpose of Appointment</label>
-                    <select id="appointment-purpose" class="appointment-purpose" onchange="toggleOtherReason()">
-                        <option value="checkup">Check-up</option>
-                        <option value="consultation">Consultation</option>
-                        <option value="emergency">Emergency</option>
-                        <option value="followup">Follow-up</option>
-                        <option value="vaccination">Vaccination</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-
-                <!-- Text input for 'Other' reason -->
-                <div id="other-reason-container" class="appointment-other-reason-container" style="display:none;">
-                    <label for="other-reason">Please specify the reason</label>
-                    <input type="text" id="other-reason" class="appointment-other-reason" placeholder="Enter your reason" />
-                </div>
-
-                <div class="appointment-submit-container">
-                    <button type="submit" class="submit-btn">Submit Appointment</button>
-                </div>
-            </div>
-        </div>
-
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>

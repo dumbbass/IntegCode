@@ -23,7 +23,7 @@
         <h2 class="calendar-title">{{ currentMonth | date: 'MMMM yyyy' }}</h2>
         <button (click)="nextMonth()" class="btn">&gt;</button>
       </div>
-    
+
       <table class="calendar-table">
         <thead>
           <tr>
@@ -32,26 +32,61 @@
         </thead>
         <tbody>
           <tr *ngFor="let week of getWeeks()">
-            <td *ngFor="let day of week" 
-                class="calendar-cell" 
+            <td *ngFor="let day of week"
+                class="calendar-cell"
                 [class.selected]="isSelected(day)"
                 [class.today]="isToday(day)"
-                (click)="toggleDate(day)">
+                (click)="openModal(day)">
               {{ day.getDate() }}
             </td>
           </tr>
         </tbody>
       </table>
-    
+
       <div class="selected-dates">
-        <h3>Selected Dates:</h3>
+        <h3>Available Dates and Times:</h3>
         <ul>
-          <li *ngFor="let date of selectedDates">{{ date | date: 'MMMM d, yyyy' }}</li>
+          <li *ngFor="let entry of availability; let i = index">
+            <strong>{{ entry.date | date: 'MMMM d, yyyy' }}</strong>:
+            <span *ngFor="let time of entry.times; let last = last">
+              {{ formatTime(time) }}<span *ngIf="!last">, </span>
+            </span>
+            <button (click)="updateAvailability(i)">Update</button>
+            <button (click)="deleteAvailability(i)">Delete</button>
+          </li>
         </ul>
       </div>
+
     </div>
-    
+
+    <!-- Modal -->
+<div class="modal" *ngIf="isModalOpen">
+  <div class="modal-content">
+    <span class="close-btn" (click)="closeModal()">&times;</span>
+    <h2 class="modal-title">Set Available Times for {{ modalDate | date: 'fullDate' }}</h2>
+
+    <div class="time-input-container">
+      <input type="time" [(ngModel)]="newTime" class="time-input" />
+      <button class="btn add-time-btn" (click)="addTime()">Add Time</button>
+    </div>
+
+    <div class="time-list">
+      <h3>Times:</h3>
+      <ul>
+        <li *ngFor="let time of modalTimes">
+          {{ formatTime(time) }}
+          <button class="btn remove-time-btn" (click)="removeTime(time)">Remove</button>
+        </li>
+      </ul>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn save-btn" (click)="saveAvailability()">Save Availability</button>
+    </div>
+  </div>
+</div>
 
 
   </div>
 </div>
+

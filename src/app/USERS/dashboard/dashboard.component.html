@@ -46,22 +46,6 @@
         </table>
       </div>
 
-      <div class="dashboard-reports-container">
-        <h2>Appointment Medical History</h2>
-        <div class="filter-container">
-          <label for="filter">Filter:</label>
-          <select id="filter" (change)="onFilterChange($event)">
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly" selected>Monthly</option>
-            <option value="yearly">Yearly</option>
-          </select>
-        </div>
-        <div class="chart-container">
-          <canvas id="medicalReportsChart"></canvas>
-        </div>
-      </div>
-
       <!-- Background History Section -->
       <div class="background-history-container">
         <h3>Background History</h3>
@@ -126,10 +110,10 @@
           <p><strong>Injuries and Accidents:</strong> {{ modalData.pastHistory.injuriesAndAccidents }}</p>
           <p><strong>Special Needs:</strong> {{ modalData.pastHistory.specialNeeds }}</p>
           <p><strong>Blood Transfusion:</strong> {{ modalData.pastHistory.bloodTransfusion }}</p>
-      
+
           <h3>Present History</h3>
           <p>{{ modalData.description }}</p>
-      
+
           <button class="close-btn" (click)="closeModal()">Close</button>
         </div>
       </div>
