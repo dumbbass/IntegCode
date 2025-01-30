@@ -100,33 +100,33 @@ export class UserappointmentsComponent implements OnInit {
   bookAppointment(): void {
     const patientId = this.authService.getPatientId();
     if (!this.selectedDoctorId || !this.selectedDate || !this.selectedTime || !this.appointmentPurpose || !patientId) {
-      alert('Please fill in all the required fields');
-      return;
+        alert('Please fill in all the required fields');
+        return;
     }
 
     const appointmentData = {
-      patient_id: patientId,
-      doctor_id: +this.selectedDoctorId,
-      appointment_date: this.selectedDate.toISOString().split('T')[0],
-      appointment_time: this.selectedTime,
-      purpose: this.appointmentPurpose,
+        patient_id: patientId,
+        doctor_id: +this.selectedDoctorId,
+        appointment_date: this.selectedDate.toISOString().split('T')[0],
+        appointment_time: this.selectedTime,
+        purpose: this.appointmentPurpose,
     };
 
     this.appointmentService.scheduleAppointment(appointmentData).subscribe(
-      (response) => {
-        if (response.status) {
-          alert('Appointment scheduled successfully');
-          this.showAppointmentForm = false;
-          this.fetchAppointments();
-          this.resetSelections();
-        } else {
-          alert('Error scheduling appointment: ' + response.message);
+        (response) => {
+            if (response.status) {
+                alert('Appointment scheduled successfully');
+                this.showAppointmentForm = false;
+                this.fetchAppointments();
+                this.resetSelections();
+            } else {
+                alert('Error scheduling appointment: ' + response.message);
+            }
+        },
+        (error) => {
+            alert('There was an error scheduling your appointment.');
+            console.error('Error scheduling appointment:', error);
         }
-      },
-      (error) => {
-        alert('There was an error scheduling your appointment.');
-        console.error('Error scheduling appointment:', error);
-      }
     );
   }
 
@@ -184,11 +184,10 @@ export class UserappointmentsComponent implements OnInit {
   }
 
   confirmAppointment(): void {
-    if (this.selectedDate && this.selectedTime) {
-      alert(`Appointment Confirmed!\nDate: ${this.selectedDate.toDateString()}\nTime: ${this.selectedTime}`);
-      this.resetSelections();
+    if (this.selectedDate && this.selectedTime && this.selectedDoctorId && this.appointmentPurpose) {
+        this.bookAppointment();
     } else {
-      alert('Please select a valid date and time.');
+        alert('Please fill in all the required fields');
     }
   }
 
