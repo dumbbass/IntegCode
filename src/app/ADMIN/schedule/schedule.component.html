@@ -8,7 +8,7 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Minimal content -->
     <div class="schedule-container">
       <div class="calendar-header">
@@ -61,14 +61,14 @@
         <div class="selected-count">
           {{ selectedDates.length }} dates selected
         </div>
-        
+
         <div class="time-input-container">
           <input type="time" [(ngModel)]="newTime" class="time-input" />
           <button class="btn add-time-btn" (click)="addBulkTime()" [disabled]="!newTime">
             Add Time
           </button>
         </div>
-        
+
         <div *ngIf="bulkTimes.length > 0" class="bulk-times-list">
           <h4>Selected Times:</h4>
           <ul>
@@ -117,7 +117,7 @@
         <div class="preset-times">
           <h3>Quick Add:</h3>
           <div class="preset-buttons">
-            <button *ngFor="let time of presetTimes" 
+            <button *ngFor="let time of presetTimes"
                     class="btn preset-btn"
                     (click)="addPresetTime(time)">
               {{ formatTime(time) }}

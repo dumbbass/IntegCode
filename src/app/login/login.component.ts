@@ -6,10 +6,10 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../auth.service';
 
 @Component({
-    selector: 'app-login',
-    imports: [CommonModule, RouterModule, FormsModule,],
-    templateUrl: './login.component.html',
-    styleUrls: ['./login.component.css']
+  selector: 'app-login',
+  imports: [CommonModule, RouterModule, FormsModule],
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
   loginData = {
@@ -22,6 +22,7 @@ export class LoginComponent implements OnInit {
 
   private apiUrl = 'http://localhost/API/carexusapi/backend/carexus.php?action=login';
   private patientsApiUrl = 'http://localhost/API/carexusapi/backend/carexus.php?action=getPatients';
+  private doctorsApiUrl = 'http://localhost/API/carexusapi/backend/carexus.php?action=getDoctors';  // New endpoint for doctors
 
   constructor(
     private http: HttpClient,
@@ -94,9 +95,41 @@ export class LoginComponent implements OnInit {
                   this.errorMessage = 'An error occurred while fetching patient data.';
                 }
               );
-            } else {
-              // Redirect admin to admin dashboard
-              this.router.navigate(['/admindashboard']);
+            } else if (role === 'doctor' || role === 'admin') {
+              // If user is a doctor, fetch doctor details
+              this.http.get<any>(this.doctorsApiUrl).subscribe(
+                (doctorsResponse) => {
+                  console.log('Fetched doctors:', doctorsResponse); // Log the response from doctors API
+                  const doctors = doctorsResponse.doctors as { doctor_id: number, user_id: number, email: string }[];
+
+                  console.log('Logged doctor id:', id);
+                  console.log('Doctor list:', doctors);
+
+                  // Find the doctor based on user_id
+                  const doctor = doctors.find(d => d.user_id === id);
+                  console.log('Found doctor:', doctor);
+
+                  // If doctor found, store doctor_id
+                  if (doctor) {
+                    console.log('Doctor found:', doctor); // Log the doctor found
+                    const doctorId = doctor.doctor_id;
+                    // Update session with doctorId
+                    this.authService.setSession(token, role, id, doctorId);
+                    this.router.navigate(['/admindashboard']); // Navigate to doctor dashboard
+                  } else {
+                    // Clear session if doctor not found
+                    this.authService.clearSession();
+                    this.loginError = true;
+                    this.errorMessage = 'Doctor not found for this user.';
+                    console.log('Doctor not found for user id:', id); // Log the error case
+                  }
+                },
+                (error) => {
+                  console.log('Error fetching doctors:', error);
+                  this.loginError = true;
+                  this.errorMessage = 'An error occurred while fetching doctor data.';
+                }
+              );
             }
           } else {
             alert('User ID not found in response');
@@ -113,6 +146,7 @@ export class LoginComponent implements OnInit {
       }
     );
   }
+
 
   goToRegister(): void {
     this.router.navigate(['/register']);

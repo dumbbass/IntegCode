@@ -5,6 +5,9 @@ import { AdminsidenavComponent } from '../adminsidenav/adminsidenav.component';
 import { FormsModule } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameDay } from 'date-fns';
+import { ScheduleService } from './schedule.service';  // Adjust import path
+import { ScheduleAuthService } from './schedule-auth.service';  // Import the new service
+import { AuthService } from '../../auth.service';
 
 @Component({
   selector: 'app-schedule',
@@ -21,7 +24,7 @@ export class ScheduleComponent {
   // Use BehaviorSubject for efficient updates
   currentMonth$ = new BehaviorSubject<Date>(new Date());
   weekDays: string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  
+
   // Cache for generated weeks
   private weeksCache: Date[][] | null = null;
   private cacheMonth: number | null = null;
@@ -34,32 +37,36 @@ export class ScheduleComponent {
 
   availability: { date: Date; times: string[] }[] = [];
 
-  // Add these new properties to the component class
-  availabilityStatus: { [key: string]: boolean } = {}; // Track which dates have availability
+  // Availability tracking
+  availabilityStatus: { [key: string]: boolean } = {};
   isBulkMode = false;
   bulkTimes: string[] = [];
   conflictMessage = '';
 
-  // Add these new properties
+  // Loading and message handling
   isLoading = false;
   errorMessage = '';
   successMessage = '';
 
-  // Add this property for preset times
+  // Preset times for quick selections
   presetTimes: string[] = [
     '09:00', '10:00', '11:00',
     '13:00', '14:00', '15:00', '16:00'
   ];
 
-  constructor() {
+  // Inject ScheduleService and ScheduleAuthService into the constructor
+  constructor(
+    private scheduleService: ScheduleService,
+    private scheduleAuthService: ScheduleAuthService,  // Inject the new service
+    private authService: AuthService  // Inject AuthService here
+  ) {
     console.log('ScheduleComponent initialized');
-    // Subscribe to month changes
     this.currentMonth$.subscribe(() => {
       this.generateWeeks();
     });
   }
 
-  // Optimized month navigation
+  // Month navigation
   prevMonth() {
     const current = this.currentMonth$.value;
     this.currentMonth$.next(new Date(current.getFullYear(), current.getMonth() - 1, 1));
@@ -70,28 +77,20 @@ export class ScheduleComponent {
     this.currentMonth$.next(new Date(current.getFullYear(), current.getMonth() + 1, 1));
   }
 
-  // Generate only visible weeks
+  // Generate weeks for the current month
   generateWeeks(): Date[][] {
     const current = this.currentMonth$.value;
-    
-    // Return cached weeks if available
     if (this.weeksCache && this.cacheMonth === current.getMonth()) {
       return this.weeksCache;
     }
 
     const weeks: Date[][] = [];
     let week: Date[] = [];
-    
-    // Get first day of month
     const firstDay = new Date(current.getFullYear(), current.getMonth(), 1);
-    // Get last day of month
     const lastDay = new Date(current.getFullYear(), current.getMonth() + 1, 0);
-    
-    // Start from the first day of the week that includes the first day of the month
     const startDay = new Date(firstDay);
     startDay.setDate(firstDay.getDate() - firstDay.getDay());
-    
-    // Generate only the visible days
+
     while (startDay <= lastDay) {
       week.push(new Date(startDay));
       if (week.length === 7) {
@@ -100,20 +99,16 @@ export class ScheduleComponent {
       }
       startDay.setDate(startDay.getDate() + 1);
     }
-    
-    // Cache the result
+
     this.weeksCache = weeks;
     this.cacheMonth = current.getMonth();
-    
     return weeks;
   }
 
-  // Get weeks for the template
   getWeeks(): Date[][] {
     return this.generateWeeks();
   }
 
-  // Optimized isToday check
   isToday(date: Date): boolean {
     const today = new Date();
     return date.getDate() === today.getDate() &&
@@ -121,7 +116,6 @@ export class ScheduleComponent {
            date.getFullYear() === today.getFullYear();
   }
 
-  // Date selection handling
   isSelected(date: Date): boolean {
     return this.selectedDates.some(d => d && isSameDay(d, date));
   }
@@ -140,13 +134,40 @@ export class ScheduleComponent {
     }
   }
 
-  // Modal handling
   openModal(date: Date) {
     this.modalDate = new Date(date);
-    const existingEntry = this.availability.find(entry => isSameDay(entry.date, date));
-    this.modalTimes = existingEntry ? [...existingEntry.times] : [];
-    this.isModalOpen = true;
+
+    // Fetch the availability for the selected date from the backend
+    const doctorId = this.authService.getDoctorId();
+    if (doctorId) {
+      this.scheduleService.getSchedule(doctorId.toString()).subscribe(
+        (schedule: any) => {
+          // Ensure schedule is an array before using .find()
+          if (Array.isArray(schedule)) {
+            const existingEntry = schedule.find((entry: { date: string; }) => entry.date === this.modalDate!.toISOString().split('T')[0]);
+
+            // If an existing entry is found, update modalTimes with the available times
+            this.modalTimes = existingEntry ? [...existingEntry.times] : [];
+
+            // Log to verify the times
+            console.log('Modal times:', this.modalTimes);
+          } else {
+            console.error('Invalid schedule format:', schedule);
+            this.errorMessage = 'Failed to load schedule data.';
+          }
+          this.isModalOpen = true;
+        },
+        (error) => {
+          console.error('Error fetching schedule:', error);
+          this.errorMessage = 'Failed to load schedule';
+        }
+      );
+    } else {
+      console.error('Doctor ID is not available');
+      this.errorMessage = 'Doctor is not logged in';
+    }
   }
+
 
   closeModal() {
     this.isModalOpen = false;
@@ -155,7 +176,6 @@ export class ScheduleComponent {
     this.newTime = '';
   }
 
-  // Time management
   addTime() {
     if (this.newTime && !this.modalTimes.includes(this.newTime)) {
       this.modalTimes.push(this.newTime);
@@ -168,43 +188,67 @@ export class ScheduleComponent {
     this.modalTimes = this.modalTimes.filter(t => t !== time);
   }
 
-  // Availability management
-  async saveAvailability() {
-    if (!this.modalDate) return;
+  // Save selected date and time slots to the backend
+  // Save selected date and time slots to the backend
+async saveAvailability() {
+  if (!this.modalDate) return;
 
-    this.isLoading = true;
-    this.errorMessage = '';
-    
-    try {
-      // Validate times
-      if (this.modalTimes.length === 0) {
-        throw new Error('Please add at least one time slot');
-      }
-
-      const existingEntry = this.availability.find(entry => 
-        isSameDay(entry.date, this.modalDate!)
-      );
-      
-      if (existingEntry) {
-        existingEntry.times = [...this.modalTimes];
-      } else {
-        this.availability.push({ 
-          date: new Date(this.modalDate), 
-          times: [...this.modalTimes] 
-        });
-      }
-      
-      this.updateAvailabilityStatus(this.modalDate);
-      this.successMessage = 'Availability saved successfully!';
-      setTimeout(() => this.successMessage = '', 3000);
-    } catch (error) {
-      this.errorMessage = error instanceof Error ? error.message : 'Failed to save availability';
-    } finally {
-      this.isLoading = false;
+  try {
+    if (this.modalTimes.length === 0) {
+      throw new Error('Please add at least one time slot');
     }
+
+    const formattedDate = this.modalDate.toISOString().split('T')[0]; // "2025-01-30"
+    const doctorId = this.authService.getDoctorId();
+    if (!doctorId) {
+      this.errorMessage = 'Doctor is not logged in.';
+      console.error('Error: Doctor is not logged in');
+      return;
+    }
+
+    const formattedTimes = this.modalTimes.map((time: string) => this.formatToAMPM(time));
+    const payload = {
+      doctor_id: doctorId.toString(),
+      date: formattedDate,
+      time_slot: formattedTimes
+    };
+
+    const response = await this.scheduleService.saveSchedule(doctorId.toString(), formattedDate, formattedTimes).toPromise();
+
+    if (response.status) {
+      this.successMessage = 'Schedule saved successfully!';
+      console.log('Schedule saved successfully!');
+
+      // Update the availability status after saving
+      this.availability.push({
+        date: this.modalDate!,
+        times: formattedTimes
+      });
+
+      // Refetch the schedule (optional, for more accuracy)
+      this.openModal(this.modalDate!);  // This will refresh the modal with the saved times
+    } else {
+      this.errorMessage = 'Failed to save schedule';
+      console.error('Failed to save schedule');
+    }
+
+    this.closeModal();
+  } catch (error) {
+    this.errorMessage = error instanceof Error ? error.message : 'Error occurred';
+    console.error('Error during save availability:', this.errorMessage);
+  }
+}
+
+  // Helper function to convert time to AM/PM format
+  formatToAMPM(time: string): string {
+    const [hours, minutes] = time.split(':').map(Number);
+    const amPm = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = hours % 12 || 12; // Convert 0 hours to 12
+    const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+    return `${formattedHours}:${formattedMinutes} ${amPm}`;
   }
 
-  // Time formatting
+
   formatTime(time: string): string {
     const [hours, minutes] = time.split(':').map(Number);
     const amPm = hours >= 12 ? 'PM' : 'AM';
@@ -212,36 +256,29 @@ export class ScheduleComponent {
     return `${formattedHours}:${minutes < 10 ? '0' + minutes : minutes} ${amPm}`;
   }
 
-  // Check if a date has availability
   hasAvailability(date: Date): boolean {
     const dateKey = date.toISOString().split('T')[0];
     return !!this.availabilityStatus[dateKey];
   }
 
-  // Get availability for a specific date
   getAvailabilityForDate(date: Date): string[] {
     const entry = this.availability.find(d => isSameDay(d.date, date));
     return entry ? entry.times : [];
   }
 
-  // Validate time slot
   validateTime(time: string): boolean {
     const [hours, minutes] = time.split(':').map(Number);
     return hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59;
   }
 
-  // Check for time conflicts
   checkTimeConflict(newTime: string): boolean {
     return this.modalTimes.some(time => {
-      const timeDiff = Math.abs(
-        new Date(`1970-01-01T${newTime}:00`).getTime() - 
-        new Date(`1970-01-01T${time}:00`).getTime()
-      );
-      return timeDiff < 30 * 60 * 1000; // 30 minutes buffer
+      const timeDiff = Math.abs(new Date(`1970-01-01T${newTime}:00`).getTime() -
+                               new Date(`1970-01-01T${time}:00`).getTime());
+      return timeDiff < 30 * 60 * 1000;
     });
   }
 
-  // Toggle bulk mode
   toggleBulkMode() {
     this.isBulkMode = !this.isBulkMode;
     if (!this.isBulkMode) {
@@ -249,7 +286,6 @@ export class ScheduleComponent {
     }
   }
 
-  // Add bulk times
   addBulkTime() {
     if (this.newTime && !this.bulkTimes.includes(this.newTime)) {
       this.bulkTimes.push(this.newTime);
@@ -258,7 +294,6 @@ export class ScheduleComponent {
     }
   }
 
-  // Apply bulk availability
   applyBulkAvailability() {
     if (this.bulkTimes.length > 0) {
       this.selectedDates.forEach(date => {
@@ -266,10 +301,7 @@ export class ScheduleComponent {
         if (existingEntry) {
           existingEntry.times = [...new Set([...existingEntry.times, ...this.bulkTimes])];
         } else {
-          this.availability.push({
-            date: new Date(date),
-            times: [...this.bulkTimes]
-          });
+          this.availability.push({ date: new Date(date), times: [...this.bulkTimes] });
         }
         this.updateAvailabilityStatus(date);
       });
@@ -278,14 +310,12 @@ export class ScheduleComponent {
     }
   }
 
-  // Update availability status
   updateAvailabilityStatus(date: Date) {
     const dateKey = date.toISOString().split('T')[0];
     const entry = this.availability.find(d => isSameDay(d.date, date));
     this.availabilityStatus[dateKey] = !!entry && entry.times.length > 0;
   }
 
-  // Add this optimized method to the component class
   removeBulkTime(time: string): void {
     const index = this.bulkTimes.indexOf(time);
     if (index > -1) {
@@ -293,7 +323,6 @@ export class ScheduleComponent {
     }
   }
 
-  // Add this method for better date selection
   selectDate(date: Date) {
     if (this.isPastDate(date)) {
       this.errorMessage = 'Cannot select past dates';
@@ -312,14 +341,12 @@ export class ScheduleComponent {
     }
   }
 
-  // Add this method to check if a date is in the past
   isPastDate(date: Date): boolean {
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset time to compare only dates
+    today.setHours(0, 0, 0, 0);
     return date < today;
   }
 
-  // Add this method to add preset times
   addPresetTime(time: string) {
     if (!this.modalTimes.includes(time)) {
       this.modalTimes.push(time);
@@ -327,7 +354,6 @@ export class ScheduleComponent {
     }
   }
 
-  // Add this method to sort times from AM to PM
   private sortTimes() {
     this.modalTimes.sort((a, b) => {
       const timeA = new Date(`1970-01-01T${a}:00`).getTime();
@@ -336,3 +362,4 @@ export class ScheduleComponent {
     });
   }
 }
+
