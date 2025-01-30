@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 30, 2025 at 07:16 PM
+-- Generation Time: Jan 30, 2025 at 06:59 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,46 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `integration_system`
 --
-
--- --------------------------------------------------------
-
---
--- Table structure for table `appointments`
---
-
-CREATE TABLE `appointments` (
-  `appointment_id` int(11) NOT NULL,
-  `patient_id` int(11) NOT NULL,
-  `doctor_id` int(11) NOT NULL,
-  `appointment_date` date NOT NULL,
-  `appointment_time` time DEFAULT NULL,
-  `purpose` varchar(255) NOT NULL,
-  `status` enum('pending','accepted','completed','rescheduled') DEFAULT 'pending',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `appointments`
---
-
-INSERT INTO `appointments` (`appointment_id`, `patient_id`, `doctor_id`, `appointment_date`, `appointment_time`, `purpose`, `status`, `created_at`, `updated_at`) VALUES
-(5, 1, 5, '2025-01-16', NULL, 'checkup', 'pending', '2025-01-15 14:40:45', '2025-01-15 14:40:45'),
-(7, 1, 5, '2025-01-26', NULL, 'checkup', 'pending', '2025-01-27 04:34:05', '2025-01-27 04:34:05');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `appointment_status_history`
---
-
-CREATE TABLE `appointment_status_history` (
-  `id` int(11) NOT NULL,
-  `appointment_id` int(11) NOT NULL,
-  `status` enum('Rescheduled','Accepted','Cancelled') NOT NULL,
-  `action_taken_by` int(11) NOT NULL,
-  `date_time` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -84,6 +44,29 @@ CREATE TABLE `doctors` (
 
 INSERT INTO `doctors` (`doctor_id`, `id`, `firstname`, `lastname`, `gender`, `email`, `created_at`, `updated_at`) VALUES
 (5, 34, 'Jeffry', 'Olaes', 'male', 'jeffry@gmail.com', '2025-01-15 10:09:10', '2025-01-15 10:09:10');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `doctor_schedules`
+--
+
+CREATE TABLE `doctor_schedules` (
+  `schedule_id` int(11) NOT NULL,
+  `doctor_id` int(11) NOT NULL,
+  `available_date` date NOT NULL,
+  `time_slot` varchar(20) NOT NULL,
+  `status` enum('available','booked') DEFAULT 'available',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `doctor_schedules`
+--
+
+INSERT INTO `doctor_schedules` (`schedule_id`, `doctor_id`, `available_date`, `time_slot`, `status`, `created_at`, `updated_at`) VALUES
+(17, 5, '2025-01-30', '10:00 AM', 'available', '2025-01-30 17:56:22', '2025-01-30 17:56:22');
 
 -- --------------------------------------------------------
 
@@ -188,27 +171,18 @@ INSERT INTO `users` (`id`, `firstname`, `lastname`, `date_of_birth`, `gender`, `
 --
 
 --
--- Indexes for table `appointments`
---
-ALTER TABLE `appointments`
-  ADD PRIMARY KEY (`appointment_id`),
-  ADD KEY `patient_id` (`patient_id`),
-  ADD KEY `doctor_id` (`doctor_id`);
-
---
--- Indexes for table `appointment_status_history`
---
-ALTER TABLE `appointment_status_history`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `appointment_id` (`appointment_id`),
-  ADD KEY `action_taken_by` (`action_taken_by`);
-
---
 -- Indexes for table `doctors`
 --
 ALTER TABLE `doctors`
   ADD PRIMARY KEY (`doctor_id`),
   ADD KEY `id` (`id`);
+
+--
+-- Indexes for table `doctor_schedules`
+--
+ALTER TABLE `doctor_schedules`
+  ADD PRIMARY KEY (`schedule_id`),
+  ADD KEY `doctor_id` (`doctor_id`);
 
 --
 -- Indexes for table `patients`
@@ -235,22 +209,16 @@ ALTER TABLE `users`
 --
 
 --
--- AUTO_INCREMENT for table `appointments`
---
-ALTER TABLE `appointments`
-  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT for table `appointment_status_history`
---
-ALTER TABLE `appointment_status_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `doctors`
 --
 ALTER TABLE `doctors`
   MODIFY `doctor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `doctor_schedules`
+--
+ALTER TABLE `doctor_schedules`
+  MODIFY `schedule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `patients`
@@ -263,6 +231,16 @@ ALTER TABLE `patients`
 --
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `doctor_schedules`
+--
+ALTER TABLE `doctor_schedules`
+  ADD CONSTRAINT `doctor_schedules_ibfk_1` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`doctor_id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
