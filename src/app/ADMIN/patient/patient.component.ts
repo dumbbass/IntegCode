@@ -76,7 +76,14 @@ export class PatientComponent implements OnInit {
       email: user.email || 'N/A',
       contact_number: user.contact_number || 'N/A',
       home_address: user.home_address || 'N/A',
-      medicalHistory: user.medicalHistory || []
+      birhtplace: user.birhtplace || 'N/A',
+      age: user.age || 'N/A',
+      nationality: user.nationality || 'N/A',
+      religion: user.religion || 'N/A',
+      civil_status: user.civil_status || 'N/A',
+      // height: user.height || 'N/A',
+      // weight: user.weight || 'N/A',
+      // medicalHistory: user.medicalHistory || []
     };
   }
 
