@@ -15,6 +15,9 @@
         <button (click)="prevMonth()" class="btn">&lt;</button>
         <h2 class="calendar-title">{{ currentMonth$ | async | date: 'MMMM yyyy' }}</h2>
         <button (click)="nextMonth()" class="btn">&gt;</button>
+        <button (click)="toggleBulkMode()" class="btn" [class.active]="isBulkMode">
+          {{ isBulkMode ? 'Cancel Bulk Mode' : 'Bulk Availability' }}
+        </button>
       </div>
 
       <table class="calendar-table">
@@ -29,8 +32,16 @@
                 class="calendar-cell"
                 [class.selected]="isSelected(day)"
                 [class.today]="isToday(day)"
-                (click)="toggleDateSelection(day)">
-              {{ day.getDate() }}
+                [class.has-availability]="hasAvailability(day)"
+                [class.bulk-selected]="isBulkMode && isSelected(day)"
+                [class.past-date]="isPastDate(day)"
+                (click)="!isPastDate(day) && selectDate(day)">
+              <div class="date-content">
+                {{ day.getDate() }}
+                <div *ngIf="hasAvailability(day)" class="availability-indicator">
+                  {{ getAvailabilityForDate(day).length }} slots
+                </div>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -43,6 +54,43 @@
             {{ date | date:'MMMM d, yyyy' }}
           </li>
         </ul>
+      </div>
+
+      <div *ngIf="isBulkMode" class="bulk-availability-container">
+        <h3>Bulk Availability Setup</h3>
+        <div class="selected-count">
+          {{ selectedDates.length }} dates selected
+        </div>
+        
+        <div class="time-input-container">
+          <input type="time" [(ngModel)]="newTime" class="time-input" />
+          <button class="btn add-time-btn" (click)="addBulkTime()" [disabled]="!newTime">
+            Add Time
+          </button>
+        </div>
+        
+        <div *ngIf="bulkTimes.length > 0" class="bulk-times-list">
+          <h4>Selected Times:</h4>
+          <ul>
+            <li *ngFor="let time of bulkTimes">
+              <span class="time-display">{{ formatTime(time) }}</span>
+              <button class="btn remove-time-btn" (click)="removeBulkTime(time)">
+                <i class="fas fa-times"></i>
+              </button>
+            </li>
+          </ul>
+          <button class="btn save-btn" (click)="applyBulkAvailability()" [disabled]="isLoading">
+            {{ isLoading ? 'Saving...' : 'Apply to Selected Dates' }}
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="errorMessage" class="error-message">
+        <i class="fas fa-exclamation-circle"></i> {{ errorMessage }}
+      </div>
+
+      <div *ngIf="successMessage" class="success-message">
+        <i class="fas fa-check-circle"></i> {{ successMessage }}
       </div>
     </div>
 
@@ -64,6 +112,17 @@
               <button class="btn remove-time-btn" (click)="removeTime(time)">Remove</button>
             </li>
           </ul>
+        </div>
+
+        <div class="preset-times">
+          <h3>Quick Add:</h3>
+          <div class="preset-buttons">
+            <button *ngFor="let time of presetTimes" 
+                    class="btn preset-btn"
+                    (click)="addPresetTime(time)">
+              {{ formatTime(time) }}
+            </button>
+          </div>
         </div>
 
         <div class="modal-actions">
