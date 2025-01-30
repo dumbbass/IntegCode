@@ -14,13 +14,13 @@ export class RegisterComponent {
   // Form inputs
   firstName: string = '';
   lastName: string = '';
-  dob: string = '';
+  date_of_birth: string = '';
   gender: string = '';
   height: number | null = null;
   weight: number | null = null;
   medications: string = '';
-  homeAddress: string = '';
-  contactNumber: string = '';
+  home_address: string = '';
+  contact_number: string = '';
   email: string = '';
   password: string = '';
   confirmPassword: string = '';
@@ -82,15 +82,15 @@ export class RegisterComponent {
     }
 
     // Date of Birth validation
-    if (!this.dob) {
-      this.errors['dob'] = 'Date of birth is required';
+    if (!this.date_of_birth) {
+      this.errors['date_of_birth'] = 'Date of birth is required';
       isValid = false;
     } else {
-      const dobDate = new Date(this.dob);
+      const date_of_birthDate = new Date(this.date_of_birth);
       const today = new Date();
-      const age = today.getFullYear() - dobDate.getFullYear();
+      const age = today.getFullYear() - date_of_birthDate.getFullYear();
       if (age < 18) {
-        this.errors['dob'] = 'You must be at least 18 years old';
+        this.errors['date_of_birth'] = 'You must be at least 18 years old';
         isValid = false;
       }
     }
@@ -114,18 +114,18 @@ export class RegisterComponent {
     }
 
     // Home Address validation
-    if (!this.homeAddress.trim()) {
-      this.errors['homeAddress'] = 'Home address is required';
+    if (!this.home_address.trim()) {
+      this.errors['home_address'] = 'Home address is required';
       isValid = false;
     }
 
     // Contact Number validation
     const phoneRegex = /^\+?[\d\s-]{10,}$/;
-    if (!this.contactNumber.trim()) {
-      this.errors['contactNumber'] = 'Contact number is required';
+    if (!this.contact_number.trim()) {
+      this.errors['contact_number'] = 'Contact number is required';
       isValid = false;
-    } else if (!phoneRegex.test(this.contactNumber)) {
-      this.errors['contactNumber'] = 'Please enter a valid contact number';
+    } else if (!phoneRegex.test(this.contact_number)) {
+      this.errors['contact_number'] = 'Please enter a valid contact number';
       isValid = false;
     }
 
@@ -184,10 +184,10 @@ export class RegisterComponent {
       const userData = {
         firstName: this.firstName,
         lastName: this.lastName,
-        dob: this.dob,
+        date_of_birth: this.date_of_birth,
         gender: this.gender,
-        homeAddress: this.homeAddress,
-        contactNumber: this.contactNumber,
+        home_address: this.home_address,
+        contact_number: this.contact_number,
         email: this.email,
         password: this.password,
         height: this.height,

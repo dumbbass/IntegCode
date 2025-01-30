@@ -36,10 +36,10 @@
         </div>
 
         <div class="form-group">
-            <label for="dob" class="form-label">Date of Birth</label>
-            <input type="date" id="dob" class="form-input" [ngClass]="{'error-input': errors['dob']}"
-                [(ngModel)]="dob" name="dob" required>
-            <div *ngIf="errors['dob']" class="error-message">{{ errors['dob'] }}</div>
+            <label for="date_of_birth" class="form-label">Date of Birth</label>
+            <input type="date" id="date_of_birth" class="form-input" [ngClass]="{'error-input': errors['date_of_birth']}"
+                [(ngModel)]="date_of_birth" name="date_of_birth" required>
+            <div *ngIf="errors['date_of_birth']" class="error-message">{{ errors['date_of_birth'] }}</div>
         </div>
 
         <div class="form-group">
@@ -113,16 +113,16 @@
 
         <div class="form-group">
             <label for="home-address" class="form-label">Home Address</label>
-            <input type="text" id="home-address" class="form-input" [ngClass]="{'error-input': errors['homeAddress']}"
-                placeholder="Enter your Home Address" [(ngModel)]="homeAddress" name="homeAddress" required>
-            <div *ngIf="errors['homeAddress']" class="error-message">{{ errors['homeAddress'] }}</div>
+            <input type="text" id="home-address" class="form-input" [ngClass]="{'error-input': errors['home_address']}"
+                placeholder="Enter your Home Address" [(ngModel)]="home_address" name="home_address" required>
+            <div *ngIf="errors['home_address']" class="error-message">{{ errors['home_address'] }}</div>
         </div>
 
         <div class="form-group">
             <label for="contact-number" class="form-label">Contact Number</label>
-            <input type="tel" id="contact-number" class="form-input" [ngClass]="{'error-input': errors['contactNumber']}"
-                placeholder="Enter your Contact Number" [(ngModel)]="contactNumber" name="contactNumber" required>
-            <div *ngIf="errors['contactNumber']" class="error-message">{{ errors['contactNumber'] }}</div>
+            <input type="tel" id="contact-number" class="form-input" [ngClass]="{'error-input': errors['contact_number']}"
+                placeholder="Enter your Contact Number" [(ngModel)]="contact_number" name="contact_number" required>
+            <div *ngIf="errors['contact_number']" class="error-message">{{ errors['contact_number'] }}</div>
         </div>
 
         <div class="form-group">

@@ -23,6 +23,9 @@ interface Patient {
   firstname: string;
   lastname: string;
   gender: 'male' | 'female' | 'other';
+  date_of_birth: string;
+  home_address: string;
+  contact_number: string;
   email: string;
   height: number;
   weight: number;
@@ -47,7 +50,7 @@ export class UserprofileComponent implements OnInit {
   firstName: string = '';
   lastName: string = '';
   birthplace: string = '';
-  dob: string = '';
+  date_of_birth: string = '';
   age: number | null = null;
   gender: string = '';
   nationality: string = '';
@@ -56,8 +59,8 @@ export class UserprofileComponent implements OnInit {
   height: number | null = null;
   weight: number | null = null;
   medications: string = '';
-  homeAddress: string = '';
-  contactNumber: string = '';
+  home_address: string = '';
+  contact_number: string = '';
   email: string = '';
   patientHistory: PatientHistory = {
     medical_history: '',
@@ -173,7 +176,7 @@ fetchPatientHistory(): void {
                   this.patientHistory = response.history;
               } else {
                   console.error('Failed to fetch patient history:', response.message);
-                  this.errorMessage = 'Failed to fetch patient history: ' + response.message;
+                  this.errorMessage = 'Fetching History: ' + response.message;
               }
           },
           error: (error) => {
