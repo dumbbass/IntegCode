@@ -12,7 +12,6 @@ export class AppointmentService {
 
   // Method to schedule an appointment
   scheduleAppointment(appointmentData: any): Observable<any> {
-    // Send the request with action as query parameter
     const params = { action: 'scheduleAppointment' };
     return this.http.post<any>(this.apiUrl, appointmentData, { params });
   }
