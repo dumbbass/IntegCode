@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AdminsidenavComponent } from '../adminsidenav/adminsidenav.component';
 import { Chart } from 'chart.js';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-admindashboard',
@@ -16,42 +17,146 @@ import { Chart } from 'chart.js';
 })
 export class AdmindashboardComponent implements AfterViewInit {
   @ViewChild('medicalReportsChart') chartCanvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('appointmentsChart') appointmentsChartCanvas!: ElementRef<HTMLCanvasElement>;
 
-  // Placeholder for the chart instance
-  chart: any;
+  chart: any; // Placeholder for the patient growth chart instance
+  appointmentsChart: any; // Placeholder for the appointments chart instance
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
   ngAfterViewInit(): void {
-    // Ensure the chartCanvas is available before trying to create the chart
-    if (this.chartCanvas) {
-      this.createChart('monthly'); // Default chart type on load
+    if (this.chartCanvas && this.appointmentsChartCanvas) {
+      this.createCharts(); // Create both charts after view initialization
     }
   }
 
-  onFilterChange(event: Event): void {
-    const filter = (event.target as HTMLSelectElement).value;
-    this.updateChart(filter);
+  createCharts(): void {
+    this.fetchUsers(); // Fetch data for both charts
   }
 
-  // Method to create chart with data for the given filter
-  createChart(filter: string): void {
-    const data = this.getDataForFilter(filter);
+  fetchUsers(): void {
+    this.http.get<{ status: boolean; users: any[] }>('http://localhost/API/carexusapi/Backend/carexus.php?action=getUsers')
+      .subscribe(response => {
+        if (response.status) {
+          const userData = this.getDataForFilter(response.users);
+          this.updateChartsWithData(userData); // Update both charts with fetched data
+        } else {
+          console.error('Failed to fetch users');
+        }
+      }, error => {
+        console.error('Error fetching data:', error);
+      });
+  }
 
-    // Destroy previous chart if exists
+  getDataForFilter(users: any[]): any {
+    const labels: string[] = [];
+    const data: number[] = [];
+    const appointmentLabels: string[] = [];
+    const appointmentData: number[] = [];
+    const groupedData: any = {};
+    const appointmentGroupedData: any = {};
+
+    const monthNames = [
+      "January", "February", "March", "April", "May", "June", "July", "August", 
+      "September", "October", "November", "December"
+    ];
+
+    users.forEach(user => {
+      const userDate = new Date(user.date);
+      const periodKey = `${userDate.getFullYear()}-${userDate.getMonth() + 1}`;
+
+      if (!groupedData[periodKey]) {
+        groupedData[periodKey] = 0;
+      }
+
+      groupedData[periodKey]++; // Increment the count of users for that period
+
+      // For appointments per day
+      const appointmentDate = new Date(user.appointmentDate); // Assuming users have an appointmentDate field
+      const appointmentKey = `${appointmentDate.getFullYear()}-${appointmentDate.getMonth() + 1}-${appointmentDate.getDate()}`;
+      
+      if (!appointmentGroupedData[appointmentKey]) {
+        appointmentGroupedData[appointmentKey] = 0;
+      }
+      
+      appointmentGroupedData[appointmentKey]++; // Increment the count of appointments for that day
+    });
+
+    // Map the grouped data to labels and counts for patient growth
+    for (const period in groupedData) {
+      const [year, month] = period.split('-');
+      labels.push(monthNames[parseInt(month) - 1] + ' ' + year); // Convert month number to month name
+      data.push(groupedData[period]);
+    }
+
+    // Map the grouped data to labels and counts for appointments per day
+    for (const appointmentDate in appointmentGroupedData) {
+      const [year, month, day] = appointmentDate.split('-');
+      appointmentLabels.push(`${monthNames[parseInt(month) - 1]} ${day}, ${year}`);
+      appointmentData.push(appointmentGroupedData[appointmentDate]);
+    }
+
+    return {
+      patientGrowth: { labels, data },
+      appointmentsPerDay: { appointmentLabels, appointmentData }
+    };
+  }
+
+  updateChartsWithData(data: any): void {
+    // Destroy existing charts before recreating them
     if (this.chart) {
       this.chart.destroy();
     }
+    if (this.appointmentsChart) {
+      this.appointmentsChart.destroy();
+    }
 
-    // Create a new chart with updated data
+    // Create Patient Growth Chart
     this.chart = new Chart(this.chartCanvas.nativeElement, {
-      type: 'line', // Type of chart, can be changed to bar, pie, etc.
+      type: 'bar', 
       data: {
-        labels: data.labels,
+        labels: data.patientGrowth.labels,
         datasets: [{
-          label: 'Appointments',
-          data: data.data,
-          borderColor: '#007BFF',
+          label: 'Patient Growth',
+          data: data.patientGrowth.data,
+          backgroundColor: '#007BFF',
+          borderColor: '#0056b3',
+          borderWidth: 1,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Total Patients'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Number of Patients'
+            },
+            beginAtZero: true,
+            max: 50 // Fixed max value for the Y-axis
+          }
+        }
+      }
+    });
+
+    // Create Appointments per Day Chart
+    this.appointmentsChart = new Chart(this.appointmentsChartCanvas.nativeElement, {
+      type: 'line', // You can change the chart type here (line, bar, etc.)
+      data: {
+        labels: data.appointmentsPerDay.appointmentLabels,
+        datasets: [{
+          label: 'Appointments per Day',
+          data: data.appointmentsPerDay.appointmentData,
+          backgroundColor: '#28a745',
+          borderColor: '#218838',
+          borderWidth: 2,
           fill: false,
         }]
       },
@@ -62,67 +167,19 @@ export class AdmindashboardComponent implements AfterViewInit {
           x: {
             title: {
               display: true,
-              text: 'Date'
+              text: 'Appointments per Day'
             }
           },
           y: {
             title: {
               display: true,
               text: 'Number of Appointments'
-            }
+            },
+            beginAtZero: true,
+            max: 50 // Fixed max value for the Y-axis
           }
         }
       }
     });
-  }
-
-  // Method to get data based on the selected filter (this is dummy data for now)
-  getDataForFilter(filter: string) {
-    const labels = [];
-    const data = [];
-    const now = new Date();
-    let startDate;
-
-    switch (filter) {
-      case 'daily':
-        startDate = new Date(now.setDate(now.getDate() - 1)); // yesterday
-        labels.push('Yesterday');
-        data.push(10); // Example value for the number of appointments
-        break;
-
-      case 'weekly':
-        startDate = new Date(now.setDate(now.getDate() - 7)); // 1 week ago
-        for (let i = 0; i < 7; i++) {
-          labels.push(`Day ${i + 1}`);
-          data.push(Math.floor(Math.random() * 10)); // Random number of appointments
-        }
-        break;
-
-      case 'monthly':
-        startDate = new Date(now.setMonth(now.getMonth() - 1)); // 1 month ago
-        for (let i = 0; i < 30; i++) {
-          labels.push(`Day ${i + 1}`);
-          data.push(Math.floor(Math.random() * 10)); // Random number of appointments
-        }
-        break;
-
-      case 'yearly':
-        startDate = new Date(now.setFullYear(now.getFullYear() - 1)); // 1 year ago
-        for (let i = 0; i < 12; i++) {
-          labels.push(`Month ${i + 1}`);
-          data.push(Math.floor(Math.random() * 100)); // Random number of appointments
-        }
-        break;
-
-      default:
-        break;
-    }
-
-    return { labels, data };
-  }
-
-  // Update chart based on filter
-  updateChart(filter: string): void {
-    this.createChart(filter);
   }
 }

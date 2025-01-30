@@ -5,7 +5,6 @@
       <div class="header">
         <div class="logo">
           <i class="fas fa-th-large"></i> Dashboard
-
         </div>
         <div class="search-container">
           <input type="text" class="search-bar" placeholder="Search">
@@ -13,7 +12,6 @@
         </div>
       </div>
     </div>
-
 
     <div class="admindashboard-list-container">
       <h2>Current Patients List in your Today's Queue</h2>
@@ -32,23 +30,19 @@
             <td>Pending</td>
           </tr>
         </tbody>
-        </table>
-        </div>
+      </table>
+    </div>
+    <div class="dashboard-reports-container">
+      <h2>Total Patient Growth</h2>
+      <div class="chart-container">
+        <canvas #medicalReportsChart></canvas>
+      </div>
+    
+      <h2>Total Appointments per Day</h2>
+      <div class="chart-container">
+        <canvas #appointmentsChart></canvas>
+      </div>
+    </div>
+    
 
-          <div class="dashboard-reports-container">
-            <h2>Appointment Medical History</h2>
-            <div class="filter-container">
-              <label for="filter">Filter:</label>
-              <select id="filter" (change)="onFilterChange($event)">
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly" selected>Monthly</option>
-                <option value="yearly">Yearly</option>
-              </select>
-            </div>
-            <div class="chart-container">
-              <canvas #medicalReportsChart></canvas>
-            </div>
-          </div>
-
-
+</div>
