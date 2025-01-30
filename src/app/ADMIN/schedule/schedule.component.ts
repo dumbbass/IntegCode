@@ -2,8 +2,9 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AdminsidenavComponent } from '../adminsidenav/adminsidenav.component';
-import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameDay } from 'date-fns';
 import { FormsModule } from '@angular/forms';
+import { BehaviorSubject } from 'rxjs';
+import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameDay } from 'date-fns';
 
 @Component({
   selector: 'app-schedule',
@@ -17,49 +18,85 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./schedule.component.css']
 })
 export class ScheduleComponent {
-  currentMonth: Date = new Date();
-  selectedDates: Date[] = [];
+  // Use BehaviorSubject for efficient updates
+  currentMonth$ = new BehaviorSubject<Date>(new Date());
   weekDays: string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  daysInMonth: Date[] = [];
-  availability: { date: Date; times: string[] }[] = []; // Store availability
+  
+  // Cache for generated weeks
+  private weeksCache: Date[][] | null = null;
+  private cacheMonth: number | null = null;
 
-  // Modal state
-  isModalOpen: boolean = false;
+  selectedDates: Date[] = [];
+  isModalOpen = false;
   modalDate: Date | null = null;
   modalTimes: string[] = [];
-  newTime: string = '';
+  newTime = '';
+
+  availability: { date: Date; times: string[] }[] = [];
 
   constructor() {
-    this.generateCalendar();
+    console.log('ScheduleComponent initialized');
+    // Subscribe to month changes
+    this.currentMonth$.subscribe(() => {
+      this.generateWeeks();
+    });
   }
 
+  // Optimized month navigation
   prevMonth() {
-    this.currentMonth = new Date(this.currentMonth.setMonth(this.currentMonth.getMonth() - 1));
-    this.generateCalendar();
+    const current = this.currentMonth$.value;
+    this.currentMonth$.next(new Date(current.getFullYear(), current.getMonth() - 1, 1));
   }
 
   nextMonth() {
-    this.currentMonth = new Date(this.currentMonth.setMonth(this.currentMonth.getMonth() + 1));
-    this.generateCalendar();
+    const current = this.currentMonth$.value;
+    this.currentMonth$.next(new Date(current.getFullYear(), current.getMonth() + 1, 1));
   }
 
-  generateCalendar() {
-    const start = startOfWeek(startOfMonth(this.currentMonth));
-    const end = endOfWeek(endOfMonth(this.currentMonth));
-
-    const days = [];
-    let day = start;
-    while (day <= end) {
-      days.push(new Date(day));
-      day = addDays(day, 1);
+  // Generate only visible weeks
+  generateWeeks(): Date[][] {
+    const current = this.currentMonth$.value;
+    
+    // Return cached weeks if available
+    if (this.weeksCache && this.cacheMonth === current.getMonth()) {
+      return this.weeksCache;
     }
-    this.daysInMonth = days;
+
+    const weeks: Date[][] = [];
+    let week: Date[] = [];
+    
+    // Get first day of month
+    const firstDay = new Date(current.getFullYear(), current.getMonth(), 1);
+    // Get last day of month
+    const lastDay = new Date(current.getFullYear(), current.getMonth() + 1, 0);
+    
+    // Start from the first day of the week that includes the first day of the month
+    const startDay = new Date(firstDay);
+    startDay.setDate(firstDay.getDate() - firstDay.getDay());
+    
+    // Generate only the visible days
+    while (startDay <= lastDay) {
+      week.push(new Date(startDay));
+      if (week.length === 7) {
+        weeks.push(week);
+        week = [];
+      }
+      startDay.setDate(startDay.getDate() + 1);
+    }
+    
+    // Cache the result
+    this.weeksCache = weeks;
+    this.cacheMonth = current.getMonth();
+    
+    return weeks;
   }
 
-  isSelected(date: Date): boolean {
-    return this.selectedDates.some((d) => isSameDay(d, date));
+  // Get weeks for the template
+  getWeeks(): Date[][] {
+    return this.generateWeeks();
   }
 
+  // Optimized isToday check
   isToday(date: Date): boolean {
     const today = new Date();
     return date.getDate() === today.getDate() &&
@@ -67,28 +104,24 @@ export class ScheduleComponent {
            date.getFullYear() === today.getFullYear();
   }
 
-  getWeeks(): Date[][] {
-    const weeks: Date[][] = [];
-    let week: Date[] = [];
-
-    this.daysInMonth.forEach((day, index) => {
-      week.push(day);
-      if ((index + 1) % 7 === 0) {
-        weeks.push(week);
-        week = [];
-      }
-    });
-
-    if (week.length > 0) {
-      weeks.push(week);
-    }
-
-    return weeks;
+  // Date selection handling
+  isSelected(date: Date): boolean {
+    return this.selectedDates.some(d => d && isSameDay(d, date));
   }
 
+  toggleDateSelection(date: Date) {
+    const index = this.selectedDates.findIndex(d => isSameDay(d, date));
+    if (index >= 0) {
+      this.selectedDates.splice(index, 1);
+    } else {
+      this.selectedDates.push(new Date(date));
+    }
+  }
+
+  // Modal handling
   openModal(date: Date) {
-    this.modalDate = date;
-    const existingEntry = this.availability.find((entry) => isSameDay(entry.date, date));
+    this.modalDate = new Date(date);
+    const existingEntry = this.availability.find(entry => isSameDay(entry.date, date));
     this.modalTimes = existingEntry ? [...existingEntry.times] : [];
     this.isModalOpen = true;
   }
@@ -100,6 +133,7 @@ export class ScheduleComponent {
     this.newTime = '';
   }
 
+  // Time management
   addTime() {
     if (this.newTime && !this.modalTimes.includes(this.newTime)) {
       this.modalTimes.push(this.newTime);
@@ -108,41 +142,33 @@ export class ScheduleComponent {
   }
 
   removeTime(time: string) {
-    this.modalTimes = this.modalTimes.filter((t) => t !== time);
+    this.modalTimes = this.modalTimes.filter(t => t !== time);
   }
 
+  // Availability management
   saveAvailability() {
     if (this.modalDate) {
-      const existingEntry = this.availability.find((entry) =>
-        isSameDay(new Date(entry.date), this.modalDate!)
+      const existingEntry = this.availability.find(entry => 
+        isSameDay(entry.date, this.modalDate!)
       );
+      
       if (existingEntry) {
         existingEntry.times = [...this.modalTimes];
       } else {
-        this.availability.push({ date: this.modalDate, times: [...this.modalTimes] });
+        this.availability.push({ 
+          date: new Date(this.modalDate), 
+          times: [...this.modalTimes] 
+        });
       }
       this.closeModal();
     }
   }
 
-  // Helper function to format time to AM/PM
+  // Time formatting
   formatTime(time: string): string {
-    const [hours, minutes] = time.split(':').map(Number); // Split time into hours and minutes
+    const [hours, minutes] = time.split(':').map(Number);
     const amPm = hours >= 12 ? 'PM' : 'AM';
-    const formattedHours = hours % 12 || 12; // Convert to 12-hour format
+    const formattedHours = hours % 12 || 12;
     return `${formattedHours}:${minutes < 10 ? '0' + minutes : minutes} ${amPm}`;
-  }
-
-  // Update an availability entry by opening the modal with its data
-  updateAvailability(index: number) {
-    const entry = this.availability[index];
-    this.modalDate = entry.date;
-    this.modalTimes = [...entry.times]; // Load the times for that date into the modal
-    this.isModalOpen = true; // Open the modal to allow updates
-  }
-
-  // Delete an availability entry
-  deleteAvailability(index: number) {
-    this.availability.splice(index, 1); // Remove the entry from the availability list
   }
 }
