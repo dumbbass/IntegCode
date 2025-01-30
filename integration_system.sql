@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 27, 2025 at 07:31 AM
+-- Generation Time: Jan 30, 2025 at 07:16 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -101,21 +101,52 @@ CREATE TABLE `patients` (
   `height` int(11) DEFAULT 0,
   `weight` int(11) DEFAULT 0,
   `medications` text NOT NULL,
+  `birthplace` varchar(255) DEFAULT NULL,
+  `nationality` varchar(255) DEFAULT NULL,
+  `religion` varchar(255) DEFAULT NULL,
+  `civil_status` varchar(255) DEFAULT NULL,
+  `age` int(11) DEFAULT NULL,
+  `date_of_birth` date DEFAULT NULL,
+  `home_address` varchar(255) DEFAULT NULL,
+  `contact_number` varchar(20) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `birthplace` VARCHAR(255) DEFAULT NULL,
-  `nationality` VARCHAR(255) DEFAULT NULL,
-  `religion` VARCHAR(255) DEFAULT NULL,
-  `civil_status` VARCHAR(255) DEFAULT NULL,
-  `age` INT DEFAULT NULL
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `patients`
 --
 
-INSERT INTO `patients` (`patient_id`, `id`, `firstname`, `lastname`, `gender`, `email`, `height`, `weight`, `medications`, `created_at`, `updated_at`, `birthplace`, `nationality`, `religion`, `civil_status`, `age`) VALUES
-(3, 50, 'Keanu', 'Nedruda', 'female', 'keanu@gmail.com', 0, 0, 'Yes', '2025-01-27 06:26:34', '2025-01-27 06:26:34', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `patients` (`patient_id`, `id`, `firstname`, `lastname`, `gender`, `email`, `height`, `weight`, `medications`, `birthplace`, `nationality`, `religion`, `civil_status`, `age`, `date_of_birth`, `home_address`, `contact_number`, `created_at`, `updated_at`) VALUES
+(3, 50, 'Keanu', 'Nedruda', 'female', 'keanu@gmail.com', 52, 52, 'Yes', 'Olongapo', 'Filipino', 'Catholic', 'Single', 23, NULL, '456 Elm St, Sampletown', '09876543217', '2025-01-27 06:26:34', '2025-01-30 16:46:24'),
+(5, 52, 'jojo', 'jojo', 'male', 'jojo@gmail.com', 55, 55, 'yes', 'Olongapo', 'Filipino', 'Catholic', 'single', 20, '2000-02-02', '456 Elm St, Sampletown', '09876543217', '2025-01-30 16:58:16', '2025-01-30 17:36:07'),
+(8, 60, 'chinie', 'jojo', 'female', 'chinie1@gmail.com', 55, 55, 'yes', 'Olongapo', 'Filipino', 'Catholic', 'single', 23, '2001-01-01', '12', '09876543217', '2025-01-30 18:10:04', '2025-01-30 18:10:04');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `patient_history`
+--
+
+CREATE TABLE `patient_history` (
+  `patient_id` int(11) NOT NULL,
+  `medical_history` text DEFAULT NULL,
+  `surgical_history` text DEFAULT NULL,
+  `medications` text DEFAULT NULL,
+  `allergies` text DEFAULT NULL,
+  `injuries_accidents` text DEFAULT NULL,
+  `special_needs` text DEFAULT NULL,
+  `blood_transfusion` varchar(10) DEFAULT 'No',
+  `present_history` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `patient_history`
+--
+
+INSERT INTO `patient_history` (`patient_id`, `medical_history`, `surgical_history`, `medications`, `allergies`, `injuries_accidents`, `special_needs`, `blood_transfusion`, `present_history`) VALUES
+(5, 'yes 2022', 'no no no', 'biogesic', 'dogbite', 'planecrash', 'down syndrome', 'Yes', 'nice and nice'),
+(7, 'asdasda', 'adsadad', '', '', '', '', 'No', '');
 
 -- --------------------------------------------------------
 
@@ -134,11 +165,11 @@ CREATE TABLE `users` (
   `email` varchar(100) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `role` enum('user','admin') DEFAULT 'user',
-  `birthplace` VARCHAR(255) DEFAULT NULL,
-  `nationality` VARCHAR(255) DEFAULT NULL,
-  `religion` VARCHAR(255) DEFAULT NULL,
-  `civil_status` VARCHAR(255) DEFAULT NULL,
-  `age` INT DEFAULT NULL
+  `birthplace` varchar(255) DEFAULT NULL,
+  `nationality` varchar(255) DEFAULT NULL,
+  `religion` varchar(255) DEFAULT NULL,
+  `civil_status` varchar(255) DEFAULT NULL,
+  `age` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -147,7 +178,10 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `firstname`, `lastname`, `date_of_birth`, `gender`, `home_address`, `contact_number`, `email`, `password`, `role`, `birthplace`, `nationality`, `religion`, `civil_status`, `age`) VALUES
 (34, 'Jeffry', 'Olaes', '1990-01-01', 'Male', '123 Main St', '1234567890', 'jeffry@gmail.com', '$2y$10$Ok1T5VnsKCdVZ/wFNrzTKu5.3JhFx5hKAN7OcP1xDITnx8sBCxFFm', 'admin', NULL, NULL, NULL, NULL, NULL),
-(50, 'Keanu', 'Nedruda', '1990-02-01', 'Female', '456 Elm St, Sampletown', '09876543217', 'keanu@gmail.com', '$2y$10$djOUQbo4CWku4P090yOiJ.4LBtRdXEYimgxxRisRY0rp6egsMqgyS', 'user', NULL, NULL, NULL, NULL, NULL);
+(50, 'Keanu', 'Nedruda', '1990-02-01', 'Female', '456 Elm St, Sampletown', '09876543217', 'keanu@gmail.com', '$2y$10$djOUQbo4CWku4P090yOiJ.4LBtRdXEYimgxxRisRY0rp6egsMqgyS', 'user', NULL, NULL, NULL, NULL, NULL),
+(52, 'jojo', 'jojo', '2000-02-02', 'Male', '456 Elm St, Sampletown', '09876543217', 'jojo@gmail.com', '$2y$10$570AVlYNdlyVFuo1T3dHU.FXVY9HSIUZrmcrChK90.1vgEr2v0Lry', 'user', 'Olongapo', 'Filipino', 'Catholic', 'single', 20),
+(55, 'chinie', 'jojo', '2000-01-01', 'Female', 'cabalan', '09876543217', 'chinie@gmail.com', '$2y$10$LTZ48.fwBlYbN5F4SIkg/eFlAz98/P/.z2tYPz167JFTeEQQa8kcW', 'user', 'Olongapo', 'Filipino', 'Catholic', 'single', 20),
+(60, 'chinie', 'jojo', '2001-01-01', 'Female', '12', '09876543217', 'chinie1@gmail.com', '$2y$10$P.Gvouuz3EY56Hv0.9fCM.uPeO3yaD4dlUZICUbaNTF1UeFloDoBa', 'user', 'Olongapo', 'Filipino', 'Catholic', 'single', 23);
 
 --
 -- Indexes for dumped tables
@@ -184,6 +218,12 @@ ALTER TABLE `patients`
   ADD KEY `fk_patient_user` (`id`);
 
 --
+-- Indexes for table `patient_history`
+--
+ALTER TABLE `patient_history`
+  ADD PRIMARY KEY (`patient_id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -216,43 +256,13 @@ ALTER TABLE `doctors`
 -- AUTO_INCREMENT for table `patients`
 --
 ALTER TABLE `patients`
-  MODIFY `patient_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `patient_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `appointments`
---
-ALTER TABLE `appointments`
-  ADD CONSTRAINT `appointments_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`patient_id`),
-  ADD CONSTRAINT `appointments_ibfk_2` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`doctor_id`);
-
---
--- Constraints for table `appointment_status_history`
---
-ALTER TABLE `appointment_status_history`
-  ADD CONSTRAINT `appointment_status_history_ibfk_1` FOREIGN KEY (`appointment_id`) REFERENCES `appointments` (`appointment_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `appointment_status_history_ibfk_2` FOREIGN KEY (`action_taken_by`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `doctors`
---
-ALTER TABLE `doctors`
-  ADD CONSTRAINT `doctors_ibfk_1` FOREIGN KEY (`id`) REFERENCES `users` (`id`);
-
---
--- Constraints for table `patients`
---
-ALTER TABLE `patients`
-  ADD CONSTRAINT `fk_patient_user` FOREIGN KEY (`id`) REFERENCES `users` (`id`);
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
