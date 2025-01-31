@@ -175,8 +175,9 @@ export class UserappointmentsComponent implements OnInit {
     this.selectedTime = time;
   }
 
-  isAvailableDate(date: Date): boolean {
-    return this.availableDates.some((availableDate) => availableDate.toDateString() === date.toDateString());
+  isAvailableDate(day: Date): boolean {
+    const dateKey = day.toISOString().split('T')[0]; // Format date
+    return this.timeSlots.hasOwnProperty(dateKey); // Check if the date exists in timeSlots
   }
 
   isSelectedDate(date: Date): boolean {
@@ -191,13 +192,20 @@ export class UserappointmentsComponent implements OnInit {
     }
   }
 
-  openModal(date: Date): void {
-    const dateKey = date.toISOString().split('T')[0];
+  openModal(day: Date): void {
+    this.modalDate = day;
+    const dateKey = day.toISOString().split('T')[0]; // Convert date to 'YYYY-MM-DD'
+    
+    // Check if there are available times for the selected date
     this.modalTimes = this.timeSlots[dateKey] || [];
-    this.modalDate = date;
-    this.isModalOpen = true; // Open the modal
+  
+    if (this.modalTimes.length > 0) {
+      this.isModalOpen = true;
+    } else {
+      alert('No available time slots for this date.');
+    }
   }
-
+  
   closeModal(): void {
     this.isModalOpen = false; // Close the modal
     this.modalDate = null;
