@@ -23,6 +23,7 @@
     "carexus": "file:",
     "chart.js": "^4.4.7",
     "date-fns": "^4.1.0",
+    "jspdf": "^2.5.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"

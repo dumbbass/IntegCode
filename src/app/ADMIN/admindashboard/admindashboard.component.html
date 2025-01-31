@@ -1,5 +1,6 @@
 <div class="dashboard-wrapper">
   <app-adminsidenav></app-adminsidenav>
+  
   <div class="main-content">
     <div class="admindashboard-header-container">
       <div class="header">
@@ -32,17 +33,61 @@
         </tbody>
       </table>
     </div>
+
     <div class="dashboard-reports-container">
-      <h2>Total Patient Growth</h2>
-      <div class="chart-container">
+      <!-- Report Generation Section -->
+      <h2>Generate Reports</h2>
+      
+      <!-- Report Type Filter -->
+      <div class="filter-container">
+        <label for="reportType">Select Report Type:</label>
+        <select id="reportType" class="report-filter">
+          <option value="patientGrowth">Patient Growth</option>
+          <option value="appointmentsPerDay">Appointments per Day</option>
+          <option value="dailyStatus">Daily Status</option>
+        </select>
+      </div>
+
+      <!-- Date Range Filter -->
+      <div class="filter-container">
+        <label for="dateRange">Select Date Range:</label>
+        <input type="date" id="startDate" class="filter-input" />
+        <input type="date" id="endDate" class="filter-input" />
+      </div>
+
+      <!-- Generate Report Button -->
+      <button class="generate-report-btn" data-bs-toggle="modal" data-bs-target="#reportModal">
+        Generate Report
+      </button>
+      
+      <!-- Chart Containers for Reports -->
+      <div class="chart-container" *ngIf="showChart">
         <canvas #medicalReportsChart></canvas>
       </div>
-    
-      <h2>Total Appointments per Day</h2>
-      <div class="chart-container">
+      
+      <div class="chart-container" *ngIf="showChart">
         <canvas #appointmentsChart></canvas>
       </div>
     </div>
-    
+  </div>
+</div>
 
+<!-- Report Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Generate Report</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Choose an action for the generated report:</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-success" (click)="downloadPDF()">Download PDF</button>
+        <button class="btn btn-info" (click)="printReport()">Print</button>
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>

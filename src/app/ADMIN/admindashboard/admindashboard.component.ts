@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { AdminsidenavComponent } from '../adminsidenav/adminsidenav.component';
 import { Chart } from 'chart.js';
 import { HttpClient } from '@angular/common/http';
+import jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-admindashboard',
@@ -21,6 +22,7 @@ export class AdmindashboardComponent implements AfterViewInit {
 
   chart: any; // Placeholder for the patient growth chart instance
   appointmentsChart: any; // Placeholder for the appointments chart instance
+  showChart: boolean = false; // Flag to control chart visibility
 
   constructor(private http: HttpClient) { }
 
@@ -113,7 +115,7 @@ export class AdmindashboardComponent implements AfterViewInit {
 
     // Create Patient Growth Chart
     this.chart = new Chart(this.chartCanvas.nativeElement, {
-      type: 'bar', 
+      type: 'bar',
       data: {
         labels: data.patientGrowth.labels,
         datasets: [{
@@ -140,7 +142,7 @@ export class AdmindashboardComponent implements AfterViewInit {
               text: 'Number of Patients'
             },
             beginAtZero: true,
-            max: 50 // Fixed max value for the Y-axis
+            max: 50
           }
         }
       }
@@ -148,7 +150,7 @@ export class AdmindashboardComponent implements AfterViewInit {
 
     // Create Appointments per Day Chart
     this.appointmentsChart = new Chart(this.appointmentsChartCanvas.nativeElement, {
-      type: 'line', // You can change the chart type here (line, bar, etc.)
+      type: 'line',
       data: {
         labels: data.appointmentsPerDay.appointmentLabels,
         datasets: [{
@@ -176,10 +178,55 @@ export class AdmindashboardComponent implements AfterViewInit {
               text: 'Number of Appointments'
             },
             beginAtZero: true,
-            max: 50 // Fixed max value for the Y-axis
+            max: 50
           }
         }
       }
     });
+  }
+
+  // Handle report generation based on selected type and date range
+  generateReport() {
+    const reportType = (document.getElementById('reportType') as HTMLSelectElement).value;
+    const startDate = (document.getElementById('startDate') as HTMLInputElement).value;
+    const endDate = (document.getElementById('endDate') as HTMLInputElement).value;
+
+    if (!startDate || !endDate) {
+      alert('Please select a valid date range');
+      return;
+    }
+
+    this.showChart = true;
+    this.fetchUsers(); // Fetch the new data based on the selected date range and report type
+  }
+
+  // **New: Download Report as PDF**
+  downloadPDF() {
+    const doc = new jsPDF();
+    doc.text("Generated Report", 20, 20);
+    doc.text(`Report Type: ${(document.getElementById('reportType') as HTMLSelectElement).value}`, 20, 30);
+    doc.text(`Date Range: ${(document.getElementById('startDate') as HTMLInputElement).value} to ${(document.getElementById('endDate') as HTMLInputElement).value}`, 20, 40);
+    
+    doc.save('report.pdf');
+  }
+
+  // **New: Print Report**
+  printReport() {
+    let reportType = (document.getElementById('reportType') as HTMLSelectElement).value;
+    let startDate = (document.getElementById('startDate') as HTMLInputElement).value;
+    let endDate = (document.getElementById('endDate') as HTMLInputElement).value;
+
+    let printContents = `
+      <h2>Generated Report</h2>
+      <p>Report Type: ${reportType}</p>
+      <p>Date Range: ${startDate} to ${endDate}</p>
+    `;
+
+    let newWindow = window.open('', '', 'width=800,height=600');
+    newWindow?.document.write('<html><head><title>Print Report</title></head><body>');
+    newWindow?.document.write(printContents);
+    newWindow?.document.write('</body></html>');
+    newWindow?.document.close();
+    newWindow?.print();
   }
 }
