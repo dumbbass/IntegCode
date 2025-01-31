@@ -35,20 +35,20 @@ export class AdmindashboardComponent implements AfterViewInit {
   }
 
   fetchUsers(): void {
-    this.http.get<{ status: boolean; users: any[] }>('http://localhost/API/carexusapi/Backend/carexus.php?action=getUsers')
+    this.http.get<{ status: boolean; patients: any[] }>('http://localhost/API/carexusapi/Backend/carexus.php?action=getPatients')
       .subscribe(response => {
         if (response.status) {
-          const userData = this.getDataForFilter(response.users);
-          this.updateChartsWithData(userData); // Update both charts with fetched data
+          const patientData = this.getDataForFilter(response.patients);
+          this.updateChartsWithData(patientData);
         } else {
-          console.error('Failed to fetch users');
+          console.error('Failed to fetch patients');
         }
       }, error => {
         console.error('Error fetching data:', error);
       });
   }
 
-  getDataForFilter(users: any[]): any {
+  getDataForFilter(patients: any[]): any {
     const labels: string[] = [];
     const data: number[] = [];
     const appointmentLabels: string[] = [];
@@ -57,35 +57,35 @@ export class AdmindashboardComponent implements AfterViewInit {
     const appointmentGroupedData: any = {};
 
     const monthNames = [
-      "January", "February", "March", "April", "May", "June", "July", "August", 
-      "September", "October", "November", "December"
+      "January", "February", "March", "April", "May", "June", "July", 
+      "August", "September", "October", "November", "December"
     ];
 
-    users.forEach(user => {
-      const userDate = new Date(user.date);
-      const periodKey = `${userDate.getFullYear()}-${userDate.getMonth() + 1}`;
+    patients.forEach(patient => {
+      const patientDate = new Date(patient.created_at); // Use created_at from patients table
+      const periodKey = `${patientDate.getFullYear()}-${patientDate.getMonth() + 1}`;
 
       if (!groupedData[periodKey]) {
         groupedData[periodKey] = 0;
       }
+      groupedData[periodKey]++;
 
-      groupedData[periodKey]++; // Increment the count of users for that period
-
-      // For appointments per day
-      const appointmentDate = new Date(user.appointmentDate); // Assuming users have an appointmentDate field
-      const appointmentKey = `${appointmentDate.getFullYear()}-${appointmentDate.getMonth() + 1}-${appointmentDate.getDate()}`;
-      
-      if (!appointmentGroupedData[appointmentKey]) {
-        appointmentGroupedData[appointmentKey] = 0;
+      // For appointments per day (if available in patients table)
+      if (patient.appointment_date) { // Assuming there's an appointment_date field
+        const appointmentDate = new Date(patient.appointment_date);
+        const appointmentKey = `${appointmentDate.getFullYear()}-${appointmentDate.getMonth() + 1}-${appointmentDate.getDate()}`;
+        
+        if (!appointmentGroupedData[appointmentKey]) {
+          appointmentGroupedData[appointmentKey] = 0;
+        }
+        appointmentGroupedData[appointmentKey]++;
       }
-      
-      appointmentGroupedData[appointmentKey]++; // Increment the count of appointments for that day
     });
 
     // Map the grouped data to labels and counts for patient growth
     for (const period in groupedData) {
       const [year, month] = period.split('-');
-      labels.push(monthNames[parseInt(month) - 1] + ' ' + year); // Convert month number to month name
+      labels.push(monthNames[parseInt(month) - 1] + ' ' + year);
       data.push(groupedData[period]);
     }
 
