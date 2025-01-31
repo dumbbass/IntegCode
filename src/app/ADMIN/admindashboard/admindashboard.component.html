@@ -1,6 +1,7 @@
 <div class="dashboard-wrapper">
   <app-adminsidenav></app-adminsidenav>
   <div class="main-content">
+    
     <div class="admindashboard-header-container">
       <div class="header">
         <div class="logo">
@@ -32,17 +33,47 @@
         </tbody>
       </table>
     </div>
+
     <div class="dashboard-reports-container">
       <h2>Total Patient Growth</h2>
       <div class="chart-container">
         <canvas #medicalReportsChart></canvas>
       </div>
-    
+      
       <h2>Total Appointments per Day</h2>
       <div class="chart-container">
         <canvas #appointmentsChart></canvas>
       </div>
-    </div>
-    
 
+      <!-- Button to Open Modal -->
+      <button (click)="openModal()" class="print-btn">Generate Report</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Report Preview Modal (Move outside dashboard container for proper positioning) -->
+<div class="report-modal" *ngIf="isModalOpen">
+  <div class="modal-content">
+    <button class="close-modal" (click)="closeModal()">✖</button>
+    <h2>Report Preview</h2>
+    
+    <div id="reportContent">
+      <h3>Patient Information</h3>
+      <table>
+        <tr>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Diagnosis</th>
+        </tr>
+        <tr *ngFor="let patient of patientData">
+          <td>{{ patient.name }}</td>
+          <td>{{ patient.age }}</td>
+          <td>{{ patient.diagnosis }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <button (click)="downloadPDF()">Download PDF</button>
+  </div>
 </div>

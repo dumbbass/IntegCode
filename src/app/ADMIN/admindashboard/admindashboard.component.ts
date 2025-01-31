@@ -4,6 +4,8 @@ import { RouterModule } from '@angular/router';
 import { AdminsidenavComponent } from '../adminsidenav/adminsidenav.component';
 import { Chart } from 'chart.js';
 import { HttpClient } from '@angular/common/http';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 @Component({
   selector: 'app-admindashboard',
@@ -19,33 +21,66 @@ export class AdmindashboardComponent implements AfterViewInit {
   @ViewChild('medicalReportsChart') chartCanvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('appointmentsChart') appointmentsChartCanvas!: ElementRef<HTMLCanvasElement>;
 
-  chart: any; // Placeholder for the patient growth chart instance
-  appointmentsChart: any; // Placeholder for the appointments chart instance
+  patients: any[] = [];
+  patientData: any[] = [];
+  isModalOpen = false;
 
-  constructor(private http: HttpClient) { }
+  chart: any; // Patient Growth Chart
+  appointmentsChart: any; // Appointments Chart
+
+  constructor(private http: HttpClient) {}
 
   ngAfterViewInit(): void {
     if (this.chartCanvas && this.appointmentsChartCanvas) {
-      this.createCharts(); // Create both charts after view initialization
+      this.createCharts();
     }
   }
 
   createCharts(): void {
-    this.fetchUsers(); // Fetch data for both charts
+    this.fetchPatients();
   }
 
-  fetchUsers(): void {
+  fetchPatients(): void {
     this.http.get<{ status: boolean; patients: any[] }>('http://localhost/API/carexusapi/Backend/carexus.php?action=getPatients')
       .subscribe(response => {
         if (response.status) {
-          const patientData = this.getDataForFilter(response.patients);
-          this.updateChartsWithData(patientData);
+          this.patients = response.patients;
+          this.patientData = response.patients; // Assigning to be used in PDF
+          const chartData = this.getDataForFilter(response.patients);
+          this.updateChartsWithData(chartData);
         } else {
           console.error('Failed to fetch patients');
         }
       }, error => {
         console.error('Error fetching data:', error);
       });
+  }
+
+  downloadPDF(): void {
+    const doc = new jsPDF();
+    doc.text('Patient Report', 14, 10);
+    doc.setFontSize(12);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 20);
+
+    const tableData = this.patientData.map(patient => [
+      patient.name, patient.age, patient.gender, patient.diagnosis, patient.status, patient.appointment_date
+    ]);
+
+    (doc as any).autoTable({
+      head: [['Name', 'Age', 'Gender', 'Diagnosis', 'Status', 'Appointment Date']],
+      body: tableData,
+      startY: 30
+    });
+
+    doc.save('Patient_Report.pdf');
+  }
+
+  openModal() {
+    this.isModalOpen = true;
+  }
+
+  closeModal() {
+    this.isModalOpen = false;
   }
 
   getDataForFilter(patients: any[]): any {
@@ -57,12 +92,12 @@ export class AdmindashboardComponent implements AfterViewInit {
     const appointmentGroupedData: any = {};
 
     const monthNames = [
-      "January", "February", "March", "April", "May", "June", "July", 
+      "January", "February", "March", "April", "May", "June", "July",
       "August", "September", "October", "November", "December"
     ];
 
     patients.forEach(patient => {
-      const patientDate = new Date(patient.created_at); // Use created_at from patients table
+      const patientDate = new Date(patient.created_at);
       const periodKey = `${patientDate.getFullYear()}-${patientDate.getMonth() + 1}`;
 
       if (!groupedData[periodKey]) {
@@ -70,11 +105,10 @@ export class AdmindashboardComponent implements AfterViewInit {
       }
       groupedData[periodKey]++;
 
-      // For appointments per day (if available in patients table)
-      if (patient.appointment_date) { // Assuming there's an appointment_date field
+      if (patient.appointment_date) {
         const appointmentDate = new Date(patient.appointment_date);
         const appointmentKey = `${appointmentDate.getFullYear()}-${appointmentDate.getMonth() + 1}-${appointmentDate.getDate()}`;
-        
+
         if (!appointmentGroupedData[appointmentKey]) {
           appointmentGroupedData[appointmentKey] = 0;
         }
@@ -82,14 +116,12 @@ export class AdmindashboardComponent implements AfterViewInit {
       }
     });
 
-    // Map the grouped data to labels and counts for patient growth
     for (const period in groupedData) {
       const [year, month] = period.split('-');
-      labels.push(monthNames[parseInt(month) - 1] + ' ' + year);
+      labels.push(`${monthNames[parseInt(month) - 1]} ${year}`);
       data.push(groupedData[period]);
     }
 
-    // Map the grouped data to labels and counts for appointments per day
     for (const appointmentDate in appointmentGroupedData) {
       const [year, month, day] = appointmentDate.split('-');
       appointmentLabels.push(`${monthNames[parseInt(month) - 1]} ${day}, ${year}`);
@@ -98,12 +130,11 @@ export class AdmindashboardComponent implements AfterViewInit {
 
     return {
       patientGrowth: { labels, data },
-      appointmentsPerDay: { appointmentLabels, appointmentData }
+      appointmentsPerDay: { labels: appointmentLabels, data: appointmentData }
     };
   }
 
   updateChartsWithData(data: any): void {
-    // Destroy existing charts before recreating them
     if (this.chart) {
       this.chart.destroy();
     }
@@ -111,9 +142,8 @@ export class AdmindashboardComponent implements AfterViewInit {
       this.appointmentsChart.destroy();
     }
 
-    // Create Patient Growth Chart
     this.chart = new Chart(this.chartCanvas.nativeElement, {
-      type: 'bar', 
+      type: 'bar',
       data: {
         labels: data.patientGrowth.labels,
         datasets: [{
@@ -140,20 +170,19 @@ export class AdmindashboardComponent implements AfterViewInit {
               text: 'Number of Patients'
             },
             beginAtZero: true,
-            max: 50 // Fixed max value for the Y-axis
+            max: 50
           }
         }
       }
     });
 
-    // Create Appointments per Day Chart
     this.appointmentsChart = new Chart(this.appointmentsChartCanvas.nativeElement, {
-      type: 'line', // You can change the chart type here (line, bar, etc.)
+      type: 'line',
       data: {
-        labels: data.appointmentsPerDay.appointmentLabels,
+        labels: data.appointmentsPerDay.labels,
         datasets: [{
           label: 'Appointments per Day',
-          data: data.appointmentsPerDay.appointmentData,
+          data: data.appointmentsPerDay.data,
           backgroundColor: '#28a745',
           borderColor: '#218838',
           borderWidth: 2,
@@ -176,7 +205,7 @@ export class AdmindashboardComponent implements AfterViewInit {
               text: 'Number of Appointments'
             },
             beginAtZero: true,
-            max: 50 // Fixed max value for the Y-axis
+            max: 50
           }
         }
       }
