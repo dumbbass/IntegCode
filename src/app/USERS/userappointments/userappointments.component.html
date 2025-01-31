@@ -21,13 +21,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let appointment of appointments">
-                        <td>{{ appointment.doctor_firstname }} {{ appointment.doctor_lastname }}</td>
-                        <td>{{ appointment.appointment_date | date: 'fullDate' }}</td>
-                        <td>{{ appointment.appointment_time }}</td>
-                        <td>{{ appointment.purpose }}</td>
-                    </tr>
-                </tbody>
+                  <tr *ngFor="let appointment of appointments">
+                      <td>{{ appointment.doctor_firstname }} {{ appointment.doctor_lastname }}</td>
+                      <td>{{ appointment.appointment_date | date: 'fullDate' }}</td>
+                      <td>{{ appointment.appointment_time }}</td>
+                      <td>{{ appointment.purpose }}</td>
+                      <td>
+                          <button class="delete-btn" (click)="deleteAppointment(appointment.appointment_id)">
+                              Delete
+                          </button>
+                      </td>
+                  </tr>
+              </tbody>
+              
             </table>
         </div>
 
@@ -66,17 +72,18 @@
 
   <div class="calendar-grid">
   <div class="weekday" *ngFor="let day of weekDays">{{ day }}</div>
-  <div
-    class="day"
-    *ngFor="let day of daysInMonth"
-    [ngClass]="{
-      'selected': isSelectedDate(day),
-      'available': isAvailableDate(day)
-    }"
-    (click)="isAvailableDate(day) && openModal(day)"
-  >
-    {{ day.getDate() }}
-  </div>
+  <<div
+  class="day"
+  *ngFor="let day of daysInMonth"
+  [ngClass]="{
+    'selected': isSelectedDate(day),
+    'past-date': !isAvailableDate(day)
+  }"
+  (click)="isAvailableDate(day) ? openModal(day) : null"
+>
+  {{ day.getDate() }}
+</div>
+
 </div>
 
 <!-- Modal -->

@@ -6,6 +6,7 @@ import { PatientService } from '../services/patient.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SidenavComponent } from '../sidenav/sidenav.component';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
     selector: 'app-userappointments',
@@ -44,10 +45,38 @@ export class UserappointmentsComponent implements OnInit {
 
   constructor(
     private doctorService: DoctorService,
+    private http: HttpClient, 
     private appointmentService: AppointmentService,
     private patientService: PatientService,
     private authService: AuthService
   ) {}
+  private getFirstDayOfMonth(year: number, month: number): number {
+    return new Date(year, month, 1).getDay();
+}
+
+private renderCalendar(year: number, month: number): void {
+    const daysContainer = document.querySelector(".calendar-grid");
+    if (!daysContainer) return;
+    
+    daysContainer.innerHTML = ""; // Clear previous month
+    const firstDay = this.getFirstDayOfMonth(year, month);
+    const totalDays = new Date(year, month + 1, 0).getDate();
+
+    for (let i = 0; i < firstDay; i++) {
+        const emptyDiv = document.createElement("div");
+        emptyDiv.classList.add("day", "empty");
+        daysContainer.appendChild(emptyDiv);
+    }
+
+    for (let i = 1; i <= totalDays; i++) {
+        const dayDiv = document.createElement("div");
+        dayDiv.classList.add("day");
+        dayDiv.textContent = i.toString();
+        daysContainer.appendChild(dayDiv);
+    }
+}
+
+
 
   ngOnInit(): void {
     this.fetchDoctors();
@@ -129,6 +158,30 @@ export class UserappointmentsComponent implements OnInit {
         }
     );
   }
+  deleteAppointment(appointmentId: number): void {
+    if (!confirm('Are you sure you want to delete this appointment?')) {
+        return;
+    }
+
+    const apiUrl = `http://localhost/API/carexusapi/backend/delete_appointment.php?action=deleteAppointment&appointmentId=${appointmentId}`;
+
+    this.http.get<{ status: boolean; message: string }>(apiUrl).subscribe(
+        (response) => {
+            if (response.status) {
+                alert('Appointment deleted successfully');
+                this.fetchAppointments(); // Refresh the list
+            } else {
+                alert('Failed to delete appointment: ' + response.message);
+            }
+        },
+        (error) => {
+            console.error('Error deleting appointment:', error);
+            alert('There was an error deleting the appointment.');
+        }
+    );
+}
+
+
 
   resetSelections(): void {
     this.selectedDate = null;
@@ -141,12 +194,14 @@ export class UserappointmentsComponent implements OnInit {
     const month = this.currentMonth.getMonth();
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
-
+  
     this.daysInMonth = [];
-    for (let date = new Date(firstDay); date <= lastDay; date.setDate(date.getDate() + 1)) {
-      this.daysInMonth.push(new Date(date));
+  
+    for (let day = 1; day <= lastDay.getDate(); day++) {
+      this.daysInMonth.push(new Date(year, month, day));
     }
   }
+  
 
   goToPreviousMonth(): void {
     const year = this.currentMonth.getFullYear();
@@ -175,9 +230,10 @@ export class UserappointmentsComponent implements OnInit {
     this.selectedTime = time;
   }
 
-  isAvailableDate(day: Date): boolean {
-    const dateKey = day.toISOString().split('T')[0]; // Format date
-    return this.timeSlots.hasOwnProperty(dateKey); // Check if the date exists in timeSlots
+  isAvailableDate(date: Date): boolean {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize to midnight for accurate comparison
+    return date >= today;
   }
 
   isSelectedDate(date: Date): boolean {
@@ -192,20 +248,13 @@ export class UserappointmentsComponent implements OnInit {
     }
   }
 
-  openModal(day: Date): void {
-    this.modalDate = day;
-    const dateKey = day.toISOString().split('T')[0]; // Convert date to 'YYYY-MM-DD'
-    
-    // Check if there are available times for the selected date
-    this.modalTimes = this.timeSlots[dateKey] || [];
-  
-    if (this.modalTimes.length > 0) {
-      this.isModalOpen = true;
-    } else {
-      alert('No available time slots for this date.');
-    }
+  openModal(date: Date): void {
+    const dateKey = date.toISOString().split('T')[0];
+    this.modalTimes = this.timeSlots[dateKey] || ['09:00 AM', '11:00 AM', '02:00 PM', '04:00 PM']; // Default times
+    this.modalDate = date;
+    this.isModalOpen = true;
   }
-  
+
   closeModal(): void {
     this.isModalOpen = false; // Close the modal
     this.modalDate = null;
@@ -217,4 +266,5 @@ export class UserappointmentsComponent implements OnInit {
     this.selectedTime = time;
     this.isModalOpen = false; // Close the modal after selection
   }
+  
 }
