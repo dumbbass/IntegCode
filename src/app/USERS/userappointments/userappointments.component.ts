@@ -45,7 +45,7 @@ export class UserappointmentsComponent implements OnInit {
 
   constructor(
     private doctorService: DoctorService,
-    private http: HttpClient, 
+    private http: HttpClient,
     private appointmentService: AppointmentService,
     private patientService: PatientService,
     private authService: AuthService
@@ -57,7 +57,7 @@ export class UserappointmentsComponent implements OnInit {
 private renderCalendar(year: number, month: number): void {
     const daysContainer = document.querySelector(".calendar-grid");
     if (!daysContainer) return;
-    
+
     daysContainer.innerHTML = ""; // Clear previous month
     const firstDay = this.getFirstDayOfMonth(year, month);
     const totalDays = new Date(year, month + 1, 0).getDate();
@@ -128,7 +128,16 @@ private renderCalendar(year: number, month: number): void {
 
   bookAppointment(): void {
     const patientId = this.authService.getPatientId();
+
+    console.log('Booking Appointment with Patient ID:', patientId);
+    console.log('Selected Doctor ID:', this.selectedDoctorId);
+    console.log('Selected Date:', this.selectedDate);
+    console.log('Selected Time:', this.selectedTime);
+    console.log('Purpose:', this.appointmentPurpose);
+
+    // Check if any required fields are empty
     if (!this.selectedDoctorId || !this.selectedDate || !this.selectedTime || !this.appointmentPurpose || !patientId) {
+        console.error('Validation Failed: Missing required fields');
         alert('Please fill in all the required fields');
         return;
     }
@@ -137,41 +146,50 @@ private renderCalendar(year: number, month: number): void {
     const selectedWeek = this.getWeekNumber(this.selectedDate);
 
     // Count the number of appointments already booked for this week
-    const appointmentsThisWeek = this.appointments.filter(app => 
+    const appointmentsThisWeek = this.appointments.filter(app =>
         this.getWeekNumber(new Date(app.appointment_date)) === selectedWeek
     );
 
     if (appointmentsThisWeek.length >= 3) {
+        console.warn('You can only book up to 3 appointments per week');
         alert('You can only book up to 3 appointments per week.');
         return;
     }
 
+    // Update the payload to match the expected format of the backend
     const appointmentData = {
         patient_id: patientId,
         doctor_id: +this.selectedDoctorId,
-        appointment_date: this.selectedDate.toISOString().split('T')[0],
-        appointment_time: this.selectedTime,
+        date: this.selectedDate.toISOString().split('T')[0],  // Use 'date' instead of 'appointment_date'
+        time: this.selectedTime,  // Use 'time' instead of 'appointment_time'
         purpose: this.appointmentPurpose,
     };
 
+    console.log('Appointment Data:', appointmentData);
+
+    // Send the appointment data to the backend
     this.appointmentService.scheduleAppointment(appointmentData).subscribe(
         (response) => {
+            // Debugging: Log the response from the backend
+            console.log('Appointment Response:', response);
+
             if (response.status) {
                 alert('Appointment booked successfully!');
                 this.fetchAppointments(); // Refresh appointments list
-                this.selectedDate = null;
-                this.selectedTime = null;
-                this.appointmentPurpose = '';
+                this.resetSelections(); // Reset the form selections
             } else {
+                console.error('Failed to book appointment:', response.message);
                 alert('Failed to book appointment: ' + response.message);
             }
         },
         (error) => {
+            // Debugging: Log the error if the API call fails
             console.error('Error booking appointment:', error);
             alert('An error occurred while booking the appointment.');
         }
     );
 }
+
 
 // Function to get the week number of a given date
 getWeekNumber(date: Date): number {
@@ -216,14 +234,14 @@ getWeekNumber(date: Date): number {
     const month = this.currentMonth.getMonth();
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
-  
+
     this.daysInMonth = [];
-  
+
     for (let day = 1; day <= lastDay.getDate(); day++) {
       this.daysInMonth.push(new Date(year, month, day));
     }
   }
-  
+
 
   goToPreviousMonth(): void {
     const year = this.currentMonth.getFullYear();
@@ -247,8 +265,8 @@ getWeekNumber(date: Date): number {
       this.selectedTime = null;
     }
   }
-  
-  
+
+
 
   selectTime(time: string): void {
     this.selectedTime = time;
@@ -268,23 +286,23 @@ getWeekNumber(date: Date): number {
     if (this.selectedDate && this.selectedTime && this.selectedDoctorId && this.appointmentPurpose) {
       // Ensure date is stored without time shift
       this.selectedDate = new Date(this.selectedDate.getFullYear(), this.selectedDate.getMonth(), this.selectedDate.getDate());
-  
+
       this.bookAppointment();
     } else {
       alert('Please fill in all the required fields');
     }
   }
-  
+
 
   openModal(date: Date): void {
     const adjustedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate()); // Ensure it's at midnight
     const dateKey = adjustedDate.toISOString().split('T')[0]; // Get proper date string
-  
+
     this.modalTimes = this.timeSlots[dateKey] || ['09:00 AM', '11:00 AM', '02:00 PM', '04:00 PM'];
     this.modalDate = adjustedDate;
     this.isModalOpen = true;
   }
-  
+
   closeModal(): void {
     this.isModalOpen = false; // Close the modal
     this.modalDate = null;
@@ -296,5 +314,5 @@ getWeekNumber(date: Date): number {
     this.selectedTime = time;
     this.isModalOpen = false; // Close the modal after selection
   }
-  
+
 }
