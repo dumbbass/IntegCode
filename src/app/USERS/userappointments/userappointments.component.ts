@@ -133,19 +133,6 @@ private renderCalendar(year: number, month: number): void {
         return;
     }
 
-    // Get the week number of the selected date
-    const selectedWeek = this.getWeekNumber(this.selectedDate);
-
-    // Count the number of appointments already booked for this week
-    const appointmentsThisWeek = this.appointments.filter(app => 
-        this.getWeekNumber(new Date(app.appointment_date)) === selectedWeek
-    );
-
-    if (appointmentsThisWeek.length >= 3) {
-        alert('You can only book up to 3 appointments per week.');
-        return;
-    }
-
     const appointmentData = {
         patient_id: patientId,
         doctor_id: +this.selectedDoctorId,
@@ -157,29 +144,20 @@ private renderCalendar(year: number, month: number): void {
     this.appointmentService.scheduleAppointment(appointmentData).subscribe(
         (response) => {
             if (response.status) {
-                alert('Appointment booked successfully!');
-                this.fetchAppointments(); // Refresh appointments list
-                this.selectedDate = null;
-                this.selectedTime = null;
-                this.appointmentPurpose = '';
+                alert('Appointment scheduled successfully');
+                this.showAppointmentForm = false;
+                this.fetchAppointments();
+                this.resetSelections();
             } else {
-                alert('Failed to book appointment: ' + response.message);
+                alert('Error scheduling appointment: ' + response.message);
             }
         },
         (error) => {
-            console.error('Error booking appointment:', error);
-            alert('An error occurred while booking the appointment.');
+            alert('There was an error scheduling your appointment.');
+            console.error('Error scheduling appointment:', error);
         }
     );
-}
-
-// Function to get the week number of a given date
-getWeekNumber(date: Date): number {
-    const startOfYear = new Date(date.getFullYear(), 0, 1);
-    const days = Math.floor((date.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000));
-    return Math.ceil((days + startOfYear.getDay() + 1) / 7);
-}
-
+  }
   deleteAppointment(appointmentId: number): void {
     if (!confirm('Are you sure you want to delete this appointment?')) {
         return;
@@ -241,14 +219,12 @@ getWeekNumber(date: Date): number {
 
   selectDate(date: Date): void {
     if (this.isAvailableDate(date)) {
-      this.selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate()); // Ensures 00:00:00 time
-      const dateKey = `${this.selectedDate.getFullYear()}-${(this.selectedDate.getMonth() + 1).toString().padStart(2, '0')}-${this.selectedDate.getDate().toString().padStart(2, '0')}`;
+      this.selectedDate = date;
+      const dateKey = date.toISOString().split('T')[0];
       this.availableTimes = this.timeSlots[dateKey] || [];
-      this.selectedTime = null;
+      this.selectedTime = null; // Reset selected time
     }
   }
-  
-  
 
   selectTime(time: string): void {
     this.selectedTime = time;
@@ -266,25 +242,19 @@ getWeekNumber(date: Date): number {
 
   confirmAppointment(): void {
     if (this.selectedDate && this.selectedTime && this.selectedDoctorId && this.appointmentPurpose) {
-      // Ensure date is stored without time shift
-      this.selectedDate = new Date(this.selectedDate.getFullYear(), this.selectedDate.getMonth(), this.selectedDate.getDate());
-  
-      this.bookAppointment();
+        this.bookAppointment();
     } else {
-      alert('Please fill in all the required fields');
+        alert('Please fill in all the required fields');
     }
   }
-  
 
   openModal(date: Date): void {
-    const adjustedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate()); // Ensure it's at midnight
-    const dateKey = adjustedDate.toISOString().split('T')[0]; // Get proper date string
-  
-    this.modalTimes = this.timeSlots[dateKey] || ['09:00 AM', '11:00 AM', '02:00 PM', '04:00 PM'];
-    this.modalDate = adjustedDate;
+    const dateKey = date.toISOString().split('T')[0];
+    this.modalTimes = this.timeSlots[dateKey] || ['09:00 AM', '11:00 AM', '02:00 PM', '04:00 PM']; // Default times
+    this.modalDate = date;
     this.isModalOpen = true;
   }
-  
+
   closeModal(): void {
     this.isModalOpen = false; // Close the modal
     this.modalDate = null;
