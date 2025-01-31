@@ -5,7 +5,7 @@
         <h1>CarexusFlow</h1>
     </div>
     <ul class="sidenav-menu">
-      <li class="sidenav-item">
+      <li *ngIf="showDashboardLink" class="sidenav-item">
         <button (click)="navigateTo('dashboard')" class="sidenav-link">
           <i class="fa fa-tachometer-alt"></i> Dashboard
         </button>

@@ -5,12 +5,14 @@ import { RouterModule } from '@angular/router'; // Add this line
 
 @Component({
     selector: 'app-sidenav',
+    standalone: true,
     imports: [CommonModule, RouterModule], // Ensure RouterModule is here
     templateUrl: './sidenav.component.html',
     styleUrls: ['./sidenav.component.css']
 })
 export class SidenavComponent {
   isLogoutModalVisible = false; // Controls the visibility of the logout modal
+  showDashboardLink = false; // Add this property to control dashboard visibility
 
   constructor(private router: Router) {}
 
