@@ -408,3 +408,88 @@ button:hover {
 .search-bar:hover {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* Shadow effect on hover */
 }
+
+/* Add these new styles to your CSS file */
+
+.remarks-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+    min-width: 150px;
+}
+
+.edit-btn, .save-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.edit-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.save-btn {
+    background-color: #2196F3;
+    color: white;
+}
+
+.edit-btn:hover, .save-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+/* Add these new styles */
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.status-badge.approved {
+    background-color: #4CAF50;
+    color: white;
+}
+
+/* Style for the last updated column */
+.appointments-table td:last-child {
+    font-size: 12px;
+    color: #666;
+}
+
+/* Search container specific for approved appointments */
+.appointments-section .search-container {
+    margin-bottom: 20px;
+}
+
+/* Responsive table adjustments */
+@media screen and (max-width: 768px) {
+    .appointments-table th:last-child,
+    .appointments-table td:last-child {
+        display: none;
+    }
+}
+
+/* Add these styles for the remarks cell */
+.appointments-table td span {
+    display: block;
+    min-height: 20px;
+    line-height: 1.5;
+}
+
+.remarks-input {
+    width: 100%;
+    min-width: 200px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    line-height: 1.5;
+}

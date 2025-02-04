@@ -21,6 +21,9 @@ export class AppointmentsComponent implements OnInit {
   selectedAppointmentId: number | null = null;
   remarks = '';
   searchQuery: string = ''; // Declare searchQuery
+  approvedAppointments: DoctorAppointment[] = [];
+  isEditing: { [key: number]: boolean } = {};
+  editableRemarks: { [key: number]: string } = {};
 
   constructor(
     private adminAppointmentService: AdminAppointmentService,
@@ -66,6 +69,19 @@ export class AppointmentsComponent implements OnInit {
         }
       },
       error: (error: unknown) => console.error('Error loading modified appointments:', error)
+    });
+
+    // Load approved appointments
+    this.adminAppointmentService.getAppointmentHistory(doctorId).subscribe({
+      next: (response) => {
+        if (response.status && response.appointments) {
+          // Filter only approved appointments
+          this.approvedAppointments = response.appointments.filter(
+            appointment => appointment.status === 'approved'
+          );
+        }
+      },
+      error: (error: unknown) => console.error('Error loading approved appointments:', error)
     });
   }
 
@@ -135,5 +151,48 @@ export class AppointmentsComponent implements OnInit {
     } else {
       this.loadAllAppointments(); // Reset to the full list if search query is empty
     }
+  }
+
+  startEditing(appointment: DoctorAppointment): void {
+    this.isEditing[appointment.appointment_id] = true;
+    this.editableRemarks[appointment.appointment_id] = appointment.remarks || '';
+  }
+
+  saveRemarks(appointmentId: number): void {
+    const remarks = this.editableRemarks[appointmentId];
+    
+    this.adminAppointmentService.updateAppointmentStatus({
+      appointment_id: appointmentId,
+      status: 'approved',
+      remarks: remarks.trim()
+    }).subscribe({
+      next: (response) => {
+        if (response.status) {
+          // Update the local data
+          const appointment = this.approvedAppointments.find(a => a.appointment_id === appointmentId);
+          if (appointment) {
+            appointment.remarks = remarks.trim();
+          }
+          // Exit edit mode
+          this.isEditing[appointmentId] = false;
+          this.editableRemarks[appointmentId] = '';
+        } else {
+          alert(response.message || 'Failed to save remarks');
+        }
+      },
+      error: (error) => {
+        console.error('Error saving remarks:', error);
+        alert('Failed to save remarks. Please try again.');
+      }
+    });
+  }
+
+  formatTableRemarks(remarks: string | undefined | null): string {
+    if (!remarks) return '-';
+    return remarks
+      .split('.')
+      .filter(sentence => sentence.trim().length > 0)
+      .map(sentence => sentence.trim() + '.')
+      .join('\n');
   }
 }

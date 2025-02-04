@@ -23,28 +23,62 @@
                     </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let appointment of appointments">
-                      <td>{{ appointment.doctor_firstname }} {{ appointment.doctor_lastname }}</td>
-                      <td>{{ appointment.appointment_date | date: 'fullDate' }}</td>
-                      <td>{{ appointment.appointment_time }}</td>
-                      <td>{{ appointment.purpose }}</td>
-                      <td>{{ appointment.status }}</td> 
-                      <td>
-                        <button *ngIf="appointment.remarks" 
-                                (click)="viewRemarks(appointment.remarks)"
-                                class="view-remarks-btn">
-                          View Remarks
-                        </button>
-                        <span *ngIf="!appointment.remarks">-</span>
-                      </td>
-                      <!-- <td>
-                          <button class="delete-btn" (click)="deleteAppointment(appointment.appointment_id)">
-                              Delete
-                          </button>
-                      </td> -->
-                  </tr>
-              </tbody>
-              
+                    <tr *ngFor="let appointment of appointments">
+                        <td>{{ appointment.doctor_firstname }} {{ appointment.doctor_lastname }}</td>
+                        <td>{{ appointment.appointment_date | date: 'fullDate' }}</td>
+                        <td>{{ appointment.appointment_time }}</td>
+                        <td>{{ appointment.purpose }}</td>
+                        <td>{{ appointment.status }}</td> 
+                        <td>
+                            <!-- Only show View Remarks button if status is not approved -->
+                            <button *ngIf="appointment.remarks && appointment.status !== 'approved'" 
+                                    (click)="viewRemarks(appointment.remarks)"
+                                    class="view-remarks-btn">
+                                <i class="fas fa-file-medical"></i>
+                                View Remarks
+                            </button>
+                            <span *ngIf="!appointment.remarks || appointment.status === 'approved'">-</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Second table showing only approved/declined appointments -->
+        <div class="patients-list-container">
+            <h2>Completed Appointments</h2>
+            <table class="patients-table">
+                <thead>
+                    <tr>
+                        <th>Doctor Name</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Purpose</th>
+                        <th>Status</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let appointment of approvedOnlyAppointments">
+                        <td>{{ appointment.doctor_firstname }} {{ appointment.doctor_lastname }}</td>
+                        <td>{{ appointment.appointment_date | date: 'fullDate' }}</td>
+                        <td>{{ appointment.appointment_time }}</td>
+                        <td>{{ appointment.purpose }}</td>
+                        <td>{{ appointment.status }}</td>
+                        <td>
+                            <button *ngIf="appointment.remarks" 
+                                    (click)="viewRemarks(appointment.remarks)"
+                                    class="view-remarks-btn">
+                                <i class="fas fa-file-medical"></i>
+                                View Remarks
+                            </button>
+                            <span *ngIf="!appointment.remarks">-</span>
+                        </td>
+                    </tr>
+                    <tr *ngIf="approvedOnlyAppointments.length === 0">
+                        <td colspan="6" class="empty-state">No approved appointments found</td>
+                    </tr>
+                </tbody>
             </table>
         </div>
 
@@ -136,18 +170,28 @@
 
 </div>
 
-<!-- Add this remarks modal -->
+<!-- Enhanced Remarks Modal -->
 <div class="remarks-modal" *ngIf="remarksModalVisible">
     <div class="modal-content">
         <div class="modal-header">
-            <h3>Appointment Remarks</h3>
+            <h3><i class="fas fa-clipboard-list"></i> Medical Recommendations</h3>
             <button class="close-btn" (click)="closeRemarksModal()">&times;</button>
         </div>
         <div class="modal-body">
-            <p>{{ currentRemarks }}</p>
+            <div class="recommendation-content">
+                <i class="fas fa-quote-left quote-icon"></i>
+                <div class="recommendations-list">
+                    <p *ngFor="let sentence of formatRemarks(currentRemarks)">
+                        {{ sentence }}
+                    </p>
+                </div>
+                <i class="fas fa-quote-right quote-icon"></i>
+            </div>
         </div>
         <div class="modal-footer">
-            <button (click)="closeRemarksModal()">Close</button>
+            <button class="close-button" (click)="closeRemarksModal()">
+                <i class="fas fa-times"></i> Close
+            </button>
         </div>
     </div>
 </div>

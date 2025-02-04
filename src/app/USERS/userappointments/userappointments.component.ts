@@ -9,6 +9,18 @@ import { SidenavComponent } from '../sidenav/sidenav.component';
 import { HttpClient } from '@angular/common/http';
 import { DoctorNamePipe } from '../pipes/doctor-name.pipe';
 
+interface Appointment {
+  appointment_id: number;
+  patient_name: string;
+  doctor_firstname: string;
+  doctor_lastname: string;
+  appointment_date: string;
+  appointment_time: string;
+  purpose: string;
+  status: string;
+  remarks?: string;
+}
+
 @Component({
     selector: 'app-userappointments',
     imports: [CommonModule, SidenavComponent, FormsModule, DoctorNamePipe],
@@ -24,7 +36,9 @@ export class UserappointmentsComponent implements OnInit {
   appointmentDate: string = '';
   appointmentPurpose: string = '';
   patientId: number | null = null;
-  appointments: any[] = [];
+  appointments: Appointment[] = [];
+  approvedOnlyAppointments: Appointment[] = [];
+  filteredAppointments: Appointment[] = [];
   currentMonth: Date = new Date();
   selectedDates: Date[] = [];
   weekDays: string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -34,11 +48,10 @@ export class UserappointmentsComponent implements OnInit {
   availableTimes: string[] = [];
   selectedDate: Date | null = null;
   selectedTime: string | null = null;
-  isModalOpen: boolean = false; // Modal visibility state
-  modalDate: Date | null = null; // Date selected for the modal
-  modalTimes: { time: string; scheduleId: string }[] = []; // Available times for the selected date
+  isModalOpen: boolean = false;
+  modalDate: Date | null = null;
+  modalTimes: { time: string; scheduleId: string }[] = [];
 
-  // Mock availability for specific dates
   timeSlots: { [key: string]: string[] } = {
     '2025-01-29': ['09:00 AM', '11:00 AM', '02:00 PM', '04:00 PM'],
     '2025-01-31': ['10:00 AM', '01:00 PM', '03:30 PM', '05:00 PM'],
@@ -58,15 +71,16 @@ export class UserappointmentsComponent implements OnInit {
     private patientService: PatientService,
     private authService: AuthService
   ) {}
+
   private getFirstDayOfMonth(year: number, month: number): number {
     return new Date(year, month, 1).getDay();
-}
+  }
 
-private renderCalendar(year: number, month: number): void {
+  private renderCalendar(year: number, month: number): void {
     const daysContainer = document.querySelector(".calendar-grid");
     if (!daysContainer) return;
     
-    daysContainer.innerHTML = ""; // Clear previous month
+    daysContainer.innerHTML = "";
     const firstDay = this.getFirstDayOfMonth(year, month);
     const totalDays = new Date(year, month + 1, 0).getDate();
 
@@ -82,9 +96,7 @@ private renderCalendar(year: number, month: number): void {
         dayDiv.textContent = i.toString();
         daysContainer.appendChild(dayDiv);
     }
-}
-
-
+  }
 
   ngOnInit(): void {
     const userId = this.authService.getUserId();
@@ -105,7 +117,6 @@ private renderCalendar(year: number, month: number): void {
         });
     }
 
-    // Fetch doctors list
     this.doctorService.getDoctors().subscribe(
         (response) => {
             if (response.status) {
@@ -133,6 +144,10 @@ private renderCalendar(year: number, month: number): void {
         (response) => {
           if (response.status) {
             this.appointments = response.appointments;
+            
+            this.approvedOnlyAppointments = response.appointments.filter(
+              (app: Appointment) => app.status === 'approved'
+            );
           } else {
             console.error('Failed to fetch appointments:', response.message);
           }
@@ -166,20 +181,12 @@ private renderCalendar(year: number, month: number): void {
         return;
     }
 
-    // Check if the selected date is at least one week after the latest appointment
-    const latestAppointment = this.appointments
-        .filter(app => app.status !== 'declined')
-        .map(app => new Date(app.appointment_date))
-        .sort((a, b) => b.getTime() - a.getTime())[0];
+    const oneWeekAfterLatest = new Date(this.selectedDate);
+    oneWeekAfterLatest.setDate(oneWeekAfterLatest.getDate() + 7);
 
-    if (latestAppointment) {
-        const oneWeekAfterLatest = new Date(latestAppointment);
-        oneWeekAfterLatest.setDate(oneWeekAfterLatest.getDate() + 7);
-
-        if (this.selectedDate < oneWeekAfterLatest) {
-            alert(`You can only schedule appointments at least one week after your last appointment. Please select a date after ${oneWeekAfterLatest.toLocaleDateString()}`);
-            return;
-        }
+    if (this.selectedDate < oneWeekAfterLatest) {
+        alert(`You can only schedule appointments at least one week after your last appointment. Please select a date after ${oneWeekAfterLatest.toLocaleDateString()}`);
+        return;
     }
 
     const appointmentData = {
@@ -216,7 +223,7 @@ private renderCalendar(year: number, month: number): void {
         (response) => {
             if (response.status) {
                 alert('Appointment deleted successfully');
-                this.fetchAppointments(); // Refresh the list
+                this.fetchAppointments();
             } else {
                 alert('Failed to delete appointment: ' + response.message);
             }
@@ -227,8 +234,6 @@ private renderCalendar(year: number, month: number): void {
         }
     );
 }
-
-
 
   resetSelections(): void {
     this.selectedDate = null;
@@ -249,7 +254,6 @@ private renderCalendar(year: number, month: number): void {
     }
   }
   
-
   goToPreviousMonth(): void {
     const year = this.currentMonth.getFullYear();
     const month = this.currentMonth.getMonth();
@@ -266,9 +270,8 @@ private renderCalendar(year: number, month: number): void {
 
   selectDate(date: Date): void {
     if (!this.isAvailableDate(date)) {
-        if (this.appointments.length > 0) {
-            const latestAppointment = this.appointments
-                .filter(app => app.status !== 'declined')
+        if (this.approvedOnlyAppointments.length > 0) {
+            const latestAppointment = this.approvedOnlyAppointments
                 .map(app => new Date(app.appointment_date))
                 .sort((a, b) => b.getTime() - a.getTime())[0];
             
@@ -289,37 +292,29 @@ private renderCalendar(year: number, month: number): void {
     }
   }
   
-  
-
   selectTime(time: string): void {
     this.selectedTime = time;
   }
 
   isAvailableDate(date: Date): boolean {
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Normalize to midnight for accurate comparison
+    today.setHours(0, 0, 0, 0);
 
-    // First check if date is in the past
     if (date < today) {
         return false;
     }
 
-    // Find the latest appointment date for this patient
-    const latestAppointment = this.appointments
-        .filter(app => app.status !== 'declined') // Ignore declined appointments
+    const latestAppointment = this.approvedOnlyAppointments
         .map(app => new Date(app.appointment_date))
         .sort((a, b) => b.getTime() - a.getTime())[0];
 
     if (latestAppointment) {
-        // Calculate one week after the latest appointment
         const oneWeekAfterLatest = new Date(latestAppointment);
         oneWeekAfterLatest.setDate(oneWeekAfterLatest.getDate() + 7);
 
-        // Date is available if it's at least one week after the latest appointment
         return date >= oneWeekAfterLatest;
     }
 
-    // If no previous appointments, any future date is available
     return true;
   }
 
@@ -342,7 +337,7 @@ private renderCalendar(year: number, month: number): void {
 
         this.patientService.getPatientInfo(userId).subscribe({
             next: (response: any) => {
-                console.log('Patient info response:', response); // Debug log
+                console.log('Patient info response:', response);
                 if (response.status && response.user) {
                     this.patientId = response.user.id;
                     this.submitAppointment();
@@ -361,7 +356,6 @@ private renderCalendar(year: number, month: number): void {
     }
   }
   
-
   openModal(date: Date): void {
     if (!this.selectedDoctorId) {
       alert('Please select a doctor first');
@@ -387,7 +381,7 @@ private renderCalendar(year: number, month: number): void {
   }
 
   closeModal(): void {
-    this.isModalOpen = false; // Close the modal
+    this.isModalOpen = false;
     this.modalDate = null;
     this.modalTimes = [];
   }
@@ -434,7 +428,6 @@ private renderCalendar(year: number, month: number): void {
           (response) => {
             if (response.status) {
               this.doctorSchedules = response.schedules;
-              // Mark dates with available schedules in the calendar
               this.updateAvailableDates();
             }
           }
@@ -448,7 +441,6 @@ private renderCalendar(year: number, month: number): void {
     );
   }
 
-  // Helper method to reset form
   resetForm(): void {
     this.selectedDoctorId = null;
     this.selectedDate = null;
@@ -501,5 +493,13 @@ private renderCalendar(year: number, month: number): void {
   closeRemarksModal(): void {
     this.remarksModalVisible = false;
     this.currentRemarks = '';
+  }
+
+  formatRemarks(remarks: string): string[] {
+    // Split the text by periods, filter out empty strings, and trim each sentence
+    return remarks
+      .split('.')
+      .filter(sentence => sentence.trim().length > 0)
+      .map(sentence => sentence.trim() + '.');
   }
 }
