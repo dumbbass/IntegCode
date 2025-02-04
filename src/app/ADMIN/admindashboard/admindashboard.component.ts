@@ -20,11 +20,11 @@ import { saveAs } from 'file-saver';
 export class AdmindashboardComponent implements AfterViewInit {
   patients: any[] = [];
   @ViewChild('medicalReportsChart') chartCanvas!: ElementRef<HTMLCanvasElement>;
-  // @ViewChild('appointmentsChart') appointmentsChartCanvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('appointmentsChart') appointmentsChartCanvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('reportChartCanvas', { static: false }) reportChartCanvas!: ElementRef;
 
   chart: any; // Placeholder for the patient growth chart instance
-  // appointmentsChart: any; // Placeholder for the appointments chart instance
+  appointmentsChart: any;
 
   constructor(private http: HttpClient) { }
   isReportModalOpen = false;
@@ -114,7 +114,162 @@ export class AdmindashboardComponent implements AfterViewInit {
   createCharts(): void {
     this.fetchUsers();
     this.fetchPatients();
+    this.createAppointmentsChart();
   }
+
+  createAppointmentsChart(): void {
+    this.http.get<{ status: boolean; appointments: any[] }>(
+      'http://localhost/API/carexusapi/Backend/carexus.php?action=getPatientAppointments'
+    ).subscribe(response => {
+      if (response.status && response.appointments) {
+        const appointmentStats = this.processAppointmentData(response.appointments);
+
+        if (this.appointmentsChartCanvas) {
+          if (this.appointmentsChart) {
+            this.appointmentsChart.destroy();
+          }
+
+          this.appointmentsChart = new Chart(this.appointmentsChartCanvas.nativeElement, {
+            type: 'bar',
+            data: {
+              labels: ['Pending', 'Approved', 'Declined'],
+              datasets: [{
+                label: 'Appointments by Status',
+                data: [
+                  appointmentStats.pending,
+                  appointmentStats.approved,
+                  appointmentStats.declined
+                ],
+                backgroundColor: [
+                  'rgba(255, 206, 86, 0.8)',  // yellow for pending
+                  'rgba(40, 167, 69, 0.8)',  // green for approved
+                  'rgba(220, 53, 69, 0.8)'   // red for declined
+                ],
+                borderColor: [
+                  'rgba(255, 206, 86, 1)',
+                  'rgba(40, 167, 69, 1)',
+                  'rgba(220, 53, 69, 1)'
+                ],
+                borderWidth: 2,
+                borderRadius: 8,
+                maxBarThickness: 60
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              layout: {
+                padding: {
+                  top: 20,
+                  bottom: 20,
+                  left: 20,
+                  right: 20
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  grid: {
+                    display: true,
+                    color: 'rgba(0, 0, 0, 0.1)'
+                  },
+                  title: {
+                    display: true,
+                    text: 'Number of Appointments',
+                    font: {
+                      size: 14,
+                      weight: 'bold'
+                    },
+                    padding: 10
+                  },
+                  ticks: {
+                    stepSize: 1,
+                    precision: 0
+                  }
+                },
+                x: {
+                  grid: {
+                    display: false
+                  },
+                  ticks: {
+                    font: {
+                      size: 12,
+                      weight: 'bold'
+                    }
+                  }
+                }
+              },
+              plugins: {
+                title: {
+                  display: true,
+                  text: 'Appointment Distribution by Status',
+                  font: {
+                    size: 18,
+                    weight: 'bold'
+                  },
+                  padding: {
+                    top: 10,
+                    bottom: 30
+                  }
+                },
+                legend: {
+                  display: false
+                },
+                tooltip: {
+                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                  titleColor: '#000',
+                  titleFont: {
+                    size: 14,
+                    weight: 'bold'
+                  },
+                  bodyColor: '#000',
+                  bodyFont: {
+                    size: 13
+                  },
+                  borderColor: 'rgba(0, 0, 0, 0.1)',
+                  borderWidth: 1,
+                  padding: 12,
+                  displayColors: true,
+                  callbacks: {
+                    label: function(context: any) {
+                      return `Total: ${context.raw} appointments`;
+                    }
+                  }
+                }
+              }
+            }
+          });
+        }
+      }
+    }, error => {
+      console.error('Error fetching appointment data:', error);
+    });
+  }
+
+  processAppointmentData(appointments: any[]): any {
+    const stats = {
+      pending: 0,
+      approved: 0,
+      declined: 0
+    };
+
+    appointments.forEach(appointment => {
+      switch (appointment.status.toLowerCase()) {
+        case 'pending':
+          stats.pending++;
+          break;
+        case 'approved':
+          stats.approved++;
+          break;
+        case 'declined':
+          stats.declined++;
+          break;
+      }
+    });
+
+    return stats;
+  }
+
   fetchAppointments(): void {
     this.http.get<{ status: boolean; appointments: any[] }>(
       'http://localhost/API/carexusapi/Backend/carexus.php?action=getPatientAppointments'
@@ -200,10 +355,7 @@ export class AdmindashboardComponent implements AfterViewInit {
   getDataForFilter(patients: any[]): any {
     const labels: string[] = [];
     const data: number[] = [];
-    // const appointmentLabels: string[] = []; // Commented out this variable
-    // const appointmentData: number[] = []; // Commented out this variable
     const groupedData: any = {};
-    // const appointmentGroupedData: any = {}; // Commented out this variable
 
     const monthNames = [
       "January", "February", "March", "April", "May", "June", "July", 
@@ -218,17 +370,6 @@ export class AdmindashboardComponent implements AfterViewInit {
         groupedData[periodKey] = 0;
       }
       groupedData[periodKey]++;
-
-      // For appointments per day (if available in patients table)
-      // if (patient.appointment_date) { // Assuming there's an appointment_date field
-      //   const appointmentDate = new Date(patient.appointment_date);
-      //   const appointmentKey = `${appointmentDate.getFullYear()}-${appointmentDate.getMonth() + 1}-${appointmentDate.getDate()}`;
-        
-      //   if (!appointmentGroupedData[appointmentKey]) {
-      //     appointmentGroupedData[appointmentKey] = 0;
-      //   }
-      //   appointmentGroupedData[appointmentKey]++;
-      // }
     });
 
     // Map the grouped data to labels and counts for patient growth
@@ -238,16 +379,8 @@ export class AdmindashboardComponent implements AfterViewInit {
       data.push(groupedData[period]);
     }
 
-    // Map the grouped data to labels and counts for appointments per day
-    // for (const appointmentDate in appointmentGroupedData) {
-    //   const [year, month, day] = appointmentDate.split('-');
-    //   appointmentLabels.push(`${monthNames[parseInt(month) - 1]} ${day}, ${year}`);
-    //   appointmentData.push(appointmentGroupedData[appointmentDate]);
-    // }
-
     return {
       patientGrowth: { labels, data }
-      // appointmentsPerDay: { appointmentLabels, appointmentData } // Commented out this return property
     };
   }
 
@@ -256,9 +389,6 @@ export class AdmindashboardComponent implements AfterViewInit {
     if (this.chart) {
       this.chart.destroy();
     }
-    // if (this.appointmentsChart) { // Commented out this check
-    //   this.appointmentsChart.destroy();
-    // }
 
     // Create Patient Growth Chart
     this.chart = new Chart(this.chartCanvas.nativeElement, {
@@ -289,45 +419,15 @@ export class AdmindashboardComponent implements AfterViewInit {
               text: 'Number of Patients'
             },
             beginAtZero: true,
-            max: 50 // Fixed max value for the Y-axis
+            max: 50, // Fixed max value for the Y-axis
+            ticks: {
+              stepSize: 1,
+              precision: 0 // This ensures whole numbers only
+            }
           }
         }
       }
     });
-
-    // Create Appointments per Day Chart
-    // this.appointmentsChart = new Chart(this.appointmentsChartCanvas.nativeElement, { // Commented out this chart creation
-    //   type: 'line',
-    //   data: {
-    //     labels: data.appointmentsPerDay.appointmentLabels,
-    //     datasets: [{
-    //       label: 'Appointments',
-    //       data: data.appointmentsPerDay.appointmentData,
-    //       backgroundColor: 'rgba(255, 99, 132, 0.2)',
-    //       borderColor: 'rgba(255, 99, 132, 1)',
-    //       borderWidth: 1,
-    //       fill: true
-    //     }]
-    //   },
-    //   options: {
-    //     responsive: true,
-    //     maintainAspectRatio: false,
-    //     scales: {
-    //       x: {
-    //         title: {
-    //           display: true,
-    //           text: 'Appointments per Day'
-    //         }
-    //       },
-    //       y: {
-    //         title: {
-    //           display: true,
-    //           text: 'Number of Appointments'
-    //         },
-    //         beginAtZero: true
-    //       }
-    //     }
-    //   }
-    // });
   }
 }
+

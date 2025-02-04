@@ -299,7 +299,7 @@
 .chart-container canvas {
   max-width: 100%;
   max-height: 100%;
-  border-radius: 4px;  /* Smooth rounded corners for the canvas */
+  border-radius: 4px;
 }
 
 .dashboard-appointments-container,
@@ -375,7 +375,8 @@ button:active {
   }
 
   .chart-container {
-    height: 250px;
+    height: 400px;
+    padding: 15px;
   }
 }
 .print-report-btn, .export-btn, .print-btn {
@@ -560,4 +561,38 @@ button:active {
   border-radius: 6px;
   margin-bottom: 10px;
   margin-top: 30px;
+}
+
+.dashboard-reports-container h2 {
+  color: #1a202c;
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 25px 0 20px;
+  padding-left: 15px;
+  border-left: 5px solid #3182ce;
+  line-height: 1.4;
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: -0.5px;
+}
+
+/* Add smooth scrolling to the whole page */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Add some spacing between charts */
+.chart-container + .chart-container {
+  margin-top: 40px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dashboard-reports-container {
+    padding: 20px;
+  }
+
+  .dashboard-reports-container h2 {
+    font-size: 1.5rem;
+    padding-left: 12px;
+  }
 }
