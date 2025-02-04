@@ -3,19 +3,19 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AdminsidenavComponent } from '../adminsidenav/adminsidenav.component';
-import { FormsModule } from '@angular/forms';  // Import FormsModule
+import { FormsModule } from '@angular/forms'; // Import FormsModule
 import { ArchiveService } from '../archive/archive.service';
 
 @Component({
-    selector: 'app-patient',
-    imports: [
-        CommonModule,
-        RouterModule,
-        AdminsidenavComponent,
-        FormsModule // Add FormsModule here
-    ],
-    templateUrl: './patient.component.html',
-    styleUrls: ['./patient.component.css']
+  selector: 'app-patient',
+  imports: [
+    CommonModule,
+    RouterModule,
+    AdminsidenavComponent,
+    FormsModule // Add FormsModule here
+  ],
+  templateUrl: './patient.component.html',
+  styleUrls: ['./patient.component.css']
 })
 export class PatientComponent implements OnInit {
   users: any[] = [];
@@ -26,8 +26,11 @@ export class PatientComponent implements OnInit {
   userToArchive: any = null;
   archiveRemarks: string = '';
   isRemarksTooLong: boolean = false; // Flag to check if remarks exceed word limit
+  showHistoryModal: boolean = false; // Flag for Patient History modal
+  appointments: any[] = []; // Added appointments arrayz
+  patientHistory: any = null; // Add this property
 
-  constructor(private http: HttpClient, private archiveService: ArchiveService) {}
+  constructor(private http: HttpClient, private archiveService: ArchiveService, ) {}
 
   ngOnInit() {
     this.fetchUsers();
@@ -57,7 +60,7 @@ export class PatientComponent implements OnInit {
       error => console.error('Error fetching users', error)
     );
   }
-
+ 
   searchUsers() {
     if (this.searchQuery.trim() === '') {
       this.filteredUsers = this.users;
@@ -76,15 +79,57 @@ export class PatientComponent implements OnInit {
       email: user.email || 'N/A',
       contact_number: user.contact_number || 'N/A',
       home_address: user.home_address || 'N/A',
-      birhtplace: user.birhtplace || 'N/A',
+      birthplace: user.birthplace || 'N/A',
       age: user.age || 'N/A',
       nationality: user.nationality || 'N/A',
       religion: user.religion || 'N/A',
       civil_status: user.civil_status || 'N/A',
-      // height: user.height || 'N/A',
-      // weight: user.weight || 'N/A',
-      // medicalHistory: user.medicalHistory || []
+      patient_id: user.patient_id
     };
+  }
+
+  openHistoryModal(user: any) {
+    if (!user.patient_id) {
+      console.error('No patient ID found for user:', user);
+      alert('Cannot fetch patient history: Patient ID not found');
+      return;
+    }
+
+    // Close the Patient Details Modal first
+    this.selectedUser = null;
+    
+    // Then open History Modal with the user data
+    this.showHistoryModal = true;
+    
+    // Fetch patient history when opening the modal
+    this.http.get<any>(`http://localhost/API/carexusapi/Backend/carexus.php?action=getPatientHistory&patient_id=${user.patient_id}`)
+      .subscribe(
+        response => {
+          if (response.status) {
+            this.patientHistory = response.history;
+          } else {
+            this.patientHistory = {
+              medical_history: 'No data available',
+              surgical_history: 'No data available',
+              medications: 'No data available',
+              allergies: 'No data available',
+              injuries_accidents: 'No data available',
+              special_needs: 'No data available',
+              blood_transfusion: 'No',
+              present_history: 'No data available'
+            };
+          }
+        },
+        error => {
+          console.error('Error fetching patient history:', error);
+          this.patientHistory = null;
+        }
+      );
+  }
+  
+
+  closeHistoryModal() {
+    this.showHistoryModal = false;
   }
 
   closeModal() {
@@ -121,4 +166,21 @@ export class PatientComponent implements OnInit {
       alert("Remarks should not exceed 30 words.");
     }
   }
+  
+
+  loadAppointments(email: string) {
+    this.http.get<any[]>(`http://localhost/API/carexusapi/Backend/carexus.php?action=getAppointments&email=${email}`)
+      .subscribe(
+        response => {
+          this.appointments = response; // Populate appointments for the selected user
+        },
+        error => console.error('Error fetching appointments', error)
+      );
+
+      
+  }
+  // Add this viewRemarks method
+  viewRemarks(remarks: string) {
+    alert(remarks); // You can replace this with any other logic to view remarks
+    }
 }

@@ -1,48 +1,123 @@
 <div class="dashboard-wrapper">
   <app-adminsidenav></app-adminsidenav>
+
   <div class="main-content">
+    <!-- Dashboard Header -->
     <div class="admindashboard-header-container">
       <div class="header">
         <div class="logo">
           <i class="fas fa-th-large"></i> Dashboard
+          <button class="print-report-btn" (click)="openReportModal()">
+            <i class="fas fa-file-alt"></i> Generate Report
+          </button>
+          
         </div>
-        <div class="search-container">
-          <input type="text" class="search-bar" placeholder="Search">
-          <i class="fas fa-search search-icon"></i>
-        </div>
+        
       </div>
     </div>
 
+    <!-- Current Patients Queue -->
     <div class="admindashboard-list-container">
-      <h2>Current Patients List in your Today's Queue</h2>
+      <h2>Current Patients List in Today's Queue</h2>
       <table class="admindashboard-table">
         <thead>
           <tr>
             <th>Name</th>
-            <th>Gender</th>
-            <th>Status</th>
+            <th>Email</th>
+            <th>Contact Number</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>John Doe</td>
-            <td>Male</td>
-            <td>Pending</td>
-          </tr>
+          <tr *ngFor="let patient of patients">
+            <td>{{ patient.firstname }} {{ patient.lastname }}</td>
+            <td>{{ patient.email }}</td>
+            <td>{{ patient.contact_number || 'Pending' }}</td>
+          </tr> 
         </tbody>
       </table>
     </div>
+
+    <!-- Charts Section -->
     <div class="dashboard-reports-container">
       <h2>Total Patient Growth</h2>
       <div class="chart-container">
         <canvas #medicalReportsChart></canvas>
       </div>
-    
-      <h2>Total Appointments per Day</h2>
+
+      <!-- <h2>Total Appointments per Day</h2>
       <div class="chart-container">
         <canvas #appointmentsChart></canvas>
+      </div> -->
+    </div>
+
+    <!-- Print Report Button -->
+    
+    <!-- Report Modal -->
+    <div class="report-modal" *ngIf="isReportModalOpen">
+      <div class="report-modal-content">
+        <button class="close-modal-btn" (click)="closeReportModal()">✖</button>
+        <h3 class="report-title">All Registered Patients</h3>
+
+        <table class="excel-table">
+          <thead>
+            <tr>
+              <th>Patient ID</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Gender</th>
+              <th>Email</th>
+              <th>Age</th>
+              <th>Contact Number</th>
+              <th>Home Address</th>
+              <th>Date of Birth</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let patient of patients">
+              <td>{{ patient.patient_id }}</td>
+              <td>{{ patient.firstname }}</td>
+              <td>{{ patient.lastname }}</td>
+              <td>{{ patient.gender }}</td>
+              <td>{{ patient.email }}</td>
+              <td>{{ patient.age }}</td>
+              <td>{{ patient.contact_number }}</td>
+              <td>{{ patient.home_address }}</td>
+              <td>{{ patient.date_of_birth | date: 'longDate' }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 class="report-title">All Made Appointments</h3>
+<table class="excel1">
+  <thead>
+    <tr>
+      <th>Appointment ID</th>
+      <th>Appointment Date</th>
+      <th>Appointment Time</th>
+      <th>Purpose</th>
+      <th>Doctor</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let appointment of appointmentPatients">
+      <td>{{ appointment.appointment_id }}</td>
+      <td>{{ appointment.appointment_date }}</td>
+      <td>{{ appointment.appointment_time }}</td>
+      <td>{{ appointment.purpose }}</td>
+      <td>{{ appointment.doctor }}</td>
+      <td>{{ appointment.status || 'Pending' }}</td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+        
+
+        <button class="export-btn" (click)="exportToExcel()">Export to Excel</button>
+        <button class="print-btn" (click)="printReport()">Print</button>
       </div>
     </div>
-    
-
+  </div>
 </div>

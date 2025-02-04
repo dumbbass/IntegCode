@@ -13,6 +13,7 @@ import { AuthGuard } from './auth.guard';
 
 import { InformationComponent } from './ADMIN/information/information.component';
 import { ArchiveComponent } from './ADMIN/archive/archive.component';
+import { AppointmentsComponent } from './ADMIN/appointments/appointments.component';
 
 export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
@@ -26,6 +27,7 @@ export const routes: Routes = [
   { path: 'userappointments', component: UserappointmentsComponent },
   { path: 'information', component: InformationComponent },
   { path: 'archive', component: ArchiveComponent },
+  { path: 'appointments', component: AppointmentsComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
 
   { path: '', redirectTo: '/login', pathMatch: 'full' },

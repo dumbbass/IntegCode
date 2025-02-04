@@ -7,13 +7,11 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class PatientService {
+  private apiUrl = 'http://localhost/API/carexusapi/backend/carexus.php';
 
-  private apiUrl = 'http://localhost/API/carexusapi/backend/carexus.php?action=getPatients';  // Your API URL
+  constructor(private http: HttpClient) { }
 
-  constructor(private http: HttpClient) {}
-
-  // Fetch the patient details using the user ID
   getPatientInfo(userId: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}?action=getPatients&id=${userId}`);
+    return this.http.get(`${this.apiUrl}?action=getUserProfile&id=${userId}`);
   }
 }

@@ -18,6 +18,8 @@
                         <th>Date</th>
                         <th>Time</th>
                         <th>Purpose of Appointment</th>
+                        <th>Status</th>
+                        <th>Remarks</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -26,11 +28,20 @@
                       <td>{{ appointment.appointment_date | date: 'fullDate' }}</td>
                       <td>{{ appointment.appointment_time }}</td>
                       <td>{{ appointment.purpose }}</td>
+                      <td>{{ appointment.status }}</td> 
                       <td>
+                        <button *ngIf="appointment.remarks" 
+                                (click)="viewRemarks(appointment.remarks)"
+                                class="view-remarks-btn">
+                          View Remarks
+                        </button>
+                        <span *ngIf="!appointment.remarks">-</span>
+                      </td>
+                      <!-- <td>
                           <button class="delete-btn" (click)="deleteAppointment(appointment.appointment_id)">
                               Delete
                           </button>
-                      </td>
+                      </td> -->
                   </tr>
               </tbody>
               
@@ -45,9 +56,13 @@
 
 <div class="appointment-purpose-container">
   <label for="doctor-select">Choose Available Doctors</label>
-  <select id="doctor-select" class="appointment-purpose" [(ngModel)]="selectedDoctorId">
+  <select 
+      id="doctor-select" 
+      class="appointment-purpose" 
+      [(ngModel)]="selectedDoctorId"
+      (change)="onDoctorSelect()">
       <option *ngFor="let doctor of doctors" [value]="doctor.doctor_id">
-        {{ doctor.firstname }} {{ doctor.lastname }}
+          {{ doctor.firstname }} {{ doctor.lastname }}
       </option>
   </select>
 </div>
@@ -93,24 +108,47 @@
     <h2>Available Times for {{ modalDate | date: 'fullDate' }}</h2>
     <div class="times-container">
       <button
-        *ngFor="let time of modalTimes"
-        (click)="selectTimeFromModal(time)"
-        [ngClass]="{ 'selected': time === selectedTime }"
+        *ngFor="let slot of modalTimes"
+        (click)="selectTimeFromModal(slot)"
+        [ngClass]="{ 'selected': slot.time === selectedTime }"
       >
-        {{ time }}
+        {{ slot.time }}
       </button>
     </div>
   </div>
 </div>
 
+<!-- Appointment Summary -->
 <div *ngIf="selectedDate && selectedTime" class="appointment-summary">
-  <h3>Appointment Summary</h3>
-  <p>Doctor: {{ selectedDoctorId }}</p>
-  <p>Purpose: {{ appointmentPurpose }}</p>
-  <p>Date: {{ selectedDate | date: 'fullDate' }}</p>
-  <p>Time: {{ selectedTime }}</p>
-  <button class="confirm-appointment-btn" (click)="confirmAppointment()">Confirm Appointment</button>
+    <h3>Appointment Summary</h3>
+    <p>Doctor: {{ selectedDoctorId && doctors ? (doctors | doctorName:selectedDoctorId) : 'No doctor selected' }}</p>
+    <p>Purpose: {{ appointmentPurpose }}</p>
+    <p>Date: {{ selectedDate | date: 'fullDate' }}</p>
+    <p>Time: {{ selectedTime }}</p>
+    <button 
+        class="confirm-appointment-btn" 
+        (click)="confirmAppointment()"
+        [disabled]="!appointmentPurpose"
+    >
+        Confirm Appointment
+    </button>
 </div>
 
+</div>
+
+<!-- Add this remarks modal -->
+<div class="remarks-modal" *ngIf="remarksModalVisible">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Appointment Remarks</h3>
+            <button class="close-btn" (click)="closeRemarksModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>{{ currentRemarks }}</p>
+        </div>
+        <div class="modal-footer">
+            <button (click)="closeRemarksModal()">Close</button>
+        </div>
+    </div>
 </div>
 

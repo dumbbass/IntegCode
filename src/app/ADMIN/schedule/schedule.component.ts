@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AdminsidenavComponent } from '../adminsidenav/adminsidenav.component';
 import { FormsModule } from '@angular/forms';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameDay } from 'date-fns';
 import { ScheduleService } from './schedule.service';  // Adjust import path
 import { ScheduleAuthService } from './schedule-auth.service';  // Import the new service
 import { AuthService } from '../../auth.service';
+import { HttpClient } from '@angular/common/http';  // Import HttpClient
 
 @Component({
   selector: 'app-schedule',
@@ -54,8 +55,11 @@ export class ScheduleComponent {
     '13:00', '14:00', '15:00', '16:00'
   ];
 
+  private apiUrl = 'http://localhost/API/carexusapi/backend/carexus.php';  // Define apiUrl
+
   // Inject ScheduleService and ScheduleAuthService into the constructor
   constructor(
+    private http: HttpClient,  // Inject HttpClient
     private scheduleService: ScheduleService,
     private scheduleAuthService: ScheduleAuthService,  // Inject the new service
     private authService: AuthService  // Inject AuthService here
@@ -168,7 +172,6 @@ export class ScheduleComponent {
     }
   }
 
-
   closeModal() {
     this.isModalOpen = false;
     this.modalDate = null;
@@ -188,56 +191,70 @@ export class ScheduleComponent {
     this.modalTimes = this.modalTimes.filter(t => t !== time);
   }
 
-  // Save selected date and time slots to the backend
-  // Save selected date and time slots to the backend
-async saveAvailability() {
-  if (!this.modalDate) return;
-
-  try {
-    if (this.modalTimes.length === 0) {
-      throw new Error('Please add at least one time slot');
-    }
-
-    const formattedDate = this.modalDate.toISOString().split('T')[0]; // "2025-01-30"
-    const doctorId = this.authService.getDoctorId();
-    if (!doctorId) {
-      this.errorMessage = 'Doctor is not logged in.';
-      console.error('Error: Doctor is not logged in');
-      return;
-    }
-
-    const formattedTimes = this.modalTimes.map((time: string) => this.formatToAMPM(time));
+  saveSchedule(doctorId: string, date: string, timeSlots: string[]): Observable<any> {
     const payload = {
-      doctor_id: doctorId.toString(),
-      date: formattedDate,
-      time_slot: formattedTimes
+      doctor_id: doctorId,
+      date: date,
+      time_slot: timeSlots
     };
-
-    const response = await this.scheduleService.saveSchedule(doctorId.toString(), formattedDate, formattedTimes).toPromise();
-
-    if (response.status) {
-      this.successMessage = 'Schedule saved successfully!';
-      console.log('Schedule saved successfully!');
-
-      // Update the availability status after saving
-      this.availability.push({
-        date: this.modalDate!,
-        times: formattedTimes
-      });
-
-      // Refetch the schedule (optional, for more accuracy)
-      this.openModal(this.modalDate!);  // This will refresh the modal with the saved times
-    } else {
-      this.errorMessage = 'Failed to save schedule';
-      console.error('Failed to save schedule');
-    }
-
-    this.closeModal();
-  } catch (error) {
-    this.errorMessage = error instanceof Error ? error.message : 'Error occurred';
-    console.error('Error during save availability:', this.errorMessage);
+    
+    const params = { action: 'saveSchedule' };
+    return this.http.post<any>(this.apiUrl, payload, { params });
   }
-}
+
+  // Save selected date and time slots to the backend
+  async saveAvailability() {
+    if (!this.modalDate) return;
+  
+    try {
+      if (this.modalTimes.length === 0) {
+        throw new Error('Please add at least one time slot');
+      }
+  
+      const formattedDate = this.modalDate.toISOString().split('T')[0];
+      const doctorId = this.authService.getDoctorId();
+      if (!doctorId) {
+        this.errorMessage = 'Doctor is not logged in.';
+        console.error('Error: Doctor is not logged in');
+        return;
+      }
+  
+      // Convert times to proper format before saving
+      const formattedTimes = this.modalTimes.map(time => this.formatToAMPM(time));
+  
+      this.scheduleService.saveSchedule(doctorId.toString(), formattedDate, formattedTimes)
+        .subscribe({
+          next: (response) => {
+            if (response.status) {
+              this.successMessage = 'Schedule saved successfully!';
+              console.log('Schedule saved successfully!');
+  
+              // Update the availability status after saving
+              this.availability.push({
+                date: this.modalDate!,
+                times: formattedTimes
+              });
+  
+              // Update availability status
+              this.updateAvailabilityStatus(this.modalDate!);
+              
+              this.closeModal();
+            } else {
+              this.errorMessage = response.message || 'Failed to save schedule';
+              console.error('Failed to save schedule:', response.message);
+            }
+          },
+          error: (error) => {
+            this.errorMessage = error.message || 'Error occurred while saving schedule';
+            console.error('Error during save availability:', error);
+          }
+        });
+  
+    } catch (error) {
+      this.errorMessage = error instanceof Error ? error.message : 'Error occurred';
+      console.error('Error during save availability:', this.errorMessage);
+    }
+  }
 
   // Helper function to convert time to AM/PM format
   formatToAMPM(time: string): string {
@@ -247,7 +264,6 @@ async saveAvailability() {
     const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
     return `${formattedHours}:${formattedMinutes} ${amPm}`;
   }
-
 
   formatTime(time: string): string {
     const [hours, minutes] = time.split(':').map(Number);
@@ -329,16 +345,7 @@ async saveAvailability() {
       return;
     }
 
-    if (this.isBulkMode) {
-      const index = this.selectedDates.findIndex(d => isSameDay(d, date));
-      if (index >= 0) {
-        this.selectedDates.splice(index, 1);
-      } else {
-        this.selectedDates.push(new Date(date));
-      }
-    } else {
-      this.openModal(date);
-    }
+    this.openSetAvailableTimeModal(date);
   }
 
   isPastDate(date: Date): boolean {
@@ -360,6 +367,46 @@ async saveAvailability() {
       const timeB = new Date(`1970-01-01T${b}:00`).getTime();
       return timeA - timeB;
     });
+  }
+
+  openSetAvailableTimeModal(date: Date) {
+    this.modalDate = new Date(date);
+    this.isModalOpen = true;
+  }
+
+  async saveAvailableTimes() {
+    if (!this.modalDate) return;
+
+    try {
+      const formattedDate = this.modalDate.toISOString().split('T')[0]; // "2025-01-30"
+      const doctorId = this.authService.getDoctorId();
+      if (!doctorId) {
+        this.errorMessage = 'Doctor is not logged in.';
+        console.error('Error: Doctor is not logged in');
+        return;
+      }
+
+      const payload = {
+        doctor_id: doctorId.toString(),
+        date: formattedDate,
+        time_slot: this.modalTimes // Assuming modalTimes contains the times to save
+      };
+
+      const response = await this.scheduleService.setAvailableSchedule(payload).toPromise();
+
+      if (response.status) {
+        this.successMessage = 'Available times set successfully!';
+        console.log('Available times set successfully!');
+      } else {
+        this.errorMessage = 'Failed to set available times';
+        console.error('Failed to set available times');
+      }
+
+      this.closeModal(); // Close the modal after saving
+    } catch (error) {
+      this.errorMessage = error instanceof Error ? error.message : 'Error occurred';
+      console.error('Error during save available times:', this.errorMessage);
+    }
   }
 }
 

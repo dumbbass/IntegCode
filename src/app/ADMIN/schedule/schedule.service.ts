@@ -6,9 +6,15 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ScheduleService {
-  private apiUrl = 'http://localhost/API/carexusapi/Backend/carexus.php?action=setAvailableSchedule'; // Adjust this URL
+  private apiUrl = 'http://localhost/API/carexusapi/backend/carexus.php';  // Base API URL
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
+
+  // Add this method to set available schedule
+  setAvailableSchedule(payload: any): Observable<any> {
+    const params = { action: 'setAvailableSchedule' };
+    return this.http.post<any>(this.apiUrl, payload, { params });
+  }
 
   // Fetch schedule for a specific doctor
   getSchedule(doctorId: string): Observable<any> {
@@ -23,7 +29,7 @@ export class ScheduleService {
       time_slot: timeSlots
     };
 
-    // Corrected the method from 'httpClient' to 'http'
-    return this.http.post<any>(this.apiUrl, payload);
+    const params = { action: 'saveSchedule' };
+    return this.http.post<any>(this.apiUrl, payload, { params });
   }
 }

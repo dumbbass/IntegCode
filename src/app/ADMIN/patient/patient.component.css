@@ -87,6 +87,7 @@ h2 {
   text-align: center;
 }
 
+
 .patients-table th,
 .patients-table td {
   padding: 10px;
@@ -97,17 +98,41 @@ h2 {
   background-color: #f0f0f0;
 }
 
+.patient-history-btn {
+  background-color: #0A21C0; /* Blue background */
+  color: white; /* White icon */
+  font-size: 16px; /* Icon size */
+  padding: 8px 10px; /* Button size */
+  border: none;
+  border-radius: 5px; /* Rounded corners */
+  position: absolute;
+  right: 10px; /* Aligns to the right */
+  bottom: 10px; /* Moves to the lower part */
+  cursor: pointer; /* Pointer on hover */
+  transition: background 0.3s ease; /* Smooth hover effect */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.patient-history-btn:hover {
+  background-color: #08199A; /* Darker blue on hover */
+}
+
+
 /* Accept, Decline, View, and Archive buttons */
 .accept-btn,
 .decline-btn,
 .view-btn,
-.archive-btn {
+.archive-btn,
+.patient-history-btn{
   padding: 10px 18px;
   font-size: 14px;
   border: none;
   cursor: pointer;
   border-radius: 5px;
   margin-right: 10px; /* Adds gap between buttons */
+
 }
 
 /* Archive button */
@@ -161,6 +186,7 @@ h2 {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1000;
+  
 }
 
 /* Modal content */
@@ -178,13 +204,15 @@ h2 {
   max-width: 90%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   transition: all 0.3s ease-in-out;
-  border-top: 30px solid black; /* Black top border */
+  border-top: 20px solid black; /* Black top border */
+ 
 }
 
 .modal-content {
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  
 }
 
 .close-btn {
@@ -238,7 +266,7 @@ button {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  margin: 10px 0;
+  margin: 10px 10px;
   transition: background-color 0.3s ease, transform 0.3s ease;
   font-weight: 600;
 }
@@ -246,6 +274,7 @@ button {
 button:first-of-type {
   background-color: #27ae60;
   color: white;
+
 }
 
 button:first-of-type:hover {
@@ -297,7 +326,8 @@ button:last-of-type:hover {
 .modal-content table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
+  
 }
 
 .modal-content th,
@@ -327,43 +357,133 @@ button:last-of-type:hover {
   transition: background-color 0.3s ease;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+
+/* Modal Background Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+/* Modal Styling */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+  width: 80%;
+  max-width: 800px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: all 0.3s ease-in-out;
+  overflow: hidden;
+}
+
+/* Modal Header */
+.modal h3 {
+  font-size: 24px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* Close Button */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 30px;
+  color: #000;
+  cursor: pointer;
+}
+
+/* Table container inside the modal */
+.table-container {
+  overflow-x: auto;
+  max-height: 400px;
+}
+
+/* Vertical Table Styling */
+.patients-table-history {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  overflow-x: auto;
+  display: block;
+}
+
+.patients-table-history th,
+.patients-table-history td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  word-wrap: break-word;
+}
+
+/* Styling for rows to be displayed as vertical sections */
+.patients-table-history th {
+  background-color: #f0f0f0;
+  text-align: center;
+  width: 200px;  /* Adjust width for each label column */
+}
+
+.patients-table-history td {
+  width: 300px;  /* Adjust width for each data cell */
+  text-align: left;
+}
+
+.patients-table-history tr {
+  display: flex;
+  flex-direction: column;
+  width: 100%;  /* Ensure the row stretches full width */
+}
+
+.patients-table-history tr td {
+  width: 100%;
+  border-top: none;
+}
+
+/* Modal Content */
+.modal-content {
+  overflow: auto;
+  max-height: 80vh;
+  padding-right: 10px;
+}
+
+/* Modal Responsiveness */
+@media screen and (max-width: 768px) {
   .modal {
-    width: 85%;
-    padding: 20px;
+    width: 90%;
+    padding: 15px;
+  }
+
+  .patients-table-history {
+    font-size: 14px;
   }
 
   .modal h3 {
-    font-size: 22px;
+    font-size: 20px;
   }
 
-  .modal p {
-    font-size: 14px;
+  .close-btn {
+    font-size: 25px;
+    top: 5px;
+    right: 10px;
   }
 
-  button {
-    font-size: 14px;
+  .patients-table-history th,
+  .patients-table-history td {
+    width: 100%; /* Take full width on small screens */
   }
 
-  textarea {
-    font-size: 12px;
+  .patients-table-history tr {
+    flex-direction: column;
   }
 }
-.history-btn {
-  padding: 12px 25px;
-  font-size: 16px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  margin: 5px 0;
-  background-color: #0c83d2;
-  color: white;
-  font-weight: 600;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.history-btn:hover {
-  background-color: #2980b9;
-  transform: translateY(-2px);
-}
+  

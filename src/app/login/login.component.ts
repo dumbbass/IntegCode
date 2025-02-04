@@ -80,7 +80,7 @@ export class LoginComponent implements OnInit {
                     const patientId = patient.patient_id;
                     // Update session with patientId
                     this.authService.setSession(token, role, id, patientId);
-                    this.router.navigate(['/dashboard']); // Navigate to user profile page
+                    this.router.navigate(['/userappointments']); // Navigate to user profile page
                   } else {
                     // Clear session if patient not found
                     this.authService.clearSession();

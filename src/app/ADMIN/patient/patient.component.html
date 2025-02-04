@@ -45,6 +45,51 @@
   </div>
 </div>
 
+Patient History Modal
+<div *ngIf="showHistoryModal" class="modal-overlay" (click)="closeHistoryModal()"></div>
+<div *ngIf="showHistoryModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" (click)="closeHistoryModal()">&times;</span>
+    <h3>Patient History  {{ selectedUser?.firstname }} {{ selectedUser?.lastname }}</h3>
+    
+    <table class="history-table">
+      <tr>
+        <td><strong>Medical History:</strong></td>
+        <td>{{ patientHistory?.medical_history || 'No data available' }}</td>
+      </tr>
+      <tr>
+        <td><strong>Surgical History:</strong></td>
+        <td>{{ patientHistory?.surgical_history || 'No data available' }}</td>
+      </tr>
+      <tr>
+        <td><strong>Medications:</strong></td>
+        <td>{{ patientHistory?.medications || 'No data available' }}</td>
+      </tr>
+      <tr>
+        <td><strong>Allergies:</strong></td>
+        <td>{{ patientHistory?.allergies || 'No data available' }}</td>
+      </tr>
+      <tr>
+        <td><strong>Injuries and Accidents:</strong></td>
+        <td>{{ patientHistory?.injuries_accidents || 'No data available' }}</td>
+      </tr>
+      <tr>
+        <td><strong>Special Needs:</strong></td>
+        <td>{{ patientHistory?.special_needs || 'No data available' }}</td>
+      </tr>
+      <tr>
+        <td><strong>Blood Transfusion:</strong></td>
+        <td>{{ patientHistory?.blood_transfusion || 'No' }}</td>
+      </tr>
+      <tr>
+        <td><strong>Present History:</strong></td>
+        <td>{{ patientHistory?.present_history || 'No data available' }}</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+
 <!-- Patient Details Modal -->
 <div *ngIf="selectedUser">
   <div class="modal-overlay" (click)="closeModal()"></div>
@@ -95,7 +140,13 @@
           <td>{{ selectedUser.civil_status }}</td>
         </tr>
       </table>
-              <button class="history-btn">Patient History</button>
+      <button class="patient-history-btn" 
+        *ngIf="selectedUser?.patient_id" 
+        (click)="openHistoryModal(selectedUser)">
+  <i class="fas fa-notes-medical"></i> <!-- Medical history icon -->
+</button>
+
+
     </div>
   </div>
 </div>

@@ -256,7 +256,7 @@
 }
 
 .close-modal-btn:hover {
-  color: #dc3545;
+  color: #000000;
 }
 
 .filter-container {
@@ -377,4 +377,187 @@ button:active {
   .chart-container {
     height: 250px;
   }
+}
+.print-report-btn, .export-btn, .print-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.print-report-btn i, .export-btn i, .print-btn i {
+  margin-right: 8px; /* Space between icon and text */
+  color: white; /* Set icon color to white */
+}
+
+
+.print-report-btn, .export-btn, .print-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin: 5px 0 0 800px;
+}
+.export-btn, .print-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin: 5px;
+}
+
+.print-report-btn:hover, .export-btn:hover, .print-btn:hover {
+  background-color: #0056b3;
+}
+
+
+.report-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.report-modal-content {
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-radius: 8px;
+  width: 95%;
+  max-width: 1200px;
+  height: 80%;
+  overflow-y: auto;
+  position: relative;
+}
+
+.close-modal-btn {
+  background-color: transparent;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.close-modal-btn:hover {
+  color: rgb(4, 4, 4);
+}
+
+.excel-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+}
+
+.excel-table th, .excel-table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+}
+
+.excel-table th {
+  background-color: #e0e0e0;
+  font-weight: bold;
+}
+
+.excel-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+@media print {
+  .report-modal-content {
+    width: 100%;
+    height: auto;
+  }
+  .close-modal-btn, .export-btn, .print-btn {
+    display: none;
+  }
+}
+.chart-container {
+  margin-top: 20px;
+  width: 100%;
+}
+.patient-info {
+  text-align: left;
+  margin-bottom: 20px;
+  background-color: #f8f8f8;
+  padding: 15px;
+  border-radius: 6px;
+}
+
+.excel-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.excel-table th, .excel-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+.excel-table th {
+  background-color: #d9e1f2;
+  font-weight: bold;
+}
+
+.excel-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+/* Print Styling */
+@media print {
+  .report-modal-content {
+    width: 100%;
+    max-width: none;
+    box-shadow: none;
+    border: none;
+  }
+
+  .close-modal-btn, .print-btn {
+    display: none;
+  }
+}
+.excel1 {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.excel1 th, .excel1 td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+.excel1 th {
+  background-color: #d9e1f2;
+  font-weight: bold;
+}
+
+.excel1 tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+.report-title{
+  background-color: #bfbfbf;
+  color: rgb(0, 0, 0);
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  margin-top: 30px;
 }

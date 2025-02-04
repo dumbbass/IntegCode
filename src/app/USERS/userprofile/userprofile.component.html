@@ -9,8 +9,13 @@
           </div>
       </div>
       <!-- Patient History Section -->
+       
       <div class="patient-history-container">
+        
         <h2>Patient History</h2>
+        <button class="userprofile-button" *ngIf="!isEditingHistory" (click)="toggleEditHistory()">
+          <i class="fas fa-notes-medical"></i> Edit Patient History
+        </button>
         <div class="history-content" [ngClass]="{'editing': isEditingHistory}">
             <div *ngIf="!isEditingHistory">
                 <!-- Patient History Table -->
@@ -100,14 +105,21 @@
             </form>
         </div>
         
-        <button *ngIf="!isEditingHistory" (click)="toggleEditHistory()">Edit History</button>
+       
     </div>
     
     
-      
+  
 
       <div class="user-container" *ngIf="user && user.firstname">
+        
+        
         <h2>Personal Information</h2>
+        <button class="userprofile-button" (click)="openModal()">
+          <i class="fas fa-user-cog"></i> Edit Patient Profile
+        </button>
+        
+        
         <div class="user-info">
           <div class="info-row">
             <div>
@@ -186,8 +198,7 @@
         <p>{{ errorMessage }}</p>
       </div>
 
-      <!-- Button to open the modal -->
-      <button (click)="openModal()">Edit Profile</button>
+      
 
       <!-- Modal for updating user profile -->
       <div id="updateProfileModal" class="modal">
@@ -207,7 +218,7 @@
             </div>
             <div class="form-group">
               <label for="email">Email</label>
-              <input type="email" id="email" [(ngModel)]="user.email" name="email">
+              <input type="email" id="email" [(ngModel)]="user.email" name="email" required disabled>
             </div>
       
             <!-- Column 2 -->
@@ -217,7 +228,7 @@
             </div>
             <div class="form-group">
               <label for="date_of_birth">Date of Birth</label>
-              <input type="date" id="date_of_birth" [(ngModel)]="user.date_of_birth" name="date_of_birth">
+              <input type="date" id="date_of_birth" [(ngModel)]="user.date_of_birth" name="date_of_birth" required disabled>
             </div>
             <div class="form-group">
               <label for="contact_number">Contact Number</label>

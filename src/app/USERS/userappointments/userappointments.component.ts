@@ -7,12 +7,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SidenavComponent } from '../sidenav/sidenav.component';
 import { HttpClient } from '@angular/common/http';
+import { DoctorNamePipe } from '../pipes/doctor-name.pipe';
 
 @Component({
     selector: 'app-userappointments',
-    imports: [CommonModule, SidenavComponent, FormsModule],
+    imports: [CommonModule, SidenavComponent, FormsModule, DoctorNamePipe],
     templateUrl: './userappointments.component.html',
-    styleUrls: ['./userappointments.component.css']
+    styleUrls: ['./userappointments.component.css'],
+    standalone: true
 })
 export class UserappointmentsComponent implements OnInit {
   showAppointmentForm: boolean = false;
@@ -34,7 +36,7 @@ export class UserappointmentsComponent implements OnInit {
   selectedTime: string | null = null;
   isModalOpen: boolean = false; // Modal visibility state
   modalDate: Date | null = null; // Date selected for the modal
-  modalTimes: string[] = []; // Available times for the selected date
+  modalTimes: { time: string; scheduleId: string }[] = []; // Available times for the selected date
 
   // Mock availability for specific dates
   timeSlots: { [key: string]: string[] } = {
@@ -42,6 +44,12 @@ export class UserappointmentsComponent implements OnInit {
     '2025-01-31': ['10:00 AM', '01:00 PM', '03:30 PM', '05:00 PM'],
     '2025-02-03': ['08:30 AM', '12:00 PM', '03:00 PM']
   };
+
+  doctorSchedules: any[] = [];
+  selectedScheduleId: string | null = null;
+
+  remarksModalVisible = false;
+  currentRemarks: string = '';
 
   constructor(
     private doctorService: DoctorService,
@@ -79,8 +87,33 @@ private renderCalendar(year: number, month: number): void {
 
 
   ngOnInit(): void {
-    this.fetchDoctors();
-    this.fetchPatientData();
+    const userId = this.authService.getUserId();
+    if (userId) {
+        this.patientService.getPatientInfo(userId).subscribe({
+            next: (response: any) => {
+                console.log('Initial patient info response:', response);
+                if (response.status && response.user && response.user.patient_id) {
+                    this.patientId = response.user.patient_id;
+                    this.fetchAppointments();
+                } else {
+                    console.error('Invalid patient info response:', response);
+                }
+            },
+            error: (error) => {
+                console.error('Error fetching patient info:', error);
+            }
+        });
+    }
+
+    // Fetch doctors list
+    this.doctorService.getDoctors().subscribe(
+        (response) => {
+            if (response.status) {
+                this.doctors = response.doctors;
+            }
+        }
+    );
+
     this.generateCalendar();
   }
 
@@ -96,7 +129,7 @@ private renderCalendar(year: number, month: number): void {
 
   fetchAppointments(): void {
     if (this.patientId !== null) {
-      this.appointmentService.getAppointments(this.patientId.toString()).subscribe(
+      this.appointmentService.getAppointments(Number(this.patientId)).subscribe(
         (response) => {
           if (response.status) {
             this.appointments = response.appointments;
@@ -133,51 +166,43 @@ private renderCalendar(year: number, month: number): void {
         return;
     }
 
-    // Get the week number of the selected date
-    const selectedWeek = this.getWeekNumber(this.selectedDate);
+    // Check if the selected date is at least one week after the latest appointment
+    const latestAppointment = this.appointments
+        .filter(app => app.status !== 'declined')
+        .map(app => new Date(app.appointment_date))
+        .sort((a, b) => b.getTime() - a.getTime())[0];
 
-    // Count the number of appointments already booked for this week
-    const appointmentsThisWeek = this.appointments.filter(app => 
-        this.getWeekNumber(new Date(app.appointment_date)) === selectedWeek
-    );
+    if (latestAppointment) {
+        const oneWeekAfterLatest = new Date(latestAppointment);
+        oneWeekAfterLatest.setDate(oneWeekAfterLatest.getDate() + 7);
 
-    if (appointmentsThisWeek.length >= 3) {
-        alert('You can only book up to 3 appointments per week.');
-        return;
+        if (this.selectedDate < oneWeekAfterLatest) {
+            alert(`You can only schedule appointments at least one week after your last appointment. Please select a date after ${oneWeekAfterLatest.toLocaleDateString()}`);
+            return;
+        }
     }
 
     const appointmentData = {
         patient_id: patientId,
-        doctor_id: +this.selectedDoctorId,
-        appointment_date: this.selectedDate.toISOString().split('T')[0],
-        appointment_time: this.selectedTime,
-        purpose: this.appointmentPurpose,
+        schedule_id: this.selectedScheduleId,
+        purpose: this.appointmentPurpose
     };
 
-    this.appointmentService.scheduleAppointment(appointmentData).subscribe(
-        (response) => {
+    this.appointmentService.scheduleAppointment(appointmentData).subscribe({
+        next: (response) => {
             if (response.status) {
-                alert('Appointment booked successfully!');
-                this.fetchAppointments(); // Refresh appointments list
-                this.selectedDate = null;
-                this.selectedTime = null;
-                this.appointmentPurpose = '';
+                alert('Appointment scheduled successfully!');
+                this.resetForm();
+                this.fetchAppointments();
             } else {
-                alert('Failed to book appointment: ' + response.message);
+                alert(response.message || 'Failed to schedule appointment');
             }
         },
-        (error) => {
-            console.error('Error booking appointment:', error);
-            alert('An error occurred while booking the appointment.');
+        error: (error) => {
+            console.error('Error scheduling appointment:', error);
+            alert('Error scheduling appointment. Please try again.');
         }
-    );
-}
-
-// Function to get the week number of a given date
-getWeekNumber(date: Date): number {
-    const startOfYear = new Date(date.getFullYear(), 0, 1);
-    const days = Math.floor((date.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000));
-    return Math.ceil((days + startOfYear.getDay() + 1) / 7);
+    });
 }
 
   deleteAppointment(appointmentId: number): void {
@@ -240,11 +265,27 @@ getWeekNumber(date: Date): number {
   }
 
   selectDate(date: Date): void {
-    if (this.isAvailableDate(date)) {
-      this.selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate()); // Ensures 00:00:00 time
-      const dateKey = `${this.selectedDate.getFullYear()}-${(this.selectedDate.getMonth() + 1).toString().padStart(2, '0')}-${this.selectedDate.getDate().toString().padStart(2, '0')}`;
-      this.availableTimes = this.timeSlots[dateKey] || [];
-      this.selectedTime = null;
+    if (!this.isAvailableDate(date)) {
+        if (this.appointments.length > 0) {
+            const latestAppointment = this.appointments
+                .filter(app => app.status !== 'declined')
+                .map(app => new Date(app.appointment_date))
+                .sort((a, b) => b.getTime() - a.getTime())[0];
+            
+            const oneWeekAfterLatest = new Date(latestAppointment);
+            oneWeekAfterLatest.setDate(oneWeekAfterLatest.getDate() + 7);
+            
+            alert(`You can only schedule appointments at least one week after your last appointment. Your next available date would be ${oneWeekAfterLatest.toLocaleDateString()}`);
+        } else {
+            alert('This date is not available for scheduling.');
+        }
+        return;
+    }
+
+    if (this.selectedDoctorId) {
+        this.openRetrieveAvailableTimeModal(date);
+    } else {
+        alert('Please select a doctor first');
     }
   }
   
@@ -257,7 +298,29 @@ getWeekNumber(date: Date): number {
   isAvailableDate(date: Date): boolean {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Normalize to midnight for accurate comparison
-    return date >= today;
+
+    // First check if date is in the past
+    if (date < today) {
+        return false;
+    }
+
+    // Find the latest appointment date for this patient
+    const latestAppointment = this.appointments
+        .filter(app => app.status !== 'declined') // Ignore declined appointments
+        .map(app => new Date(app.appointment_date))
+        .sort((a, b) => b.getTime() - a.getTime())[0];
+
+    if (latestAppointment) {
+        // Calculate one week after the latest appointment
+        const oneWeekAfterLatest = new Date(latestAppointment);
+        oneWeekAfterLatest.setDate(oneWeekAfterLatest.getDate() + 7);
+
+        // Date is available if it's at least one week after the latest appointment
+        return date >= oneWeekAfterLatest;
+    }
+
+    // If no previous appointments, any future date is available
+    return true;
   }
 
   isSelectedDate(date: Date): boolean {
@@ -265,36 +328,178 @@ getWeekNumber(date: Date): number {
   }
 
   confirmAppointment(): void {
-    if (this.selectedDate && this.selectedTime && this.selectedDoctorId && this.appointmentPurpose) {
-      // Ensure date is stored without time shift
-      this.selectedDate = new Date(this.selectedDate.getFullYear(), this.selectedDate.getMonth(), this.selectedDate.getDate());
-  
-      this.bookAppointment();
+    if (!this.selectedScheduleId || !this.appointmentPurpose) {
+        alert('Please select a time slot and enter appointment purpose');
+        return;
+    }
+
+    if (!this.patientId) {
+        const userId = this.authService.getUserId();
+        if (!userId) {
+            alert('Please log in to book an appointment');
+            return;
+        }
+
+        this.patientService.getPatientInfo(userId).subscribe({
+            next: (response: any) => {
+                console.log('Patient info response:', response); // Debug log
+                if (response.status && response.user) {
+                    this.patientId = response.user.id;
+                    this.submitAppointment();
+                } else {
+                    console.error('Invalid response:', response);
+                    alert('Could not retrieve patient information. Please try again.');
+                }
+            },
+            error: (error) => {
+                console.error('Error getting patient info:', error);
+                alert('Error retrieving patient information. Please try again.');
+            }
+        });
     } else {
-      alert('Please fill in all the required fields');
+        this.submitAppointment();
     }
   }
   
 
   openModal(date: Date): void {
-    const adjustedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate()); // Ensure it's at midnight
-    const dateKey = adjustedDate.toISOString().split('T')[0]; // Get proper date string
-  
-    this.modalTimes = this.timeSlots[dateKey] || ['09:00 AM', '11:00 AM', '02:00 PM', '04:00 PM'];
-    this.modalDate = adjustedDate;
-    this.isModalOpen = true;
+    if (!this.selectedDoctorId) {
+      alert('Please select a doctor first');
+      return;
+    }
+
+    const dateString = date.toISOString().split('T')[0];
+    this.appointmentService.getDoctorSchedules(this.selectedDoctorId, dateString)
+      .subscribe(
+        (response) => {
+          if (response.status && response.schedules.length > 0) {
+            this.modalTimes = response.schedules.map((schedule: any) => ({
+              time: schedule.time_slot,
+              scheduleId: schedule.schedule_id
+            }));
+            this.modalDate = date;
+            this.isModalOpen = true;
+          } else {
+            alert('No available time slots for this date');
+          }
+        }
+      );
   }
-  
+
   closeModal(): void {
     this.isModalOpen = false; // Close the modal
     this.modalDate = null;
     this.modalTimes = [];
   }
 
-  selectTimeFromModal(time: string): void {
+  selectTimeFromModal(timeSlot: any): void {
+    this.selectedTime = timeSlot.time;
+    this.selectedScheduleId = timeSlot.scheduleId;
     this.selectedDate = this.modalDate;
-    this.selectedTime = time;
-    this.isModalOpen = false; // Close the modal after selection
+    this.isModalOpen = false;
   }
   
+  openRetrieveAvailableTimeModal(date: Date): void {
+    if (!this.selectedDoctorId) {
+        alert('Please select a doctor first');
+        return;
+    }
+
+    const dateString = date.toISOString().split('T')[0];
+    this.appointmentService.getDoctorSchedules(this.selectedDoctorId, dateString)
+        .subscribe(
+            (response) => {
+                if (response.status && response.schedules && response.schedules.length > 0) {
+                    this.modalTimes = response.schedules.map((schedule: any) => ({
+                        time: schedule.time_slot,
+                        scheduleId: schedule.schedule_id
+                    }));
+                    this.modalDate = date;
+                    this.isModalOpen = true;
+                } else {
+                    alert('No available time slots for this date');
+                }
+            },
+            (error) => {
+                console.error('Error fetching doctor schedules:', error);
+                alert('Error fetching available times');
+            }
+        );
+  }
+
+  onDoctorSelect(): void {
+    if (this.selectedDoctorId) {
+      this.appointmentService.getDoctorSchedules(this.selectedDoctorId)
+        .subscribe(
+          (response) => {
+            if (response.status) {
+              this.doctorSchedules = response.schedules;
+              // Mark dates with available schedules in the calendar
+              this.updateAvailableDates();
+            }
+          }
+        );
+    }
+  }
+
+  updateAvailableDates(): void {
+    this.availableDates = this.doctorSchedules.map(schedule => 
+      new Date(schedule.available_date)
+    );
+  }
+
+  // Helper method to reset form
+  resetForm(): void {
+    this.selectedDoctorId = null;
+    this.selectedDate = null;
+    this.selectedTime = null;
+    this.selectedScheduleId = null;
+    this.appointmentPurpose = '';
+    this.modalTimes = [];
+    this.isModalOpen = false;
+  }
+
+  private submitAppointment(): void {
+    if (!this.patientId) {
+        console.error('No patient ID available');
+        alert('Error: Patient ID is missing');
+        return;
+    }
+
+    const appointmentData = {
+        patient_id: this.patientId,
+        schedule_id: this.selectedScheduleId,
+        purpose: this.appointmentPurpose
+    };
+
+    console.log('Submitting appointment with data:', appointmentData);
+
+    this.appointmentService.scheduleAppointment(appointmentData)
+        .subscribe({
+            next: (response) => {
+                console.log('Appointment response:', response);
+                if (response.status) {
+                    alert('Appointment scheduled successfully!');
+                    this.resetForm();
+                    this.fetchAppointments();
+                } else {
+                    alert(response.message || 'Failed to schedule appointment');
+                }
+            },
+            error: (error) => {
+                console.error('Error scheduling appointment:', error);
+                alert('Error scheduling appointment. Please try again.');
+            }
+        });
+  }
+
+  viewRemarks(remarks: string): void {
+    this.currentRemarks = remarks;
+    this.remarksModalVisible = true;
+  }
+
+  closeRemarksModal(): void {
+    this.remarksModalVisible = false;
+    this.currentRemarks = '';
+  }
 }
