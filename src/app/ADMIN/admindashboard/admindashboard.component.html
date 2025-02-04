@@ -32,21 +32,36 @@
             <td>{{ patient.firstname }} {{ patient.lastname }}</td>
             <td>{{ patient.email }}</td>
             <td>{{ patient.contact_number || 'Pending' }}</td>
-          </tr> 
+          </tr>
         </tbody>
       </table>
     </div>
 
     <!-- Charts Section -->
     <div class="dashboard-reports-container">
-      <h2>Total Patient Growth</h2>
-      <div class="chart-container">
-        <canvas #medicalReportsChart></canvas>
+      <!-- Side by side charts -->
+      <div class="charts-row">
+        <div class="chart-column">
+          <h2>Appointments Overview</h2>
+          <div class="chart-container">
+            <canvas #appointmentsChart></canvas>
+          </div>
+        </div>
+        
+        <div class="chart-column">
+          <h2>Total Patient Growth</h2>
+          <div class="chart-container">
+            <canvas #medicalReportsChart></canvas>
+          </div>
+        </div>
       </div>
 
-      <h2>Appointments Overview</h2>
-      <div class="chart-container">
-        <canvas #appointmentsChart></canvas>
+      <!-- Bottom chart -->
+      <div class="bottom-chart">
+        <h2>Monthly Appointment </h2>
+        <div class="chart-container">
+          <canvas #appointmentsPerMonthChart></canvas>
+        </div>
       </div>
     </div>
 

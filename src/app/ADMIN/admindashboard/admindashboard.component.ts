@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AdminsidenavComponent } from '../adminsidenav/adminsidenav.component';
@@ -6,6 +6,7 @@ import { Chart } from 'chart.js';
 import { HttpClient } from '@angular/common/http';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { interval, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-admindashboard',
@@ -17,16 +18,32 @@ import { saveAs } from 'file-saver';
   templateUrl: './admindashboard.component.html',
   styleUrls: ['./admindashboard.component.css']
 })
-export class AdmindashboardComponent implements AfterViewInit {
+export class AdmindashboardComponent implements AfterViewInit, OnDestroy {
   patients: any[] = [];
   @ViewChild('medicalReportsChart') chartCanvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('appointmentsChart') appointmentsChartCanvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('reportChartCanvas', { static: false }) reportChartCanvas!: ElementRef;
+  @ViewChild('appointmentsPerMonthChart') appointmentsPerMonthCanvas!: ElementRef<HTMLCanvasElement>;
 
   chart: any; // Placeholder for the patient growth chart instance
   appointmentsChart: any;
+  appointmentsPerMonthChart: any;
 
-  constructor(private http: HttpClient) { }
+  displayedPatients: any[] = [];
+  maxDisplayPatients = 3;
+  currentStartIndex = 0;
+
+  private autoScrollInterval: Subscription;
+  scrollPosition = 0;
+  scrollStep = 0.5; // Slower scroll (or increase for faster scroll)
+
+  constructor(private http: HttpClient) {
+    // Adjust interval for smoother/faster scroll (lower = smoother but more CPU intensive)
+    this.autoScrollInterval = interval(30).subscribe(() => {
+      this.autoScroll();
+    });
+  }
+
   isReportModalOpen = false;
   statistics = [
     { period: 'Daily', appointments: 5, registrations: 3 },
@@ -115,6 +132,7 @@ export class AdmindashboardComponent implements AfterViewInit {
     this.fetchUsers();
     this.fetchPatients();
     this.createAppointmentsChart();
+    this.createAppointmentsPerMonthChart();
   }
 
   createAppointmentsChart(): void {
@@ -219,12 +237,13 @@ export class AdmindashboardComponent implements AfterViewInit {
                   backgroundColor: 'rgba(255, 255, 255, 0.9)',
                   titleColor: '#000',
                   titleFont: {
-                    size: 14,
+                    size: 16,
                     weight: 'bold'
                   },
                   bodyColor: '#000',
                   bodyFont: {
-                    size: 13
+                    size: 14,
+                    weight: 'bold'
                   },
                   borderColor: 'rgba(0, 0, 0, 0.1)',
                   borderWidth: 1,
@@ -296,7 +315,12 @@ export class AdmindashboardComponent implements AfterViewInit {
     this.http.get<{ status: boolean; patients: any[] }>('http://localhost/API/carexusapi/Backend/carexus.php?action=getPatients')
       .subscribe(response => {
         if (response.status) {
+          // Store all patients
           this.patients = response.patients;
+          
+          // Initialize displayed patients
+          this.rotateDisplayedPatients();
+          
           const chartData = this.getDataForFilter(response.patients);
           this.updateChartsWithData(chartData);
         } else {
@@ -385,12 +409,10 @@ export class AdmindashboardComponent implements AfterViewInit {
   }
 
   updateChartsWithData(data: any): void {
-    // Destroy existing charts before recreating them
     if (this.chart) {
       this.chart.destroy();
     }
 
-    // Create Patient Growth Chart
     this.chart = new Chart(this.chartCanvas.nativeElement, {
       type: 'bar', 
       data: {
@@ -406,28 +428,229 @@ export class AdmindashboardComponent implements AfterViewInit {
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Patient Growth Over Time',
+            font: {
+              size: 16,
+              weight: 'bold'
+            }
+          },
+          legend: {
+            labels: {
+              font: {
+                size: 14,
+                weight: 'bold'
+              }
+            }
+          }
+        },
         scales: {
           x: {
             title: {
               display: true,
-              text: 'Total Patients'
+              text: 'Month',
+              font: {
+                size: 14,
+                weight: 'bold'
+              }
+            },
+            ticks: {
+              font: {
+                size: 12,
+                weight: 'bold'
+              }
             }
           },
           y: {
             title: {
               display: true,
-              text: 'Number of Patients'
+              text: 'Number of Patients',
+              font: {
+                size: 14,
+                weight: 'bold'
+              }
             },
             beginAtZero: true,
-            max: 50, // Fixed max value for the Y-axis
+            max: 50,
             ticks: {
               stepSize: 1,
-              precision: 0 // This ensures whole numbers only
+              precision: 0
             }
           }
         }
       }
     });
+  }
+
+  createAppointmentsPerMonthChart(): void {
+    this.http.get<{ status: boolean; appointments: any[] }>(
+      'http://localhost/API/carexusapi/Backend/carexus.php?action=getPatientAppointments'
+    ).subscribe(response => {
+      if (response.status && response.appointments) {
+        const monthlyStats = this.processMonthlyAppointments(response.appointments);
+
+        if (this.appointmentsPerMonthCanvas) {
+          if (this.appointmentsPerMonthChart) {
+            this.appointmentsPerMonthChart.destroy();
+          }
+
+          this.appointmentsPerMonthChart = new Chart(this.appointmentsPerMonthCanvas.nativeElement, {
+            type: 'line',
+            data: {
+              labels: monthlyStats.labels,
+              datasets: [{
+                label: 'Total Appointments',
+                data: monthlyStats.data,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                title: {
+                  display: true,
+                  text: 'Monthly Appointment Trends',
+                  font: {
+                    size: 16,
+                    weight: 'bold'
+                  }
+                },
+                legend: {
+                  display: true,
+                  position: 'bottom',
+                  labels: {
+                    font: {
+                      size: 14,
+                      weight: 'bold'
+                    }
+                  }
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  title: {
+                    display: true,
+                    text: 'Number of Appointments',
+                    font: {
+                      size: 14,
+                      weight: 'bold'
+                    }
+                  },
+                  ticks: {
+                    stepSize: 1,
+                    precision: 0
+                  }
+                },
+                x: {
+                  title: {
+                    display: true,
+                    text: 'Month',
+                    font: {
+                      size: 14,
+                      weight: 'bold'
+                    }
+                  },
+                  ticks: {
+                    font: {
+                      size: 12,
+                      weight: 'bold'
+                    }
+                  }
+                }
+              }
+            }
+          });
+        }
+      }
+    });
+  }
+
+  processMonthlyAppointments(appointments: any[]): { labels: string[], data: number[] } {
+    const monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    const monthlyData: { [key: string]: number } = {};
+
+    // Initialize all months with 0
+    const today = new Date();
+    for (let i = 0; i < 12; i++) {
+      const date = new Date(today.getFullYear(), i, 1);
+      const monthKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+      monthlyData[monthKey] = 0;
+    }
+
+    // Count appointments per month
+    appointments.forEach(appointment => {
+      const date = new Date(appointment.appointment_date);
+      const monthKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+      monthlyData[monthKey] = (monthlyData[monthKey] || 0) + 1;
+    });
+
+    // Convert to arrays for Chart.js
+    const sortedEntries = Object.entries(monthlyData).sort();
+    const labels = sortedEntries.map(([key]) => {
+      const [year, month] = key.split('-');
+      return `${monthNames[parseInt(month) - 1]} ${year}`;
+    });
+    const data = sortedEntries.map(([_, count]) => count);
+
+    return { labels, data };
+  }
+
+  rotateDisplayedPatients() {
+    if (!this.patients || this.patients.length === 0) {
+      this.fetchPatients();
+      return;
+    }
+
+    // Move the start index
+    this.currentStartIndex = (this.currentStartIndex + this.maxDisplayPatients) % this.patients.length;
+    
+    // Get next batch of patients
+    this.displayedPatients = [];
+    for (let i = 0; i < this.maxDisplayPatients; i++) {
+      const index = (this.currentStartIndex + i) % this.patients.length;
+      this.displayedPatients.push(this.patients[index]);
+    }
+  }
+
+  autoScroll() {
+    const tableContainer = document.querySelector('.admindashboard-list-container');
+    const tbody = document.querySelector('.admindashboard-table tbody');
+    
+    if (tableContainer && tbody) {
+      // Increment scroll position
+      this.scrollPosition += this.scrollStep;
+      
+      // Get the height of the tbody
+      const tbodyHeight = (tbody as HTMLElement).offsetHeight;
+      
+      // If we've scrolled past the height of the original content
+      if (this.scrollPosition >= tbodyHeight) {
+        // Reset scroll position to top
+        this.scrollPosition = 0;
+        tableContainer.scrollTop = 0;
+      } else {
+        // Continue scrolling
+        tableContainer.scrollTop = this.scrollPosition;
+      }
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.autoScrollInterval) {
+      this.autoScrollInterval.unsubscribe();
+    }
   }
 }
 
